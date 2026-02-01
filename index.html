@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>The Bridge: Branching Story</title>
+  <style>
+    :root{
+      --bg0:#07080b;
+      --bg1:#0b1020;
+      --ink:#e8e9ee;
+      --muted:#a9adbb;
+      --accent:#7dd3fc;
+      --danger:#ff5c7a;
+      --ok:#76ffb2;
+      --warn:#ffd36c;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(0,0,0,.22);
+      --border:rgba(255,255,255,.12);
+      --shadow: 0 12px 40px rgba(0,0,0,.55);
+      --radius:16px;
+      --focus:0 0 0 3px rgba(125,211,252,.28);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 700px at 10% 10%, rgba(125,211,252,.10), transparent 55%),
+        radial-gradient(900px 500px at 80% 30%, rgba(255,92,122,.08), transparent 60%),
+        radial-gradient(800px 600px at 40% 90%, rgba(118,255,178,.06), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      letter-spacing:.2px;
+    }
+    .wrap{ max-width: 1020px; margin: 0 auto; padding: 20px 16px 90px; }
+
+    .intro{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
+      box-shadow: var(--shadow);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+      margin-bottom: 14px;
+    }
+    .mist{
+      pointer-events:none;
+      position:absolute; inset:-35%;
+      background:
+        radial-gradient(closest-side at 20% 40%, rgba(255,255,255,.10), transparent 65%),
+        radial-gradient(closest-side at 60% 30%, rgba(255,255,255,.07), transparent 70%),
+        radial-gradient(closest-side at 70% 70%, rgba(255,255,255,.05), transparent 65%),
+        radial-gradient(closest-side at 35% 85%, rgba(255,255,255,.06), transparent 70%);
+      filter: blur(10px);
+      opacity:.42;
+      animation: drift 12s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+    @keyframes drift{
+      from{ transform: translate3d(-1%, -1%, 0) scale(1.02); }
+      to{ transform: translate3d(1%, 1%, 0) scale(1.04); }
+    }
+    h1{ margin:0 0 8px 0; font-size: clamp(24px, 3vw, 36px); line-height:1.05; font-weight:900; }
+    .intro p{ margin:0; color:var(--muted); line-height:1.6; max-width: 82ch; font-size: 14px; white-space: pre-wrap; }
+    .meta{ margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size: 12px; }
+    .tag{ padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18); }
+
+    .grid{ display:grid; gap:14px; }
+    @media (min-width: 980px){
+      .grid{ grid-template-columns: 340px 1fr; align-items:start; }
+    }
+
+    .panel{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    .hudTitle{ margin: 0 0 10px 0; font-size: 13px; letter-spacing:.5px; color: var(--muted); text-transform: uppercase; }
+    .bars{ display:grid; gap:8px; }
+    .barRow{ display:grid; grid-template-columns: 92px 1fr 44px; align-items:center; gap:10px; font-size:12px; color:var(--muted); }
+    .bar{ position:relative; height:10px; border-radius: 999px; background: rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.10); }
+    .fill{ position:absolute; inset:0; width:50%; border-radius:999px; transition: width .25s ease; box-shadow: 0 0 18px rgba(125,211,252,.18); background: linear-gradient(90deg, rgba(125,211,252,.95), rgba(118,255,178,.85)); }
+    .fill.danger{ background: linear-gradient(90deg, rgba(255,92,122,.95), rgba(255,211,108,.85)); box-shadow: 0 0 18px rgba(255,92,122,.16); }
+    .fill.warn{ background: linear-gradient(90deg, rgba(255,211,108,.92), rgba(125,211,252,.78)); box-shadow: 0 0 18px rgba(255,211,108,.14); }
+
+    .invGrid{ margin-top: 10px; display:grid; gap:10px; }
+    .box{ border:1px solid rgba(255,255,255,.10); border-radius: 14px; background: rgba(0,0,0,.18); padding: 10px; }
+    .boxTitle{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 8px 0; font-size:12px; letter-spacing:.35px; color: var(--muted); text-transform: uppercase; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .itemRow{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 8px 8px; border-radius: 12px; border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03); margin-bottom: 8px;
+    }
+    .itemRow:last-child{ margin-bottom: 0; }
+    .itemName{ display:flex; flex-direction:column; gap:2px; min-width: 0; }
+    .itemName strong{ font-size: 13px; color: var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .itemName span{ font-size: 12px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .btn{
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(17,26,51,.90), rgba(12,18,38,.90));
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size:12px;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ border-color: rgba(125,211,252,.35); background: linear-gradient(180deg, rgba(17,26,51,.98), rgba(12,18,38,.98)); }
+    .btn:active{ transform: translateY(1px); }
+    .btn:focus{ outline:none; box-shadow: var(--focus); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    .btnSmall{ padding: 6px 9px; border-radius: 10px; font-size: 12px; background: rgba(0,0,0,.18); }
+
+    .rightCard{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .rightCardInner{ padding: 18px; position:relative; }
+    .sceneTitle{ font-weight:900; letter-spacing:.4px; margin:0 0 8px 0; font-size: 16px; }
+    .text{ margin:0; color: var(--ink); line-height:1.65; font-size: 15px; white-space: pre-wrap; }
+
+    .choices{ display:grid; grid-template-columns: 1fr; gap:10px; margin-top: 16px; }
+    @media (min-width: 820px){ .choices{ grid-template-columns: 1fr 1fr; } }
+
+    .choiceBtn{
+      display:flex; gap:10px; align-items:flex-start;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(17,26,51,.82), rgba(12,18,38,.82));
+      color: var(--ink);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+      text-align:left;
+      min-height: 56px;
+    }
+    .choiceBtn:hover{ border-color: rgba(125,211,252,.35); background: linear-gradient(180deg, rgba(17,26,51,.95), rgba(12,18,38,.95)); }
+    .choiceBtn:active{ transform: translateY(1px); }
+    .choiceBtn:focus{ outline:none; box-shadow: var(--focus); }
+
+    .badge{
+      flex:0 0 auto; width: 30px; height:30px;
+      border-radius: 10px; display:grid; place-items:center;
+      font-weight:900;
+      background: rgba(125,211,252,.16);
+      border:1px solid rgba(125,211,252,.22);
+      color: var(--accent);
+      margin-top:2px;
+    }
+    .choiceText{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .choiceText .main{ font-weight:800; font-size: 14px; line-height:1.25; }
+    .choiceText .hint{ font-size: 12px; color: var(--muted); line-height:1.25; }
+
+    .log{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.5;
+      max-height: 170px;
+      overflow:auto;
+      white-space: pre-wrap;
+    }
+
+    .combat{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      display:none;
+    }
+    .combat.show{ display:block; }
+    .combatTop{
+      display:flex; justify-content:space-between; gap:10px;
+      align-items:flex-start; flex-wrap:wrap; margin-bottom: 10px;
+    }
+    .combatTop h3{ margin:0; font-size: 13px; letter-spacing:.35px; text-transform: uppercase; color: var(--muted); }
+    .enemyCard{
+      display:flex; flex-direction:column; gap:2px;
+      padding: 10px; border:1px solid rgba(255,255,255,.10);
+      border-radius: 14px; background: rgba(255,255,255,.03);
+      min-width: 240px;
+    }
+    .enemyCard strong{ font-size: 14px; }
+    .enemyCard span{ font-size: 12px; color: var(--muted); }
+
+    .combatDice{ display:flex; gap:12px; margin-bottom: 10px; flex-wrap:wrap; }
+    .dieBox{
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      padding: 6px 10px;
+      min-width: 90px;
+      text-align:center;
+    }
+    .dieLabel{ font-size: 10px; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; }
+    .dieNum{ font-size: 22px; font-weight:700; color: var(--accent); min-height:24px; }
+    .dieNum.enemy{ color: var(--danger); }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.55);
+      color: var(--ink);
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      white-space: nowrap;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-4px); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <section class="intro" aria-label="Introduction">
+      <div class="mist"></div>
+      <h1>The Bridge</h1>
+      <p id="introText"></p>
+      <div class="meta">
+        <span class="tag">Single page</span>
+        <span class="tag">Branching story</span>
+        <span class="tag">Dice combat (d20)</span>
+        <span class="tag">Loot one-time</span>
+        <span class="tag">Hidden ending</span>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Game UI below introduction">
+      <aside class="panel" aria-label="Player stats and inventory">
+        <div class="hudTitle">Status</div>
+        <div class="bars">
+          <div class="barRow">
+            <div>Health</div>
+            <div class="bar"><div id="hpFill" class="fill danger"></div></div>
+            <div id="hpTxt" style="text-align:right;">100</div>
+          </div>
+          <div class="barRow">
+            <div>Energy</div>
+            <div class="bar"><div id="enFill" class="fill warn"></div></div>
+            <div id="enTxt" style="text-align:right;">100</div>
+          </div>
+          <div class="barRow">
+            <div>Resolve</div>
+            <div class="bar"><div id="reFill" class="fill"></div></div>
+            <div id="reTxt" style="text-align:right;">50</div>
+          </div>
+        </div>
+
+        <div class="invGrid">
+          <div class="box">
+            <div class="boxTitle">
+              <span>Equipped weapon</span>
+              <span class="mono" id="weaponBadge"></span>
+            </div>
+            <div id="equippedBox"></div>
+          </div>
+
+          <div class="box">
+            <div class="boxTitle">
+              <span>Backpack</span>
+              <span class="mono" id="carryBadge"></span>
+            </div>
+            <div id="backpackBox"></div>
+          </div>
+
+          <div class="box">
+            <div class="boxTitle">
+              <span>Supplies</span>
+              <span class="mono">Use wisely</span>
+            </div>
+            <div id="suppliesBox"></div>
+          </div>
+
+          <div class="box">
+            <div class="boxTitle">
+              <span>Controls</span>
+              <span class="mono">autosave</span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btnSmall" id="restartBtn">Restart</button>
+              <button class="btn btnSmall" id="clearSaveBtn">Reset save</button>
+              <button class="btn btnSmall" id="toggleHardBtn">Hard mode: Off</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="rightCard" aria-label="Story and choices">
+        <div class="mist"></div>
+        <div class="rightCardInner">
+          <h2 class="sceneTitle" id="sceneTitle">Loading...</h2>
+          <p class="text" id="sceneText"></p>
+
+          <div class="combat" id="combatBox" aria-label="Combat box">
+            <div class="combatTop">
+              <h3>Combat</h3>
+              <div class="enemyCard">
+                <strong id="enemyName">Enemy</strong>
+                <span id="enemyMeta">HP ?, AC ?, Threat ?</span>
+              </div>
+            </div>
+
+            <div class="combatDice">
+              <div class="dieBox">
+                <div class="dieLabel">Your d20</div>
+                <div id="playerDie" class="dieNum">-</div>
+              </div>
+              <div class="dieBox">
+                <div class="dieLabel">Enemy d20</div>
+                <div id="enemyDie" class="dieNum enemy">-</div>
+              </div>
+              <div class="dieBox">
+                <div class="dieLabel">Last hit</div>
+                <div id="lastHit" class="dieNum" style="color:var(--ok);">-</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn" id="attackBtn">Attack</button>
+              <button class="btn" id="focusBtn" title="Spend energy to gain accuracy">Focus</button>
+              <button class="btn" id="guardBtn" title="Reduce incoming damage this round">Guard</button>
+              <button class="btn" id="fleeBtn" title="Attempt to flee">Flee</button>
+            </div>
+            <div class="log" id="combatLog"></div>
+          </div>
+
+          <div class="choices" id="choices"></div>
+          <div class="log" id="log"></div>
+        </div>
+      </main>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const STORAGE_KEY = "the_bridge_save_fixed_v3";
+
+  const INTRO = `Some places are built to last.
+Some places are built to keep you.
+
+In the Village of Immortals, death is a myth you study like an old language.
+To keep the village from overflowing, the Council maintains a single rule:
+Every year, two must cross the Bridge.
+
+The Bridge is stone, massive, and wrong.
+It looks suspended over nothing, but columns sink into fog like drowned towers.
+Its surface is so cold and rough it can make your head spin through your fingertips.
+
+Almost no one returns.
+Exactly one did, once: old, blind, deaf, and mute.
+
+Tonight, the Council speaks your name.`;
+
+  const $ = (id)=>document.getElementById(id);
+  const clamp = (n,a,b)=>Math.max(a, Math.min(b,n));
+  const randInt = (min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+  const roll = (sides)=>randInt(1,sides);
+
+  function toast(msg){
+    const el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    window.setTimeout(()=>el.classList.remove("show"), 1400);
+  }
+
+  function rollDice(expr){
+    const m = String(expr).trim().match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+    if(!m) return { total:0, detail:"0" };
+    const n = parseInt(m[1],10);
+    const d = parseInt(m[2],10);
+    const mod = m[3] ? parseInt(m[3],10) : 0;
+    let rolls = [];
+    let sum = 0;
+    for(let i=0;i<n;i++){ const r=roll(d); rolls.push(r); sum+=r; }
+    const total = sum + mod;
+    const detail = `${n}d${d}${mod? (mod>0? "+"+mod : mod):""} = [${rolls.join(", ")}]${mod? (mod>0? " + "+mod : " - "+Math.abs(mod)):""} => ${total}`;
+    return { total, detail };
+  }
+
+  function animateDie(elId, finalVal, ms=520){
+    const el = $(elId);
+    if(!el) return;
+    const ticks = Math.max(8, Math.floor(ms/40));
+    let i = 0;
+    clearInterval(el._anim);
+    el._anim = setInterval(()=>{
+      el.textContent = randInt(1,20);
+      i++;
+      if(i>=ticks){
+        clearInterval(el._anim);
+        el.textContent = String(finalVal);
+      }
+    }, 40);
+  }
+
+  const WEAPONS = {
+    iron_sword: { id:"iron_sword", name:"Iron Sword", desc:"Reliable steel. Familiar weight.", dmg:"1d8+1", hit:+2, dur:18, rarity:"common" },
+    fog_dagger: { id:"fog_dagger", name:"Fog Dagger", desc:"A thin blade colder than air.", dmg:"1d6+2", hit:+3, dur:14, rarity:"uncommon" },
+    stone_maul: { id:"stone_maul", name:"Stone Maul", desc:"Heavy, blunt, honest.", dmg:"1d12", hit:+1, dur:12, rarity:"uncommon" },
+    glass_sabre: { id:"glass_sabre", name:"Glass Sabre", desc:"Beautiful. Breaks like a promise.", dmg:"2d4+2", hit:+4, dur:8, rarity:"rare" },
+    council_needle: { id:"council_needle", name:"Council Needle", desc:"Not a weapon, a verdict.", dmg:"1d10+1", hit:+5, dur:10, rarity:"rare" }
+  };
+
+  const ENEMIES = {
+    the_censor: { id:"the_censor", name:"The Censor", desc:"It edits reality mid sentence.", hp:18, ac:12, dmg:"1d8+1", hit:+3, threat:2 },
+    mist_mirror: { id:"mist_mirror", name:"Mist Mirror", desc:"Looks like you, with wrong timing.", hp:16, ac:13, dmg:"1d6+3", hit:+4, threat:2 },
+    stone_scribe:{ id:"stone_scribe", name:"Stone Scribe", desc:"Carves marks into stone using bone.", hp:22, ac:11, dmg:"1d10", hit:+2, threat:3 }
+  };
+
+  const DEFAULT_STATE = {
+    hp:100, energy:100, resolve:50,
+    hardMode:false,
+    supplies:{ bread:1, water:1, salve:0 },
+    weapons:["iron_sword"],
+    equipped:"iron_sword",
+    weaponDur:{},
+    flags:{
+      searchedSeam:false,
+      searchedDoor:false,
+      secretSeed:0
+    },
+    scene:"intro_scene",
+    log:["The wind is still. In the Village, that is always the first omen."],
+    combat:null,
+    postCombat:null
+  };
+
+  let S = load() || structuredClone(DEFAULT_STATE);
+  normalizeState();
+
+  function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){} }
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+
+  function normalizeState(){
+    if(!S.weaponDur) S.weaponDur = {};
+    if(!S.flags) S.flags = {};
+    if(typeof S.flags.searchedSeam !== "boolean") S.flags.searchedSeam = false;
+    if(typeof S.flags.searchedDoor !== "boolean") S.flags.searchedDoor = false;
+
+    S.weapons.forEach(id=>{
+      if(typeof S.weaponDur[id] !== "number"){
+        S.weaponDur[id] = WEAPONS[id]?.dur ?? 0;
+      }
+    });
+    if(!S.weapons.includes(S.equipped)){
+      S.equipped = S.weapons[0] || "iron_sword";
+    }
+  }
+
+  function addLog(line){
+    S.log.push(line);
+    if(S.log.length>80) S.log.shift();
+    renderLog();
+  }
+  function renderLog(){
+    $("log").textContent = S.log.slice(-16).join("\n");
+    $("log").scrollTop = $("log").scrollHeight;
+  }
+
+  function setStat(key, delta){
+    if(key==="hp") S.hp = clamp(S.hp+delta,0,100);
+    if(key==="energy") S.energy = clamp(S.energy+delta,0,100);
+    if(key==="resolve") S.resolve = clamp(S.resolve+delta,0,100);
+    renderHud();
+    save();
+  }
+
+  function getDur(id){
+    const base = WEAPONS[id]?.dur ?? 0;
+    const cur = S.weaponDur[id];
+    return (typeof cur === "number") ? cur : base;
+  }
+  function setDur(id, v){
+    const base = WEAPONS[id]?.dur ?? 0;
+    S.weaponDur[id] = clamp(v,0,base);
+  }
+  function decDur(id, amt){ setDur(id, getDur(id)-amt); }
+
+  function weaponSnapshot(id){
+    const w = WEAPONS[id];
+    if(!w) return null;
+    return { ...w, curDur:getDur(id) };
+  }
+  function currentWeapon(){
+    return weaponSnapshot(S.equipped) || weaponSnapshot("iron_sword");
+  }
+  function weaponToHit(w){
+    const brokenPenalty = (w.curDur<=0) ? -3 : 0;
+    return (w.hit||0) + brokenPenalty;
+  }
+
+  function gainWeapon(id){
+    if(!WEAPONS[id]) return;
+    if(!S.weapons.includes(id)){
+      S.weapons.push(id);
+      S.weaponDur[id] = WEAPONS[id].dur;
+      addLog(`You obtained a weapon: ${WEAPONS[id].name}.`);
+      toast(`Loot: ${WEAPONS[id].name}`);
+      renderHud();
+      save();
+    }
+  }
+  function equipWeapon(id){
+    if(!WEAPONS[id]) return;
+    S.equipped = id;
+    addLog(`You equipped: ${WEAPONS[id].name}.`);
+    toast("Weapon equipped.");
+    renderHud();
+    save();
+  }
+
+  function useBread(){
+    if(S.supplies.bread<=0) return;
+    S.supplies.bread--;
+    setStat("energy", +18);
+    setStat("resolve", +4);
+    addLog("You ate bread. Your body remembers being mortal.");
+    renderHud(); save();
+  }
+  function useWater(){
+    if(S.supplies.water<=0) return;
+    S.supplies.water--;
+    setStat("hp", +16);
+    setStat("energy", +8);
+    addLog("You drank water. Stone feels less hungry.");
+    renderHud(); save();
+  }
+  function useSalve(){
+    if(S.supplies.salve<=0) return;
+    S.supplies.salve--;
+    setStat("hp", +28);
+    addLog("You applied salve. The pain steps back.");
+    renderHud(); save();
+  }
+
+  function makeItemRow(title, subtitle, buttons){
+    const row = document.createElement("div");
+    row.className = "itemRow";
+    const left = document.createElement("div");
+    left.className = "itemName";
+    const strong = document.createElement("strong");
+    strong.textContent = title;
+    const span = document.createElement("span");
+    span.textContent = subtitle;
+    left.appendChild(strong);
+    left.appendChild(span);
+
+    const right = document.createElement("div");
+    right.style.display="flex";
+    right.style.gap="6px";
+    right.style.flexWrap="wrap";
+
+    (buttons||[]).forEach(b=>{
+      const btn = document.createElement("button");
+      btn.className = "btn btnSmall";
+      btn.type = "button";
+      btn.textContent = b.label;
+      if(b.disabled) btn.disabled = true;
+      btn.addEventListener("click", b.onClick);
+      right.appendChild(btn);
+    });
+
+    row.appendChild(left);
+    row.appendChild(right);
+    return row;
+  }
+
+  function renderHud(){
+    $("hpFill").style.width = S.hp + "%";
+    $("enFill").style.width = S.energy + "%";
+    $("reFill").style.width = S.resolve + "%";
+    $("hpTxt").textContent = S.hp;
+    $("enTxt").textContent = S.energy;
+    $("reTxt").textContent = S.resolve;
+    $("toggleHardBtn").textContent = `Hard mode: ${S.hardMode ? "On" : "Off"}`;
+
+    const w = currentWeapon();
+    const toHit = weaponToHit(w);
+    $("weaponBadge").textContent = `DMG ${w.dmg}  HIT ${toHit>=0? "+"+toHit:toHit}`;
+    const eq = $("equippedBox");
+    eq.innerHTML = "";
+    eq.appendChild(makeItemRow(
+      w.name,
+      `${w.desc} | ${w.dmg} | to hit ${toHit>=0? "+"+toHit:toHit} | durability ${w.curDur}`,
+      []
+    ));
+
+    const bag = $("backpackBox");
+    bag.innerHTML = "";
+    const owned = S.weapons.map(id=>weaponSnapshot(id)).filter(Boolean);
+    $("carryBadge").textContent = `${owned.length} weapons`;
+    owned.forEach(wep=>{
+      const isEq = wep.id === S.equipped;
+      bag.appendChild(makeItemRow(
+        wep.name + (isEq ? " (equipped)" : ""),
+        `DMG ${wep.dmg} | HIT ${weaponToHit(wep)>=0? "+"+weaponToHit(wep):weaponToHit(wep)} | DUR ${wep.curDur} | ${wep.rarity}`,
+        isEq ? [] : [{ label:"Equip", onClick:()=>equipWeapon(wep.id) }]
+      ));
+    });
+
+    const sup = $("suppliesBox");
+    sup.innerHTML = "";
+    sup.appendChild(makeItemRow(`Bread x${S.supplies.bread}`, "Restore energy and some resolve.", [
+      { label:"Use", disabled:S.supplies.bread<=0, onClick:useBread }
+    ]));
+    sup.appendChild(makeItemRow(`Water x${S.supplies.water}`, "Restore health and energy.", [
+      { label:"Use", disabled:S.supplies.water<=0, onClick:useWater }
+    ]));
+    sup.appendChild(makeItemRow(`Salve x${S.supplies.salve}`, "Emergency healing.", [
+      { label:"Use", disabled:S.supplies.salve<=0, onClick:useSalve }
+    ]));
+  }
+
+  const SCENES = {
+    intro_scene:{
+      title:"The Village That Outlasts Meaning",
+      text:(s)=>`The Village of Immortals does not rot. Roofs do not leak. Arguments do not end.
+Urgency is treated as a mortal habit.
+
+To keep the village from overflowing, the Council maintains the Rule:
+Every year, two cross the Bridge.
+
+Tonight, your name is chosen.`,
+      choices:[
+        { label:"Go to the Council Hall", hint:"Your life becomes a procedure.", to:"council_hall" }
+      ]
+    },
+
+    council_hall:{
+      title:"Council Hall, Under Perfect Lamps",
+      text:(s)=>`The Council speaks calmly, like the Rule is weather.
+Two will cross. No exceptions.
+
+A custodian stands aside, fingers scarred. The other chosen waits in silence.`,
+      choices:[
+        { label:"Follow procedure to the gate", hint:"No more delays.", to:"gate" },
+        { label:"Attempt the impossible objection", hint:"Tiny chance of a hidden ending.", to:"secret_roll" }
+      ]
+    },
+
+    secret_roll:{
+      title:"The Impossible Probability",
+      text:(s)=>`You challenge the Rule. The room tilts, as if reality is deciding whether you are allowed to be unique.
+
+Hold your ground. The odds are absurd.`,
+      choices:[
+        { label:"Hold your ground", hint:"Ridiculously low chance to skip the journey.", to:"secret_result",
+          effect:(st)=>{
+            const base = 220;
+            const bonus = Math.floor((st.resolve-50)/4);
+            const target = Math.max(70, base - bonus);
+            st.flags.secretSeed = randInt(1,target);
+            addLog("You did not blink.");
+          }
+        },
+        { label:"Back down", hint:"Return to procedure.", to:"council_hall", effect:(st)=>setStat("resolve",-3) }
+      ]
+    },
+
+    secret_result:{
+      title:"Secret Outcome",
+      text:(s)=>{
+        if(s.flags.secretSeed===1){
+          return `The Rule bends.
+An exception.
+
+You are dismissed.
+
+SECRET ENDING UNLOCKED
+You avoided the journey.
+
+Final status
+Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}`;
+        }
+        return `Nothing happens. The Village swallows anomalies.
+Procedure resumes.`;
+      },
+      choices:[
+        { label:"Continue", hint:"Normal path.", to:"gate",
+          effect:(st)=>{
+            if(st.flags.secretSeed===1) addLog("The story ends early. The Bridge does not get you this time.");
+          }
+        },
+        { label:"Restart", hint:"Clean run.", to:"__restart" }
+      ]
+    },
+
+    gate:{
+      title:"The Gate and the Fog",
+      text:(s)=>`Night. The gate opens. The Bridge waits beyond it, swallowing moonlight.
+The stone is cold enough to make your head spin through your palm.
+
+A sound arrives. Maybe a bell. Maybe blood.`,
+      choices:[
+        { label:"Step onto the Bridge", hint:"Forward is the only direction that matters.", to:"first_steps",
+          effect:(st)=>setStat("energy",-2)
+        }
+      ]
+    },
+
+    first_steps:{
+      title:"First Steps, First Distortions",
+      text:(s)=>`The Bridge is longer than it should be. Fog lies to distance.
+On the stone, you find something impossible: a wrapped object in the seams.
+And near the middle stretch, an impossible door stands on bare stone.`,
+      choices:[
+        { label:"Search the stone seams", hint:"One time only. After looting, it disappears.", to:"seam_loot",
+          when:(st)=>!st.flags.searchedSeam,
+          effect:(st)=>{ setStat("energy",-4); addLog("You search the seams. The stone feels like a locked drawer."); }
+        },
+        { label:"Approach the impossible door", hint:"One time only loot option nearby.", to:"door_scene",
+          effect:(st)=>{ setStat("energy",-3); addLog("You approach the door. The handle looks warm, which is suspicious."); }
+        },
+        { label:"Push forward into thicker fog", hint:"Risk of hostile presences.", to:"ambush_choice",
+          effect:(st)=>{ setStat("energy",-2); addLog("You keep moving. The Bridge learns your rhythm."); }
+        }
+      ]
+    },
+
+    seam_loot:{
+      title:"Stone Seams",
+      text:(s)=>`Your fingers slide into cracks where blocks meet.
+The stone is colder inside, like it keeps secrets refrigerated.
+
+You unwrap the object slowly.`,
+      choices:[
+        { label:"Take it", hint:"After taking, this option never returns.", to:"first_steps",
+          effect:(st)=>{
+            st.flags.searchedSeam = true; // THIS is what removes the choice forever
+            const r = randInt(1,100);
+            if(r<=28){
+              gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
+              setStat("resolve", +4);
+            }else if(r<=60){
+              st.supplies.water += 1;
+              toast("Water +1");
+              addLog("You found water sealed in a small flask. It tastes like a different year.");
+            }else{
+              setStat("hp",-6);
+              addLog("The cloth cuts you like paper. The Bridge dislikes theft.");
+            }
+            renderHud(); save();
+          }
+        }
+      ]
+    },
+
+    door_scene:{
+      title:"The Door Standing Alone",
+      text:(s)=>`A door on bare stone. No walls. No house. Just a door.
+Carved into it: ENTER AND FORGET.
+
+The air around it feels warmer. That is always a trap.`,
+      choices:[
+        { label:"Search around the doorframe", hint:"One time only. After looting, it disappears.", to:"door_loot",
+          when:(st)=>!st.flags.searchedDoor,
+          effect:(st)=>{ setStat("energy",-3); addLog("You search around the door. The fog watches your hands."); }
+        },
+        { label:"Open the door", hint:"A shortcut with a price.", to:"forget_ending",
+          effect:(st)=>{ setStat("resolve",-6); addLog("Your hand touches the handle. Warmth is a crime here."); }
+        },
+        { label:"Refuse and move on", hint:"Harder path. Cleaner self.", to:"ambush_choice",
+          effect:(st)=>{ setStat("resolve", +5); addLog("You refuse the anesthetic. The Bridge seems disappointed."); }
+        }
+      ]
+    },
+
+    door_loot:{
+      title:"Around the Door",
+      text:(s)=>`Near the frame, a thin metal sliver is embedded in stone.
+It is painfully sharp, like it wants to make decisions for you.`,
+      choices:[
+        { label:"Keep it", hint:"After taking, this option never returns.", to:"door_scene",
+          effect:(st)=>{
+            st.flags.searchedDoor = true; // THIS removes the option forever
+            const r = randInt(1,100);
+            if(r<=10){
+              gainWeapon("council_needle");
+              setStat("resolve", +6);
+            }else if(r<=40){
+              gainWeapon("glass_sabre");
+              setStat("resolve", +4);
+            }else{
+              setStat("hp",-8);
+              addLog("The metal bites you like a verdict. The Bridge dislikes greed.");
+            }
+            renderHud(); save();
+          }
+        }
+      ]
+    },
+
+    ambush_choice:{
+      title:"The Fog Tightens",
+      text:(s)=>`The fog becomes thick enough to feel like fabric.
+You sense attention. Not eyes. A rule deciding how to categorize you.
+
+A hostile presence can form at any moment.`,
+      choices:[
+        { label:"Stand your ground", hint:"Higher chance of combat, better control.", to:"combat_censor",
+          effect:(st)=>{ setStat("resolve", +3); addLog("You stand still. The Bridge hates that."); }
+        },
+        { label:"Walk carefully without reacting", hint:"May avoid combat if your resolve is high.", to:"avoid_check",
+          effect:(st)=>{ setStat("energy",-2); addLog("You refuse to perform fear."); }
+        }
+      ]
+    },
+
+    avoid_check:{
+      title:"The Non Performance",
+      text:(s)=>`Sometimes refusing to perform is a weapon.
+But the Bridge loves exceptions, and exceptions are expensive.`,
+      choices:[
+        { label:"Continue", hint:"Resolve check decides.", to:"avoid_result",
+          effect:(st)=>{ st.flags._avoid = roll(20) + Math.floor(st.resolve/20); }
+        }
+      ]
+    },
+
+    avoid_result:{
+      title:"Result",
+      text:(s)=>{
+        const c = s.flags._avoid || 0;
+        if(c>=18) return `You slip past the attention.
+Resolve check: ${c} (success).`;
+        return `The fog hardens into intent.
+Resolve check: ${c} (failed). Combat begins.`;
+      },
+      choices:[
+        { label:"Proceed", hint:"Either way, forward.", to:(s)=>((S.flags._avoid||0)>=18 ? "final_approach" : "combat_mirror") }
+      ]
+    },
+
+    final_approach:{
+      title:"The Last Fog",
+      text:(s)=>`The air changes. It smells like soil, not stone.
+A sign the exit exists.
+
+You step toward the threshold.
+Whatever the Bridge did to you, it remembers.`,
+      choices:[
+        { label:"Exit", hint:"Reach an ending.", to:"cross_ending" },
+        { label:"Restart", hint:"Try other branches.", to:"__restart" }
+      ]
+    },
+
+    cross_ending:{
+      title:"Ending: Beyond the Bridge",
+      text:(s)=>`You step out of the fog.
+The light is harsh, honest, mortal.
+
+Final status
+Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}
+
+The Bridge does not threaten you.
+It simply remembers you.`,
+      choices:[
+        { label:"Restart", hint:"Clean run.", to:"__restart" }
+      ]
+    },
+
+    forget_ending:{
+      title:"Ending: Enter and Forget",
+      text:(s)=>`You return to warmth.
+You live. You smile. You resume eternity.
+
+And yet, sometimes someone says a simple word and you do not understand it.
+
+Final status
+Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}
+
+The Rule is satisfied.
+You returned.
+Changed.`,
+      choices:[
+        { label:"Restart", hint:"Try refusing the door.", to:"__restart" }
+      ]
+    }
+  };
+
+  function renderScene(){
+    $("sceneTitle").textContent = SCENES[S.scene].title;
+    $("sceneText").textContent = SCENES[S.scene].text(S);
+
+    const choicesBox = $("choices");
+    choicesBox.innerHTML = "";
+
+    // If we are in post-combat state, show ONLY Continue (prevents lock and prevents stray buttons)
+    if(S.postCombat){
+      const btn = document.createElement("button");
+      btn.className = "choiceBtn";
+      btn.type = "button";
+      btn.innerHTML = `<div class="badge">C</div>
+        <div class="choiceText">
+          <div class="main">Continue</div>
+          <div class="hint">Leave the fight behind. Carry the consequences forward.</div>
+        </div>`;
+      btn.addEventListener("click", ()=>{
+        const next = S.postCombat.nextScene;
+        const note = S.postCombat.note;
+        S.postCombat = null;
+        addLog(note || "You continue.");
+        save();
+        go(next);
+      });
+      choicesBox.appendChild(btn);
+      renderLog();
+      return;
+    }
+
+    // Combat active hides choices (combat UI has its own buttons)
+    if(S.combat && S.combat.active){
+      renderCombat();
+      renderLog();
+      return;
+    } else {
+      renderCombat(); // hides combat box
+    }
+
+    const sc = SCENES[S.scene];
+    const list = sc.choices || [];
+    let visibleIndex = 0;
+    list.forEach((c)=>{
+      let show = true;
+      if(typeof c.when === "function"){
+        try{ show = c.when(S); }catch(e){ show = true; }
+      }
+      if(!show) return;
+
+      const btn = document.createElement("button");
+      btn.className = "choiceBtn";
+      btn.type = "button";
+      const badgeLetter = String.fromCharCode(65 + (visibleIndex % 26));
+      visibleIndex++;
+
+      btn.innerHTML = `<div class="badge">${badgeLetter}</div>
+        <div class="choiceText">
+          <div class="main"></div>
+          <div class="hint"></div>
+        </div>`;
+      btn.querySelector(".main").textContent = c.label;
+      btn.querySelector(".hint").textContent = c.hint || "";
+
+      btn.addEventListener("click", ()=>{
+        if(typeof c.effect === "function") c.effect(S);
+        const next = (typeof c.to === "function") ? c.to(S) : c.to;
+        renderHud();
+        save();
+        go(next);
+      });
+
+      choicesBox.appendChild(btn);
+    });
+
+    renderLog();
+  }
+
+  function go(sceneId){
+    if(sceneId==="__restart"){
+      S = structuredClone(DEFAULT_STATE);
+      normalizeState();
+      save();
+      renderAll();
+      toast("New run.");
+      return;
+    }
+    if(!SCENES[sceneId]){
+      addLog("Missing scene. Resetting.");
+      S.scene = "intro_scene";
+      save();
+      renderAll();
+      return;
+    }
+    S.scene = sceneId;
+    save();
+    renderAll();
+  }
+
+  function renderAll(){
+    $("introText").textContent = INTRO;
+    normalizeState();
+    renderHud();
+    renderScene();
+    renderLog();
+  }
+
+  // Combat system
+  function renderCombat(){
+    const box = $("combatBox");
+    if(!S.combat || !S.combat.active){
+      box.classList.remove("show");
+      $("attackBtn").disabled = true;
+      $("focusBtn").disabled = true;
+      $("guardBtn").disabled = true;
+      $("fleeBtn").disabled = true;
+      return;
+    }
+    box.classList.add("show");
+    const e = ENEMIES[S.combat.enemyId];
+    $("enemyName").textContent = e.name;
+    $("enemyMeta").textContent = `HP ${S.combat.eHp}, AC ${S.combat.eAc}, Threat ${S.combat.eThreat}`;
+    $("attackBtn").disabled = false;
+    $("focusBtn").disabled = false;
+    $("guardBtn").disabled = false;
+    $("fleeBtn").disabled = !S.combat.allowFleeTo;
+    $("choices").innerHTML = "";
+  }
+
+  function combatLog(line){
+    const el = $("combatLog");
+    el.textContent += "\n" + line;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function startCombat(enemyId, returnScene, allowFleeTo){
+    const e = ENEMIES[enemyId];
+    if(!e) return;
+
+    const hpBonus = S.hardMode ? 4 : 0;
+    const acBonus = S.hardMode ? 1 : 0;
+    const hitBonus = S.hardMode ? 1 : 0;
+
+    S.combat = {
+      active:true,
+      enemyId,
+      eHp: e.hp + hpBonus,
+      eAc: e.ac + acBonus,
+      eHit: e.hit + hitBonus,
+      eDmg: e.dmg,
+      eThreat: e.threat + (S.hardMode ? 1 : 0),
+      guard:false,
+      focusStacks:0,
+      returnScene: returnScene,
+      allowFleeTo: allowFleeTo || null
+    };
+
+    $("combatLog").textContent = `${e.desc}\n\nCombat begins.`;
+    $("playerDie").textContent = "-";
+    $("enemyDie").textContent = "-";
+    $("lastHit").textContent = "-";
+    addLog(`A hostile presence forms: ${e.name}.`);
+    save();
+    renderScene();
+  }
+
+  function endCombat(victory){
+    const enemy = ENEMIES[S.combat.enemyId];
+    if(victory){
+      addLog(`You survived ${enemy.name}. The Bridge does not congratulate you.`);
+      // small loot
+      const drop = randInt(1,100) - (S.hardMode ? 10 : 0);
+      if(drop<=18){
+        gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
+      }else if(drop<=45){
+        S.supplies.salve += 1;
+        toast("Loot: Salve +1");
+        addLog("You found salve in a crack of the stone.");
+      }else if(drop<=70){
+        S.supplies.bread += 1;
+        toast("Loot: Bread +1");
+        addLog("You found bread that tastes like yesterday.");
+      }else{
+        addLog("Nothing useful remains, only the memory of impact.");
+      }
+      setStat("resolve", +6);
+      setStat("energy", -3);
+    } else {
+      addLog("You endured. The Bridge calls that enough.");
+    }
+
+    // IMPORTANT FIX: do not drop the player into a dead UI state
+    // We set a postCombat continuation that shows a Continue button.
+    const nextScene = S.combat.returnScene || S.scene;
+    S.postCombat = {
+      nextScene: nextScene,
+      note: victory ? "You steady your breathing and move on." : "You crawl forward, refusing to stop."
+    };
+
+    S.combat = null;
+    renderHud();
+    save();
+    renderScene();
+  }
+
+  function enemyTurn(){
+    if(!S.combat) return;
+    const e = ENEMIES[S.combat.enemyId];
+    const d20 = roll(20);
+    animateDie("enemyDie", d20);
+
+    const enemyAtk = d20 + S.combat.eHit + Math.floor((S.combat.eThreat-2));
+    const playerAC = 12 + Math.floor(S.resolve/25) + (S.combat.guard ? 2 : 0) + (S.hardMode ? -1 : 0);
+
+    if(d20===1){
+      combatLog(`${e.name} rolls a natural 1. Reality stutters. MISS.`);
+      S.combat.guard = false;
+      S.combat.focusStacks = 0;
+      save();
+      return;
+    }
+
+    const hit = (d20===20) || (enemyAtk >= playerAC);
+    if(hit){
+      const dmg = rollDice(S.combat.eDmg);
+      let taken = dmg.total;
+      if(S.combat.guard) taken = Math.max(1, Math.floor(taken*0.55));
+      if(d20===20) taken += rollDice("1d6").total;
+
+      setStat("hp", -taken);
+      setStat("resolve", -2);
+      $("lastHit").textContent = String(taken);
+      combatLog(`${e.name} rolls ${d20}. Attack ${enemyAtk} vs your AC ${playerAC}. HIT.`);
+      combatLog(`Damage: ${dmg.detail} | You take ${taken}.`);
+
+      if(S.hp<=0){
+        combatLog("You collapse. Not dead. Rewritten.");
+        S.hp = 35; S.energy = 25; S.resolve = clamp(S.resolve-12,0,100);
+        endCombat(false);
+        return;
+      }
+    } else {
+      combatLog(`${e.name} rolls ${d20}. Attack ${enemyAtk} vs your AC ${playerAC}. MISS.`);
+      setStat("resolve", +1);
+    }
+
+    S.combat.guard = false;
+    S.combat.focusStacks = 0;
+    save();
+  }
+
+  function playerAttack(){
+    if(!S.combat) return;
+    const wep = currentWeapon();
+    const nat = roll(20);
+    animateDie("playerDie", nat);
+
+    decDur(wep.id, 1);
+
+    const toHit = weaponToHit(wep);
+    const focusBonus = S.combat.focusStacks * 2;
+    const attackTotal = nat + toHit + focusBonus + Math.floor((S.resolve-50)/20);
+
+    if(nat===1){
+      combatLog("You roll a natural 1. The stone catches your angle. MISS.");
+      setStat("energy",-3);
+      enemyTurn();
+      return;
+    }
+
+    const crit = (nat===20);
+    if(crit || attackTotal >= S.combat.eAc){
+      const dmg = rollDice(wep.dmg);
+      const bonus = crit ? rollDice("1d6").total : 0;
+      const finalDmg = dmg.total + bonus;
+
+      S.combat.eHp = Math.max(0, S.combat.eHp - finalDmg);
+      $("lastHit").textContent = String(finalDmg);
+      combatLog(`You roll ${nat}. Attack ${attackTotal} vs AC ${S.combat.eAc}. HIT.`);
+      combatLog(`Damage: ${dmg.detail}${crit ? " | CRIT +1d6" : ""} => ${finalDmg}`);
+
+      setStat("energy",-5);
+
+      if(S.combat.eHp<=0){
+        combatLog("Enemy collapses into fog and silence.");
+        endCombat(true);
+        return;
+      }
+      enemyTurn();
+    } else {
+      combatLog(`You roll ${nat}. Attack ${attackTotal} vs AC ${S.combat.eAc}. MISS.`);
+      setStat("energy",-4);
+      enemyTurn();
+    }
+    save();
+  }
+
+  function playerFocus(){
+    if(!S.combat) return;
+    if(S.energy<10){
+      combatLog("You try to focus, but your body refuses. Not enough energy.");
+      return;
+    }
+    setStat("energy",-10);
+    setStat("resolve",+6);
+    S.combat.focusStacks = clamp(S.combat.focusStacks+1,0,3);
+    combatLog(`You focus. Next attack gains +${S.combat.focusStacks*2} to hit.`);
+    enemyTurn();
+    save();
+  }
+
+  function playerGuard(){
+    if(!S.combat) return;
+    S.combat.guard = true;
+    setStat("energy",-6);
+    setStat("resolve",+2);
+    combatLog("You guard. Incoming damage reduced this round.");
+    enemyTurn();
+    save();
+  }
+
+  function playerFlee(){
+    if(!S.combat || !S.combat.allowFleeTo) return;
+    const fleeRoll = roll(20) + Math.floor(S.resolve/25) - (S.combat.eThreat*2) + (S.hardMode ? -1 : 0);
+    animateDie("playerDie", fleeRoll);
+    combatLog(`Flee attempt: ${fleeRoll}.`);
+    if(fleeRoll>=14){
+      combatLog("You slip away into thicker fog. ESCAPE.");
+      const to = S.combat.allowFleeTo;
+      S.combat = null;
+      S.postCombat = { nextScene: to, note:"You escaped. It feels like living." };
+      save();
+      renderScene();
+      return;
+    }
+    combatLog("You turn to run. The enemy punishes the motion.");
+    enemyTurn();
+    save();
+  }
+
+  // Combat entry points as scenes
+  function combatScene(enemyId, returnScene, fleeTo){
+    startCombat(enemyId, returnScene, fleeTo);
+  }
+
+  // Hook these "virtual scenes" into navigation
+  const originalGo = go;
+  go = function(sceneId){
+    if(sceneId==="combat_censor"){
+      combatScene("the_censor", "final_approach", "final_approach");
+      return;
+    }
+    if(sceneId==="combat_mirror"){
+      combatScene("mist_mirror", "final_approach", "final_approach");
+      return;
+    }
+    originalGo(sceneId);
+  };
+
+  // Buttons
+  $("attackBtn").addEventListener("click", playerAttack);
+  $("focusBtn").addEventListener("click", playerFocus);
+  $("guardBtn").addEventListener("click", playerGuard);
+  $("fleeBtn").addEventListener("click", playerFlee);
+
+  $("restartBtn").addEventListener("click", ()=>go("__restart"));
+  $("clearSaveBtn").addEventListener("click", ()=>{
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    S = structuredClone(DEFAULT_STATE);
+    normalizeState();
+    save();
+    renderAll();
+    toast("Save reset.");
+  });
+  $("toggleHardBtn").addEventListener("click", ()=>{
+    S.hardMode = !S.hardMode;
+    addLog(`Hard mode is now ${S.hardMode ? "ON" : "OFF"}.`);
+    save();
+    renderHud();
+  });
+
+  // Intro text
+  $("introText").textContent = INTRO;
+
+  // Boot
+  renderAll();
+})();
+</script>
+</body>
+</html>

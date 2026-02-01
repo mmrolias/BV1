@@ -1,9 +1,10 @@
 <!doctype html>
+<!-- BUILD v7 -->
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>The Bridge: Branching Story</title>
+  <title>The Bridge: Branching Story (BUILD v7)</title>
   <style>
     :root{
       --bg0:#07080b;
@@ -14,13 +15,20 @@
       --danger:#ff5c7a;
       --ok:#76ffb2;
       --warn:#ffd36c;
+
       --card:rgba(255,255,255,.06);
       --card2:rgba(0,0,0,.22);
       --border:rgba(255,255,255,.12);
       --shadow: 0 12px 40px rgba(0,0,0,.55);
       --radius:16px;
       --focus:0 0 0 3px rgba(125,211,252,.28);
+
+      --legendary:#fbbf24;
+      --rare:#c4b5fd;
+      --uncommon:#a7f3d0;
+      --common:#93c5fd;
     }
+
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -33,8 +41,41 @@
       min-height:100vh;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       letter-spacing:.2px;
+      transition: background 350ms ease;
     }
-    .wrap{ max-width: 1020px; margin: 0 auto; padding: 20px 16px 90px; }
+
+    body.layout-wide{
+      background:
+        radial-gradient(1400px 900px at 20% 15%, rgba(125,211,252,.12), transparent 58%),
+        radial-gradient(900px 600px at 70% 25%, rgba(255,211,108,.07), transparent 62%),
+        linear-gradient(180deg, #06070a, #0a1230);
+    }
+    body.layout-claustrophobic{
+      background:
+        radial-gradient(700px 500px at 50% 15%, rgba(255,92,122,.10), transparent 55%),
+        radial-gradient(700px 500px at 50% 85%, rgba(125,211,252,.08), transparent 55%),
+        linear-gradient(180deg, #050507, #090a12);
+    }
+    body.layout-hall{
+      background:
+        radial-gradient(900px 600px at 50% 20%, rgba(255,255,255,.06), transparent 60%),
+        radial-gradient(900px 600px at 50% 80%, rgba(125,211,252,.08), transparent 60%),
+        linear-gradient(180deg, #07080c, #0d1430);
+    }
+    body.layout-inverted{
+      background:
+        radial-gradient(900px 700px at 50% 10%, rgba(251,191,36,.08), transparent 62%),
+        radial-gradient(900px 700px at 50% 90%, rgba(125,211,252,.08), transparent 62%),
+        linear-gradient(180deg, #05060a, #121535);
+    }
+    body.layout-city{
+      background:
+        radial-gradient(1100px 700px at 60% 12%, rgba(255,255,255,.05), transparent 62%),
+        radial-gradient(900px 600px at 30% 85%, rgba(196,181,253,.08), transparent 62%),
+        linear-gradient(180deg, #05060a, #101235);
+    }
+
+    .wrap{ max-width: 1060px; margin: 0 auto; padding: 20px 16px 90px; }
 
     .intro{
       border:1px solid var(--border);
@@ -46,6 +87,7 @@
       overflow:hidden;
       margin-bottom: 14px;
     }
+
     .mist{
       pointer-events:none;
       position:absolute; inset:-35%;
@@ -63,14 +105,16 @@
       from{ transform: translate3d(-1%, -1%, 0) scale(1.02); }
       to{ transform: translate3d(1%, 1%, 0) scale(1.04); }
     }
+
     h1{ margin:0 0 8px 0; font-size: clamp(24px, 3vw, 36px); line-height:1.05; font-weight:900; }
-    .intro p{ margin:0; color:var(--muted); line-height:1.6; max-width: 82ch; font-size: 14px; white-space: pre-wrap; }
+    .intro p{ margin:0; color:var(--muted); line-height:1.6; max-width: 92ch; font-size: 14px; white-space: pre-wrap; }
     .meta{ margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size: 12px; }
     .tag{ padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18); }
 
     .grid{ display:grid; gap:14px; }
     @media (min-width: 980px){
-      .grid{ grid-template-columns: 340px 1fr; align-items:start; }
+      .grid{ grid-template-columns: 360px 1fr; align-items:start; }
+      body.layout-wide .grid{ grid-template-columns: 320px 1fr; }
     }
 
     .panel{
@@ -94,15 +138,51 @@
     .boxTitle{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 8px 0; font-size:12px; letter-spacing:.35px; color: var(--muted); text-transform: uppercase; }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
-    .itemRow{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding: 8px 8px; border-radius: 12px; border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03); margin-bottom: 8px;
+    .cardRow{
+      display:flex; align-items:stretch; justify-content:space-between; gap:10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.16));
+      margin-bottom: 10px;
+      position:relative;
+      overflow:hidden;
     }
-    .itemRow:last-child{ margin-bottom: 0; }
-    .itemName{ display:flex; flex-direction:column; gap:2px; min-width: 0; }
-    .itemName strong{ font-size: 13px; color: var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .itemName span{ font-size: 12px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cardRow:last-child{ margin-bottom: 0; }
+
+    .rarityGlow{
+      pointer-events:none;
+      position:absolute; inset:-30%;
+      opacity:.38;
+      filter: blur(14px);
+      transform: rotate(12deg);
+      mix-blend-mode: screen;
+    }
+    .cardRow.r-common .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(147,197,253,.20), transparent 65%); }
+    .cardRow.r-uncommon .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(167,243,208,.20), transparent 65%); }
+    .cardRow.r-rare .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(196,181,253,.22), transparent 65%); }
+    .cardRow.r-legendary .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(251,191,36,.22), transparent 65%); opacity:.55; }
+
+    .itemLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .itemTop{ display:flex; align-items:center; gap:8px; min-width:0; }
+    .itemTop strong{ font-size: 13px; color: var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .itemSub{ font-size: 12px; color: var(--muted); line-height:1.25; }
+
+    .pill{
+      flex:0 0 auto;
+      font-size:10px;
+      letter-spacing:.5px;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+    }
+    .pill.common{ border-color: rgba(147,197,253,.25); color: var(--common); }
+    .pill.uncommon{ border-color: rgba(167,243,208,.25); color: var(--uncommon); }
+    .pill.rare{ border-color: rgba(196,181,253,.25); color: var(--rare); }
+    .pill.legendary{ border-color: rgba(251,191,36,.30); color: var(--legendary); }
 
     .btn{
       border:1px solid rgba(255,255,255,.12);
@@ -128,8 +208,20 @@
       box-shadow: var(--shadow);
       overflow:hidden;
       position:relative;
+      transform: translateZ(0);
     }
     .rightCardInner{ padding: 18px; position:relative; }
+
+    .rightCard.shake{ animation: shake 240ms ease-in-out; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
     .sceneTitle{ font-weight:900; letter-spacing:.4px; margin:0 0 8px 0; font-size: 16px; }
     .text{ margin:0; color: var(--ink); line-height:1.65; font-size: 15px; white-space: pre-wrap; }
 
@@ -146,7 +238,7 @@
       cursor:pointer;
       transition: transform .06s ease, border-color .15s ease, background .15s ease;
       text-align:left;
-      min-height: 56px;
+      min-height: 58px;
     }
     .choiceBtn:hover{ border-color: rgba(125,211,252,.35); background: linear-gradient(180deg, rgba(17,26,51,.95), rgba(12,18,38,.95)); }
     .choiceBtn:active{ transform: translateY(1px); }
@@ -174,7 +266,7 @@
       color: var(--muted);
       font-size: 12px;
       line-height:1.5;
-      max-height: 170px;
+      max-height: 180px;
       overflow:auto;
       white-space: pre-wrap;
     }
@@ -188,19 +280,99 @@
       display:none;
     }
     .combat.show{ display:block; }
+
     .combatTop{
       display:flex; justify-content:space-between; gap:10px;
       align-items:flex-start; flex-wrap:wrap; margin-bottom: 10px;
     }
     .combatTop h3{ margin:0; font-size: 13px; letter-spacing:.35px; text-transform: uppercase; color: var(--muted); }
+
     .enemyCard{
-      display:flex; flex-direction:column; gap:2px;
+      display:flex; flex-direction:column; gap:6px;
       padding: 10px; border:1px solid rgba(255,255,255,.10);
       border-radius: 14px; background: rgba(255,255,255,.03);
-      min-width: 240px;
+      min-width: 260px;
+      position: relative;
+      overflow: hidden;
+      transform: translateZ(0);
     }
     .enemyCard strong{ font-size: 14px; }
     .enemyCard span{ font-size: 12px; color: var(--muted); }
+
+    .enemyImpact{
+      pointer-events:none;
+      position:absolute;
+      inset:-40%;
+      opacity:0;
+      filter: blur(10px);
+      transform: scale(0.92) rotate(8deg);
+      background: radial-gradient(closest-side at 45% 40%, rgba(125,211,252,.22), transparent 62%);
+      transition: opacity 120ms ease, transform 120ms ease;
+      mix-blend-mode: screen;
+    }
+    .enemyCard.impact .enemyImpact{
+      opacity:1;
+      transform: scale(1.05) rotate(8deg);
+    }
+    .enemyCard.impact{
+      animation: enemyPunch 160ms ease-in-out;
+    }
+    @keyframes enemyPunch{
+      0%{ transform: translateX(0); }
+      35%{ transform: translateX(-4px); }
+      70%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+
+    .critBadge{
+      pointer-events:none;
+      position:absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(251,191,36,.35);
+      background: rgba(251,191,36,.14);
+      color: var(--legendary);
+      font-weight: 900;
+      letter-spacing: .6px;
+      font-size: 11px;
+      opacity: 0;
+      transform: scale(.92);
+      transition: opacity 120ms ease, transform 120ms ease;
+      text-transform: uppercase;
+    }
+    .critBadge.show{
+      opacity: 1;
+      transform: scale(1);
+      animation: critFlash 420ms ease-in-out;
+    }
+    @keyframes critFlash{
+      0%{ filter: blur(0); }
+      40%{ filter: blur(.2px); }
+      100%{ filter: blur(0); }
+    }
+
+    .enemyHpRow{
+      display:grid; grid-template-columns: 44px 1fr 60px;
+      gap:8px; align-items:center;
+      font-size:11px; color: var(--muted);
+    }
+    .enemyHpBar{
+      position:relative; height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .enemyHpFill{
+      position:absolute; inset:0;
+      width:100%;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(255,92,122,.92), rgba(255,211,108,.74));
+      transition: width 180ms ease;
+      box-shadow: 0 0 16px rgba(255,92,122,.14);
+    }
 
     .combatDice{ display:flex; gap:12px; margin-bottom: 10px; flex-wrap:wrap; }
     .dieBox{
@@ -208,7 +380,7 @@
       border:1px solid rgba(255,255,255,.10);
       border-radius: 12px;
       padding: 6px 10px;
-      min-width: 90px;
+      min-width: 100px;
       text-align:center;
     }
     .dieLabel{ font-size: 10px; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; }
@@ -231,8 +403,58 @@
       pointer-events:none;
       transition: opacity .2s ease, transform .2s ease;
       white-space: nowrap;
+      z-index: 50;
     }
     .toast.show{ opacity:1; transform: translateX(-50%) translateY(-4px); }
+
+    .lootOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.42);
+      display:none;
+      place-items:center;
+      z-index: 60;
+      padding: 18px;
+    }
+    .lootOverlay.show{ display:grid; }
+    .lootCard{
+      width: min(580px, 96vw);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.24));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .lootCard .mist{ opacity:.30; }
+    .lootCardInner{ padding: 14px; position:relative; }
+    .lootHeader{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom: 10px;
+    }
+    .lootHeader h4{ margin:0; font-size: 13px; letter-spacing:.35px; text-transform: uppercase; color: var(--muted); }
+    .lootBody{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      border-radius: 16px;
+      padding: 12px;
+      position:relative;
+      overflow:hidden;
+    }
+    .lootBody strong{ display:block; font-size: 16px; margin-bottom: 6px; }
+    .lootBody p{ margin:0; color: var(--muted); line-height:1.5; font-size: 13px; white-space: pre-wrap; }
+    .lootFooter{ margin-top: 12px; display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+
+    .splitHint{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px dashed rgba(255,255,255,.16);
+      background: rgba(0,0,0,.14);
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.45;
+      display:none;
+    }
   </style>
 </head>
 
@@ -243,11 +465,17 @@
       <h1>The Bridge</h1>
       <p id="introText"></p>
       <div class="meta">
+        <span class="tag">BUILD v7</span>
         <span class="tag">Single page</span>
         <span class="tag">Branching story</span>
         <span class="tag">Dice combat (d20)</span>
-        <span class="tag">Loot one-time</span>
-        <span class="tag">Hidden ending</span>
+        <span class="tag">Enemy HP bar</span>
+        <span class="tag">Loot is one-shot</span>
+        <span class="tag">Post-combat Continue</span>
+        <span class="tag">Impact anim</span>
+        <span class="tag">CRIT badge</span>
+        <span class="tag">Legendary weapons</span>
+        <span class="tag">Ultra rare event</span>
       </div>
     </section>
 
@@ -311,7 +539,7 @@
         </div>
       </aside>
 
-      <main class="rightCard" aria-label="Story and choices">
+      <main class="rightCard" id="storyCard" aria-label="Story and choices">
         <div class="mist"></div>
         <div class="rightCardInner">
           <h2 class="sceneTitle" id="sceneTitle">Loading...</h2>
@@ -320,9 +548,17 @@
           <div class="combat" id="combatBox" aria-label="Combat box">
             <div class="combatTop">
               <h3>Combat</h3>
-              <div class="enemyCard">
+              <div class="enemyCard" id="enemyCard">
+                <div class="enemyImpact" id="enemyImpact"></div>
+                <div class="critBadge" id="critBadge">CRIT</div>
+
                 <strong id="enemyName">Enemy</strong>
                 <span id="enemyMeta">HP ?, AC ?, Threat ?</span>
+                <div class="enemyHpRow">
+                  <div>HP</div>
+                  <div class="enemyHpBar"><div id="enemyHpFill" class="enemyHpFill"></div></div>
+                  <div id="enemyHpTxt" style="text-align:right;">?</div>
+                </div>
               </div>
             </div>
 
@@ -350,6 +586,8 @@
             <div class="log" id="combatLog"></div>
           </div>
 
+          <div class="splitHint" id="layoutHint"></div>
+
           <div class="choices" id="choices"></div>
           <div class="log" id="log"></div>
         </div>
@@ -359,17 +597,37 @@
 
   <div class="toast" id="toast"></div>
 
+  <div class="lootOverlay" id="lootOverlay" aria-label="Loot overlay">
+    <div class="lootCard" role="dialog" aria-modal="true">
+      <div class="mist"></div>
+      <div class="lootCardInner">
+        <div class="lootHeader">
+          <h4>Loot</h4>
+          <span id="lootPill" class="pill common">COMMON</span>
+        </div>
+        <div class="lootBody" id="lootBody">
+          <strong id="lootTitle">Item</strong>
+          <p id="lootDesc">Description</p>
+        </div>
+        <div class="lootFooter">
+          <button class="btn" id="lootOkBtn">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART 2/2 goes here: the full JavaScript engine -->
 <script>
 (function(){
   "use strict";
 
-  const STORAGE_KEY = "the_bridge_save_fixed_v3";
+  const STORAGE_KEY = "the_bridge_build_v7";
 
   const INTRO = `Some places are built to last.
 Some places are built to keep you.
 
 In the Village of Immortals, death is a myth you study like an old language.
-To keep the village from overflowing, the Council maintains a single rule:
+To prevent the village from overflowing, the Council enforces one rule:
 Every year, two must cross the Bridge.
 
 The Bridge is stone, massive, and wrong.
@@ -391,6 +649,70 @@ Tonight, the Council speaks your name.`;
     el.textContent = msg;
     el.classList.add("show");
     window.setTimeout(()=>el.classList.remove("show"), 1400);
+  }
+
+  function shakeStory(){
+    const card = $("storyCard");
+    if(!card) return;
+    card.classList.remove("shake");
+    void card.offsetWidth;
+    card.classList.add("shake");
+    window.setTimeout(()=>card.classList.remove("shake"), 320);
+  }
+
+  function enemyImpact(){
+    const c = $("enemyCard");
+    if(!c) return;
+    c.classList.remove("impact");
+    void c.offsetWidth;
+    c.classList.add("impact");
+    window.setTimeout(()=>c.classList.remove("impact"), 220);
+  }
+
+  function showCritBadge(){
+    const b = $("critBadge");
+    if(!b) return;
+    b.classList.remove("show");
+    void b.offsetWidth;
+    b.classList.add("show");
+    window.setTimeout(()=>b.classList.remove("show"), 520);
+  }
+
+  function setLayout(mode){
+    const b = document.body;
+    b.classList.remove("layout-wide","layout-claustrophobic","layout-hall","layout-inverted","layout-city");
+    const hint = $("layoutHint");
+    if(hint){
+      hint.style.display = "none";
+      hint.textContent = "";
+    }
+
+    function showHint(t){
+      if(!hint) return;
+      hint.style.display = "block";
+      hint.textContent = t;
+    }
+
+    if(mode==="wide"){
+      b.classList.add("layout-wide");
+      showHint("Distance returns. The fog behaves like an ocean that forgot its tide.");
+    }
+    if(mode==="claustrophobic"){
+      b.classList.add("layout-claustrophobic");
+      showHint("Space tightens. Sound gets trapped. Even your thoughts feel narrower.");
+    }
+    if(mode==="hall"){
+      b.classList.add("layout-hall");
+      showHint("Clean light. Procedural silence. The Bridge pretends it is only architecture.");
+    }
+    if(mode==="inverted"){
+      b.classList.add("layout-inverted");
+      showHint("Up and down lose authority. The Bridge stops pretending it is harmless stone.");
+    }
+    if(mode==="city"){
+      b.classList.add("layout-city");
+      showHint("A hanging silhouette of structures appears in the fog, like a city remembered, not built.");
+    }
   }
 
   function rollDice(expr){
@@ -423,18 +745,47 @@ Tonight, the Council speaks your name.`;
     }, 40);
   }
 
+  function rarityClass(r){
+    if(r==="legendary") return "legendary";
+    if(r==="rare") return "rare";
+    if(r==="uncommon") return "uncommon";
+    return "common";
+  }
+
   const WEAPONS = {
     iron_sword: { id:"iron_sword", name:"Iron Sword", desc:"Reliable steel. Familiar weight.", dmg:"1d8+1", hit:+2, dur:18, rarity:"common" },
     fog_dagger: { id:"fog_dagger", name:"Fog Dagger", desc:"A thin blade colder than air.", dmg:"1d6+2", hit:+3, dur:14, rarity:"uncommon" },
     stone_maul: { id:"stone_maul", name:"Stone Maul", desc:"Heavy, blunt, honest.", dmg:"1d12", hit:+1, dur:12, rarity:"uncommon" },
     glass_sabre: { id:"glass_sabre", name:"Glass Sabre", desc:"Beautiful. Breaks like a promise.", dmg:"2d4+2", hit:+4, dur:8, rarity:"rare" },
-    council_needle: { id:"council_needle", name:"Council Needle", desc:"Not a weapon, a verdict.", dmg:"1d10+1", hit:+5, dur:10, rarity:"rare" }
+    council_needle: { id:"council_needle", name:"Council Needle", desc:"Not a weapon, a verdict.", dmg:"1d10+1", hit:+5, dur:10, rarity:"rare" },
+
+    bridgeheart_relic: {
+      id:"bridgeheart_relic",
+      name:"Bridgeheart Relic",
+      desc:"A blade made from the Bridge's memory. It feels warm because it is not meant for you.",
+      dmg:"2d10+2",
+      hit:+6,
+      dur:16,
+      rarity:"legendary"
+    },
+
+    crown_of_hunger: {
+      id:"crown_of_hunger",
+      name:"Crown of Hunger",
+      desc:"A ring-blade that drinks uncertainty. Powerful, but it makes the Bridge curious about you.",
+      dmg:"3d6+2",
+      hit:+5,
+      dur:12,
+      rarity:"legendary"
+    }
   };
 
   const ENEMIES = {
-    the_censor: { id:"the_censor", name:"The Censor", desc:"It edits reality mid sentence.", hp:18, ac:12, dmg:"1d8+1", hit:+3, threat:2 },
     mist_mirror: { id:"mist_mirror", name:"Mist Mirror", desc:"Looks like you, with wrong timing.", hp:16, ac:13, dmg:"1d6+3", hit:+4, threat:2 },
-    stone_scribe:{ id:"stone_scribe", name:"Stone Scribe", desc:"Carves marks into stone using bone.", hp:22, ac:11, dmg:"1d10", hit:+2, threat:3 }
+    stone_scribe:{ id:"stone_scribe", name:"Stone Scribe", desc:"Carves marks into stone using bone.", hp:22, ac:11, dmg:"1d10", hit:+2, threat:3 },
+    hollow_warden:{ id:"hollow_warden", name:"Hollow Warden", desc:"Armor with nobody inside. It still has authority.", hp:26, ac:12, dmg:"1d8+3", hit:+4, threat:3 },
+    toll_clerk:{ id:"toll_clerk", name:"The Toll Clerk", desc:"A human-shaped stamp. It tries to charge you for being real.", hp:20, ac:12, dmg:"1d8+2", hit:+3, threat:2 },
+    choir_column:{ id:"choir_column", name:"Choir of Columns", desc:"Not one enemy. A chorus that hits in rhythm.", hp:24, ac:11, dmg:"1d6+4", hit:+4, threat:3 }
   };
 
   const DEFAULT_STATE = {
@@ -447,12 +798,27 @@ Tonight, the Council speaks your name.`;
     flags:{
       searchedSeam:false,
       searchedDoor:false,
+      searchedPedestal:false,
+      tookAshCoin:false,
+      listenedArch:false,
+      ledgerSeen:false,
+      countedSteps:false,
+      brokeCount:false,
+      nameGiven:false,
+
+      rareReturnedSeen:false,
+      rareReturnedMet:false,
+
+      crownEventSeen:false,
+      signatureSeen:false,
+
       secretSeed:0
     },
     scene:"intro_scene",
     log:["The wind is still. In the Village, that is always the first omen."],
     combat:null,
-    postCombat:null
+    postCombat:null,
+    layout:"hall"
   };
 
   let S = load() || structuredClone(DEFAULT_STATE);
@@ -470,9 +836,19 @@ Tonight, the Council speaks your name.`;
   function normalizeState(){
     if(!S.weaponDur) S.weaponDur = {};
     if(!S.flags) S.flags = {};
-    if(typeof S.flags.searchedSeam !== "boolean") S.flags.searchedSeam = false;
-    if(typeof S.flags.searchedDoor !== "boolean") S.flags.searchedDoor = false;
+    if(!S.supplies) S.supplies = { bread:1, water:1, salve:0 };
 
+    const f = S.flags;
+    const boolKeys = [
+      "searchedSeam","searchedDoor","searchedPedestal","tookAshCoin","listenedArch",
+      "ledgerSeen","countedSteps","brokeCount","nameGiven",
+      "rareReturnedSeen","rareReturnedMet","crownEventSeen","signatureSeen"
+    ];
+    boolKeys.forEach(k=>{
+      if(typeof f[k] !== "boolean") f[k] = false;
+    });
+
+    if(!Array.isArray(S.weapons)) S.weapons = ["iron_sword"];
     S.weapons.forEach(id=>{
       if(typeof S.weaponDur[id] !== "number"){
         S.weaponDur[id] = WEAPONS[id]?.dur ?? 0;
@@ -481,16 +857,19 @@ Tonight, the Council speaks your name.`;
     if(!S.weapons.includes(S.equipped)){
       S.equipped = S.weapons[0] || "iron_sword";
     }
+    if(!S.layout) S.layout = "hall";
   }
 
   function addLog(line){
     S.log.push(line);
-    if(S.log.length>80) S.log.shift();
+    if(S.log.length>160) S.log.shift();
     renderLog();
   }
   function renderLog(){
-    $("log").textContent = S.log.slice(-16).join("\n");
-    $("log").scrollTop = $("log").scrollHeight;
+    const el = $("log");
+    if(!el) return;
+    el.textContent = S.log.slice(-18).join("\n");
+    el.scrollTop = el.scrollHeight;
   }
 
   function setStat(key, delta){
@@ -525,68 +904,122 @@ Tonight, the Council speaks your name.`;
     return (w.hit||0) + brokenPenalty;
   }
 
+  function showLootCard(title, desc, rarity){
+    $("lootTitle").textContent = title;
+    $("lootDesc").textContent = desc;
+
+    const pill = $("lootPill");
+    const cls = rarityClass(rarity);
+    pill.className = "pill " + cls;
+    pill.textContent = cls.toUpperCase();
+
+    $("lootOverlay").classList.add("show");
+  }
+
+  $("lootOkBtn").addEventListener("click", ()=> $("lootOverlay").classList.remove("show"));
+
   function gainWeapon(id){
     if(!WEAPONS[id]) return;
     if(!S.weapons.includes(id)){
       S.weapons.push(id);
       S.weaponDur[id] = WEAPONS[id].dur;
-      addLog(`You obtained a weapon: ${WEAPONS[id].name}.`);
-      toast(`Loot: ${WEAPONS[id].name}`);
+      addLog(`You obtained: ${WEAPONS[id].name}.`);
+      showLootCard(
+        WEAPONS[id].name,
+        `${WEAPONS[id].desc}\n\nDMG ${WEAPONS[id].dmg} | HIT ${WEAPONS[id].hit>=0? "+"+WEAPONS[id].hit:WEAPONS[id].hit} | DUR ${WEAPONS[id].dur}`,
+        WEAPONS[id].rarity
+      );
       renderHud();
       save();
+    } else {
+      addLog(`You found ${WEAPONS[id].name} again, but you already carry it.`);
     }
   }
+
   function equipWeapon(id){
     if(!WEAPONS[id]) return;
+    if(!S.weapons.includes(id)) return;
     S.equipped = id;
-    addLog(`You equipped: ${WEAPONS[id].name}.`);
+    addLog(`Equipped: ${WEAPONS[id].name}.`);
     toast("Weapon equipped.");
     renderHud();
     save();
   }
 
-  function useBread(){
-    if(S.supplies.bread<=0) return;
-    S.supplies.bread--;
-    setStat("energy", +18);
-    setStat("resolve", +4);
-    addLog("You ate bread. Your body remembers being mortal.");
-    renderHud(); save();
-  }
-  function useWater(){
-    if(S.supplies.water<=0) return;
-    S.supplies.water--;
-    setStat("hp", +16);
-    setStat("energy", +8);
-    addLog("You drank water. Stone feels less hungry.");
-    renderHud(); save();
-  }
-  function useSalve(){
-    if(S.supplies.salve<=0) return;
-    S.supplies.salve--;
-    setStat("hp", +28);
-    addLog("You applied salve. The pain steps back.");
+  function gainSupply(kind, qty, note){
+    S.supplies[kind] = (S.supplies[kind]||0) + qty;
+    addLog(note || `You gained ${kind} x${qty}.`);
+    const nice = kind[0].toUpperCase() + kind.slice(1);
+    showLootCard(`${nice} x${qty}`, note || "Supplies found.", "common");
     renderHud(); save();
   }
 
-  function makeItemRow(title, subtitle, buttons){
+  function useBread(){
+    if((S.supplies.bread||0)<=0) return;
+    S.supplies.bread--;
+    setStat("energy", +18);
+    setStat("resolve", +4);
+    addLog("You eat bread. Your body remembers being mortal.");
+    renderHud(); save();
+  }
+  function useWater(){
+    if((S.supplies.water||0)<=0) return;
+    S.supplies.water--;
+    setStat("hp", +16);
+    setStat("energy", +8);
+    addLog("You drink water. Stone feels less hungry.");
+    renderHud(); save();
+  }
+  function useSalve(){
+    if((S.supplies.salve||0)<=0) return;
+    S.supplies.salve--;
+    setStat("hp", +28);
+    addLog("You apply salve. Pain steps back.");
+    renderHud(); save();
+  }
+
+  function makeCardRow({title, subtitle, rarity, rightButtons}){
     const row = document.createElement("div");
-    row.className = "itemRow";
+    const r = rarityClass(rarity);
+    row.className = `cardRow ${
+      r==="legendary" ? "r-legendary" :
+      (r==="rare" ? "r-rare" : (r==="uncommon" ? "r-uncommon" : "r-common"))
+    }`;
+
+    const glow = document.createElement("div");
+    glow.className = "rarityGlow";
+    row.appendChild(glow);
+
     const left = document.createElement("div");
-    left.className = "itemName";
+    left.className = "itemLeft";
+
+    const top = document.createElement("div");
+    top.className = "itemTop";
+
     const strong = document.createElement("strong");
     strong.textContent = title;
-    const span = document.createElement("span");
-    span.textContent = subtitle;
-    left.appendChild(strong);
-    left.appendChild(span);
+
+    const pill = document.createElement("span");
+    pill.className = "pill " + rarityClass(rarity);
+    pill.textContent = rarityClass(rarity).toUpperCase();
+
+    top.appendChild(strong);
+    top.appendChild(pill);
+
+    const sub = document.createElement("div");
+    sub.className = "itemSub";
+    sub.textContent = subtitle;
+
+    left.appendChild(top);
+    left.appendChild(sub);
 
     const right = document.createElement("div");
     right.style.display="flex";
     right.style.gap="6px";
     right.style.flexWrap="wrap";
+    right.style.alignItems="center";
 
-    (buttons||[]).forEach(b=>{
+    (rightButtons||[]).forEach(b=>{
       const btn = document.createElement("button");
       btn.className = "btn btnSmall";
       btn.type = "button";
@@ -613,13 +1046,15 @@ Tonight, the Council speaks your name.`;
     const w = currentWeapon();
     const toHit = weaponToHit(w);
     $("weaponBadge").textContent = `DMG ${w.dmg}  HIT ${toHit>=0? "+"+toHit:toHit}`;
+
     const eq = $("equippedBox");
     eq.innerHTML = "";
-    eq.appendChild(makeItemRow(
-      w.name,
-      `${w.desc} | ${w.dmg} | to hit ${toHit>=0? "+"+toHit:toHit} | durability ${w.curDur}`,
-      []
-    ));
+    eq.appendChild(makeCardRow({
+      title: w.name,
+      subtitle: `${w.desc} | DMG ${w.dmg} | HIT ${toHit>=0? "+"+toHit:toHit} | DUR ${w.curDur}`,
+      rarity: w.rarity,
+      rightButtons:[]
+    }));
 
     const bag = $("backpackBox");
     bag.innerHTML = "";
@@ -627,28 +1062,61 @@ Tonight, the Council speaks your name.`;
     $("carryBadge").textContent = `${owned.length} weapons`;
     owned.forEach(wep=>{
       const isEq = wep.id === S.equipped;
-      bag.appendChild(makeItemRow(
-        wep.name + (isEq ? " (equipped)" : ""),
-        `DMG ${wep.dmg} | HIT ${weaponToHit(wep)>=0? "+"+weaponToHit(wep):weaponToHit(wep)} | DUR ${wep.curDur} | ${wep.rarity}`,
-        isEq ? [] : [{ label:"Equip", onClick:()=>equipWeapon(wep.id) }]
-      ));
+      bag.appendChild(makeCardRow({
+        title: wep.name + (isEq ? " (equipped)" : ""),
+        subtitle: `DMG ${wep.dmg} | HIT ${weaponToHit(wep)>=0? "+"+weaponToHit(wep):weaponToHit(wep)} | DUR ${wep.curDur}`,
+        rarity: wep.rarity,
+        rightButtons: isEq ? [] : [{ label:"Equip", onClick:()=>equipWeapon(wep.id) }]
+      }));
     });
 
     const sup = $("suppliesBox");
     sup.innerHTML = "";
-    sup.appendChild(makeItemRow(`Bread x${S.supplies.bread}`, "Restore energy and some resolve.", [
-      { label:"Use", disabled:S.supplies.bread<=0, onClick:useBread }
-    ]));
-    sup.appendChild(makeItemRow(`Water x${S.supplies.water}`, "Restore health and energy.", [
-      { label:"Use", disabled:S.supplies.water<=0, onClick:useWater }
-    ]));
-    sup.appendChild(makeItemRow(`Salve x${S.supplies.salve}`, "Emergency healing.", [
-      { label:"Use", disabled:S.supplies.salve<=0, onClick:useSalve }
-    ]));
+    sup.appendChild(makeCardRow({
+      title:`Bread x${S.supplies.bread||0}`,
+      subtitle:"Restore energy and some resolve.",
+      rarity:"common",
+      rightButtons:[{ label:"Use", disabled:(S.supplies.bread||0)<=0, onClick:useBread }]
+    }));
+    sup.appendChild(makeCardRow({
+      title:`Water x${S.supplies.water||0}`,
+      subtitle:"Restore health and energy.",
+      rarity:"common",
+      rightButtons:[{ label:"Use", disabled:(S.supplies.water||0)<=0, onClick:useWater }]
+    }));
+    sup.appendChild(makeCardRow({
+      title:`Salve x${S.supplies.salve||0}`,
+      subtitle:"Emergency healing.",
+      rarity:"uncommon",
+      rightButtons:[{ label:"Use", disabled:(S.supplies.salve||0)<=0, onClick:useSalve }]
+    }));
+  }
+
+  function shouldTriggerReturnedOne(nextSceneId){
+    if(S.flags.rareReturnedSeen) return false;
+
+    const eligibleScenes = new Set([
+      "mirror_gallery",
+      "counting_steps",
+      "inversion_span",
+      "toll_station",
+      "final_approach"
+    ]);
+    if(!eligibleScenes.has(nextSceneId)) return false;
+
+    const resolveGate = S.resolve >= 72;
+    const listened = S.flags.listenedArch === true;
+    const selfConsistent = (S.flags.tookAshCoin === false) || (S.flags.tookAshCoin === true && S.flags.nameGiven === true);
+
+    if(!(resolveGate && listened && selfConsistent)) return false;
+
+    const chance = 260;
+    return randInt(1, chance) === 1;
   }
 
   const SCENES = {
     intro_scene:{
+      layout:"hall",
       title:"The Village That Outlasts Meaning",
       text:(s)=>`The Village of Immortals does not rot. Roofs do not leak. Arguments do not end.
 Urgency is treated as a mortal habit.
@@ -663,11 +1131,16 @@ Tonight, your name is chosen.`,
     },
 
     council_hall:{
+      layout:"hall",
       title:"Council Hall, Under Perfect Lamps",
       text:(s)=>`The Council speaks calmly, like the Rule is weather.
 Two will cross. No exceptions.
 
-A custodian stands aside, fingers scarred. The other chosen waits in silence.`,
+A custodian stands aside, fingers scarred.
+The other chosen stands near the door, too quiet, as if saving words for a different life.
+
+The Bridge is not described as danger.
+It is described as maintenance.`,
       choices:[
         { label:"Follow procedure to the gate", hint:"No more delays.", to:"gate" },
         { label:"Attempt the impossible objection", hint:"Tiny chance of a hidden ending.", to:"secret_roll" }
@@ -675,10 +1148,14 @@ A custodian stands aside, fingers scarred. The other chosen waits in silence.`,
     },
 
     secret_roll:{
+      layout:"hall",
       title:"The Impossible Probability",
-      text:(s)=>`You challenge the Rule. The room tilts, as if reality is deciding whether you are allowed to be unique.
+      text:(s)=>`You challenge the Rule.
+The room tilts, as if reality is deciding whether you are allowed to be unique.
 
-Hold your ground. The odds are absurd.`,
+Hold your ground.
+The odds are absurd.
+That is the point.`,
       choices:[
         { label:"Hold your ground", hint:"Ridiculously low chance to skip the journey.", to:"secret_result",
           effect:(st)=>{
@@ -694,6 +1171,7 @@ Hold your ground. The odds are absurd.`,
     },
 
     secret_result:{
+      layout:"hall",
       title:"Secret Outcome",
       text:(s)=>{
         if(s.flags.secretSeed===1){
@@ -712,21 +1190,23 @@ Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}`;
 Procedure resumes.`;
       },
       choices:[
-        { label:"Continue", hint:"Normal path.", to:"gate",
-          effect:(st)=>{
-            if(st.flags.secretSeed===1) addLog("The story ends early. The Bridge does not get you this time.");
-          }
-        },
+        { label:"Continue", hint:"Normal path.", to:"gate" },
         { label:"Restart", hint:"Clean run.", to:"__restart" }
       ]
     },
 
     gate:{
+      layout:"wide",
       title:"The Gate and the Fog",
       text:(s)=>`Night. The gate opens. The Bridge waits beyond it, swallowing moonlight.
 The stone is cold enough to make your head spin through your palm.
 
-A sound arrives. Maybe a bell. Maybe blood.`,
+Columns disappear into fog below, thick as drowned cotton.
+The Bridge looks suspended over nothing, but your feet know better.
+
+A sound arrives.
+Maybe a bell.
+Maybe blood.`,
       choices:[
         { label:"Step onto the Bridge", hint:"Forward is the only direction that matters.", to:"first_steps",
           effect:(st)=>setStat("energy",-2)
@@ -735,152 +1215,1057 @@ A sound arrives. Maybe a bell. Maybe blood.`,
     },
 
     first_steps:{
-      title:"First Steps, First Distortions",
+      layout:"wide",
+      title:"Act I: The Bridge Learns Your Name",
       text:(s)=>`The Bridge is longer than it should be. Fog lies to distance.
-On the stone, you find something impossible: a wrapped object in the seams.
-And near the middle stretch, an impossible door stands on bare stone.`,
+At first, it behaves like stone.
+
+Then your skin notices small inconsistencies:
+a seam that feels warmer than the rest,
+a drip of water where no roof exists,
+a faint humming like speech held behind teeth.
+
+Farther ahead, an impossible door stands on bare stone.
+Beyond that, an arch rises out of the fog as if the Bridge grew a rib.`,
       choices:[
-        { label:"Search the stone seams", hint:"One time only. After looting, it disappears.", to:"seam_loot",
+        { label:"Search the stone seams", hint:"One time only loot.", to:"seam_loot",
           when:(st)=>!st.flags.searchedSeam,
           effect:(st)=>{ setStat("energy",-4); addLog("You search the seams. The stone feels like a locked drawer."); }
         },
-        { label:"Approach the impossible door", hint:"One time only loot option nearby.", to:"door_scene",
+        { label:"Approach the impossible door", hint:"A shortcut with a price.", to:"door_scene",
           effect:(st)=>{ setStat("energy",-3); addLog("You approach the door. The handle looks warm, which is suspicious."); }
         },
-        { label:"Push forward into thicker fog", hint:"Risk of hostile presences.", to:"ambush_choice",
-          effect:(st)=>{ setStat("energy",-2); addLog("You keep moving. The Bridge learns your rhythm."); }
+        { label:"Walk under the arch", hint:"Listen, and the Bridge answers back.", to:"arch_scene",
+          effect:(st)=>{ setStat("energy",-2); addLog("You step toward the arch. The fog narrows, as if to hear you."); }
+        },
+        { label:"Push forward into thicker fog", hint:"Higher risk, faster progress.", to:"fog_run",
+          effect:(st)=>{ setStat("energy",-5); addLog("You move faster. The Bridge corrects you."); }
         }
       ]
     },
 
     seam_loot:{
+      layout:"wide",
       title:"Stone Seams",
       text:(s)=>`Your fingers slide into cracks where blocks meet.
 The stone is colder inside, like it keeps secrets refrigerated.
 
-You unwrap the object slowly.`,
+You unwrap a cloth bundle slowly.
+The fabric is old, but not decayed.
+Immortal fabric, you think.
+That alone feels wrong.`,
       choices:[
-        { label:"Take it", hint:"After taking, this option never returns.", to:"first_steps",
+        { label:"Take the bundle", hint:"After taking it, this option disappears.", to:"first_steps",
           effect:(st)=>{
-            st.flags.searchedSeam = true; // THIS is what removes the choice forever
+            st.flags.searchedSeam = true;
             const r = randInt(1,100);
-            if(r<=28){
+            if(r<=22){
               gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
               setStat("resolve", +4);
-            }else if(r<=60){
-              st.supplies.water += 1;
-              toast("Water +1");
-              addLog("You found water sealed in a small flask. It tastes like a different year.");
+            }else if(r<=58){
+              gainSupply("water", 1, "You found water sealed in a small flask. It tastes like a different year.");
+            }else if(r<=85){
+              gainSupply("bread", 1, "You found bread that tastes like yesterday, stubbornly fresh.");
             }else{
-              setStat("hp",-6);
+              setStat("hp",-7);
+              shakeStory();
               addLog("The cloth cuts you like paper. The Bridge dislikes theft.");
             }
-            renderHud(); save();
           }
         }
       ]
     },
 
     door_scene:{
+      layout:"claustrophobic",
       title:"The Door Standing Alone",
       text:(s)=>`A door on bare stone. No walls. No house. Just a door.
 Carved into it: ENTER AND FORGET.
 
-The air around it feels warmer. That is always a trap.`,
+The air around it feels warmer.
+That is always a trap.
+
+On the other side, you can almost hear a room breathing.`,
       choices:[
-        { label:"Search around the doorframe", hint:"One time only. After looting, it disappears.", to:"door_loot",
+        { label:"Search around the doorframe", hint:"One time only loot.", to:"door_loot",
           when:(st)=>!st.flags.searchedDoor,
           effect:(st)=>{ setStat("energy",-3); addLog("You search around the door. The fog watches your hands."); }
         },
-        { label:"Open the door", hint:"A shortcut with a price.", to:"forget_ending",
+        { label:"Open the door", hint:"Short path. Long consequences.", to:"forget_ending",
           effect:(st)=>{ setStat("resolve",-6); addLog("Your hand touches the handle. Warmth is a crime here."); }
         },
-        { label:"Refuse and move on", hint:"Harder path. Cleaner self.", to:"ambush_choice",
+        { label:"Refuse and move on", hint:"Harder path. Cleaner self.", to:"arch_scene",
           effect:(st)=>{ setStat("resolve", +5); addLog("You refuse the anesthetic. The Bridge seems disappointed."); }
         }
       ]
     },
 
     door_loot:{
+      layout:"claustrophobic",
       title:"Around the Door",
       text:(s)=>`Near the frame, a thin metal sliver is embedded in stone.
 It is painfully sharp, like it wants to make decisions for you.`,
       choices:[
-        { label:"Keep it", hint:"After taking, this option never returns.", to:"door_scene",
+        { label:"Keep it", hint:"After taking it, this option disappears.", to:"door_scene",
           effect:(st)=>{
-            st.flags.searchedDoor = true; // THIS removes the option forever
+            st.flags.searchedDoor = true;
             const r = randInt(1,100);
-            if(r<=10){
+            if(r<=12){
               gainWeapon("council_needle");
               setStat("resolve", +6);
-            }else if(r<=40){
+            }else if(r<=45){
               gainWeapon("glass_sabre");
               setStat("resolve", +4);
             }else{
               setStat("hp",-8);
+              shakeStory();
               addLog("The metal bites you like a verdict. The Bridge dislikes greed.");
             }
-            renderHud(); save();
           }
         }
       ]
     },
 
-    ambush_choice:{
-      title:"The Fog Tightens",
-      text:(s)=>`The fog becomes thick enough to feel like fabric.
-You sense attention. Not eyes. A rule deciding how to categorize you.
+    arch_scene:{
+      layout:"wide",
+      title:"The Listening Arch",
+      text:(s)=>`The arch rises from nothing, a rib of stone over the path.
+Marks cover it. Not writing, not quite.
+The kind of shapes you see when you press your face against your eyelids.
 
-A hostile presence can form at any moment.`,
+The hum you heard earlier starts to match your breathing.
+
+Under the arch, the Bridge becomes a question.`,
       choices:[
-        { label:"Stand your ground", hint:"Higher chance of combat, better control.", to:"combat_censor",
-          effect:(st)=>{ setStat("resolve", +3); addLog("You stand still. The Bridge hates that."); }
+        { label:"Stand under it and listen", hint:"One time only. Knowledge can hurt.", to:"arch_listen",
+          when:(st)=>!st.flags.listenedArch,
+          effect:(st)=>{ st.flags.listenedArch = true; setStat("energy",-2); addLog("You listen. The fog shifts like a throat."); }
         },
-        { label:"Walk carefully without reacting", hint:"May avoid combat if your resolve is high.", to:"avoid_check",
-          effect:(st)=>{ setStat("energy",-2); addLog("You refuse to perform fear."); }
+        { label:"Walk through without listening", hint:"Safer, but you remain blind.", to:"column_forest",
+          effect:(st)=>{ setStat("resolve",-1); addLog("You refuse the answer. Sometimes that is wisdom."); }
         }
       ]
     },
 
-    avoid_check:{
-      title:"The Non Performance",
-      text:(s)=>`Sometimes refusing to perform is a weapon.
-But the Bridge loves exceptions, and exceptions are expensive.`,
+    arch_listen:{
+      layout:"claustrophobic",
+      title:"A Voice With No Mouth",
+      text:(s)=>`A whisper arrives from inside the stone.
+
+Not words.
+Instructions.
+
+The Bridge tells you, gently, that it does not kill travelers.
+It sorts them.
+It corrects the village.
+It balances a ledger nobody remembers signing.
+
+The idea settles into your ribs like cold iron.`,
       choices:[
-        { label:"Continue", hint:"Resolve check decides.", to:"avoid_result",
-          effect:(st)=>{ st.flags._avoid = roll(20) + Math.floor(st.resolve/20); }
+        { label:"Accept the knowledge", hint:"Resolve up, but your body pays.", to:"column_forest",
+          effect:(st)=>{ setStat("resolve", +10); setStat("hp",-6); shakeStory(); addLog("Your heartbeat stutters. Knowledge is heavy."); }
+        },
+        { label:"Reject it", hint:"Lighter mind, heavier risk.", to:"column_forest",
+          effect:(st)=>{ setStat("resolve",-6); addLog("You reject it. The whisper laughs without sound."); }
         }
       ]
     },
 
-    avoid_result:{
-      title:"Result",
-      text:(s)=>{
-        const c = s.flags._avoid || 0;
-        if(c>=18) return `You slip past the attention.
-Resolve check: ${c} (success).`;
-        return `The fog hardens into intent.
-Resolve check: ${c} (failed). Combat begins.`;
-      },
+    fog_run:{
+      layout:"wide",
+      title:"Faster Than Meaning",
+      text:(s)=>`You move fast enough to feel almost mortal.
+The fog resists. The Bridge dislikes being treated like a simple road.
+
+Ahead, the columns beneath become visible, briefly, as the mist thins:
+massive stone trunks disappearing into infinite white.
+
+Something moves between them.`,
       choices:[
-        { label:"Proceed", hint:"Either way, forward.", to:(s)=>((S.flags._avoid||0)>=18 ? "final_approach" : "combat_mirror") }
+        { label:"Slow down and look", hint:"Attention is safer than speed.", to:"column_forest",
+          effect:(st)=>{ setStat("energy",-1); addLog("You slow down. The Bridge seems to inhale."); }
+        },
+        { label:"Keep running", hint:"High risk. You may be corrected.", to:"punish_scene",
+          effect:(st)=>{ setStat("energy",-4); addLog("You keep running. The fog tightens around your ankles."); }
+        }
+      ]
+    },
+
+    punish_scene:{
+      layout:"claustrophobic",
+      title:"Correction",
+      text:(s)=>`The Bridge does not shout.
+It corrects.
+
+Your foot catches a seam that was not there a second ago.
+Stone rises like a lip and bites your momentum.
+
+You fall.
+Not far.
+Enough.`,
+      choices:[
+        { label:"Get up, slower", hint:"Pain is punctuation here.", to:"column_forest",
+          effect:(st)=>{ setStat("hp",-10); shakeStory(); setStat("resolve",+3); addLog("Pain is the Bridge's punctuation."); }
+        }
+      ]
+    },
+
+    column_forest:{
+      layout:"wide",
+      title:"Act II: The Column Forest",
+      text:(s)=>`The fog thins in bands. In those bands, you see below the Bridge:
+columns, countless, like a forest of stone trunks.
+
+Some are carved with faces.
+Some are carved with hands.
+Most are carved with names.
+
+Then you notice something worse:
+some names are fresh.
+
+Ahead, the Bridge widens into a small platform with a broken pedestal.
+A coin of gray ash rests there, too clean to be real.`,
+      choices:[
+        { label:"Inspect the pedestal", hint:"One time only loot.", to:"pedestal_loot",
+          when:(st)=>!st.flags.searchedPedestal,
+          effect:(st)=>{ st.flags.searchedPedestal = true; setStat("energy",-2); addLog("The pedestal is chipped, like it survived an argument."); }
+        },
+        { label:"Take the ash coin", hint:"This can twist later scenes.", to:"take_coin",
+          when:(st)=>!st.flags.tookAshCoin,
+          effect:(st)=>{ st.flags.tookAshCoin = true; setStat("resolve",-2); addLog("The coin feels like absence pretending to be metal."); }
+        },
+        { label:"Move on", hint:"The Bridge continues.", to:"counting_steps",
+          effect:(st)=>{ setStat("resolve",+2); addLog("You move on. The Bridge respects restraint, sometimes."); }
+        }
+      ]
+    },
+
+    pedestal_loot:{
+      layout:"wide",
+      title:"Pedestal",
+      text:(s)=>`Inside the pedestal is a compartment.
+It is not hidden well. It is hidden politely.
+
+The Bridge wants you to find it.`,
+      choices:[
+        { label:"Open it", hint:"Gain supplies or a weapon.", to:"column_forest",
+          effect:(st)=>{
+            const r = randInt(1,100);
+            if(r<=18){
+              gainWeapon("fog_dagger");
+              setStat("resolve", +3);
+            }else if(r<=36){
+              gainWeapon("stone_maul");
+            }else if(r<=70){
+              gainSupply("salve", 1, "You found salve wrapped in cloth that smells faintly like pine.");
+            }else{
+              gainSupply("water", 1, "A flask. The water is still. That should not be possible.");
+            }
+          }
+        }
+      ]
+    },
+
+    take_coin:{
+      layout:"wide",
+      title:"The Ash Coin",
+      text:(s)=>`You take the coin.
+It does not weigh much.
+Yet you feel heavier, like you agreed to something.
+
+On the coin, a mark:
+a simple bridge shape, then a line through it.
+
+Cancel. Deny. Void.
+
+A bargaining tool, or a warning.`,
+      choices:[
+        { label:"Pocket it and continue", hint:"The Bridge will remember.", to:"counting_steps" }
+      ]
+    },
+
+    counting_steps:{
+      layout:"wide",
+      title:"Act II.5: The Counting",
+      text:(s)=>`The Bridge begins to count your steps.
+
+Not out loud.
+In your teeth.
+
+One.
+Two.
+Three.
+
+Then it stops.
+Then it starts again from one, as if the last few minutes were rejected.
+
+A straight run of stone ahead looks identical, yet your body insists it is a loop.
+
+A crack forms in the right wall of fog, like a seam in fabric.`,
+      choices:[
+        { label:"Count along", hint:"Obedience can become leverage.", to:"count_along",
+          effect:(st)=>{ st.flags.countedSteps = true; setStat("resolve",+4); addLog("You count. The Bridge seems pleased by your compliance."); }
+        },
+        { label:"Stop counting", hint:"Defiance risks a correction.", to:"break_count",
+          effect:(st)=>{ st.flags.brokeCount = true; setStat("resolve",+3); addLog("You stop counting. The fog tightens as if offended."); }
+        },
+        { label:"Touch the crack in the fog", hint:"A hidden ledger might exist.", to:"ledger_crack",
+          effect:(st)=>{ setStat("energy",-3); addLog("You touch the crack. The air feels paper thin."); }
+        },
+        { label:"Keep walking, ignore it all", hint:"Refuse the game.", to:"inversion_span",
+          effect:(st)=>{ setStat("energy",-2); addLog("You keep walking. The Bridge hates being ignored."); }
+        }
+      ]
+    },
+
+    count_along:{
+      layout:"claustrophobic",
+      title:"The Rhythm of Approval",
+      text:(s)=>`Counting becomes easier than thinking.
+That is the danger.
+
+The Bridge starts to synchronize with you:
+your breath, your pace, your pulse.
+
+For a moment, the fog parts.
+You glimpse a figure far ahead, perfectly still.`,
+      choices:[
+        { label:"Approach the still figure", hint:"This may lead to something that should not exist.", to:"mirror_gallery",
+          effect:(st)=>{ setStat("energy",-2); addLog("You move toward the stillness. The Bridge watches quietly."); }
+        },
+        { label:"Break rhythm, change pace", hint:"Refuse synchronization.", to:"break_count",
+          effect:(st)=>{ st.flags.brokeCount = true; setStat("resolve",+2); addLog("You break the rhythm. The Bridge loses its grip, briefly."); }
+        }
+      ]
+    },
+
+    break_count:{
+      layout:"claustrophobic",
+      title:"Manual Control",
+      text:(s)=>`You change pace. You reclaim your timing.
+
+The Bridge responds with a small cruelty:
+the stone becomes slightly rougher under your next step.
+Not enough to harm.
+Enough to remind.
+
+Ahead, reflections begin to form in the fog.`,
+      choices:[
+        { label:"Continue", hint:"Toward the Mirror Gallery.", to:"mirror_gallery",
+          effect:(st)=>{ setStat("energy",-1); addLog("You continue. Reflections gather like witnesses."); }
+        }
+      ]
+    },
+
+    ledger_crack:{
+      layout:"inverted",
+      title:"The Ledger Room",
+      text:(s)=>`You press into the crack and the Bridge gives way.
+
+For a second, you are not on the Bridge.
+You are inside it.
+
+Shelves of stone. Lines carved like accounting.
+Names. Dates. Outcomes.
+Not written, etched as if the world itself was forced to remember.
+
+In the center: a blank line, waiting.
+
+You understand something simple and brutal:
+the Bridge does not test you.
+It records you.`,
+      choices:[
+        { label:"Look for your name", hint:"Knowledge hurts. But it is real.", to:"ledger_self",
+          effect:(st)=>{ st.flags.ledgerSeen = true; setStat("resolve",+8); setStat("energy",-4); addLog("You search for yourself. The room feels amused."); }
+        },
+        { label:"Leave immediately", hint:"Some truths are hooks.", to:"counting_steps",
+          effect:(st)=>{ setStat("resolve",+2); addLog("You back out. The crack seals like skin."); }
+        }
+      ]
+    },
+
+    ledger_self:{
+      layout:"inverted",
+      title:"An Entry That Should Not Exist",
+      text:(s)=>`You find your line.
+
+It is already there.
+
+Not complete, but present, like a form prepared in advance.
+A space is reserved for your return.
+A space is reserved for your change.
+
+Immortals do not sweat from fear.
+They sweat from realization.`,
+      choices:[
+        { label:"Scratch the line with your nail", hint:"Tiny rebellion, real risk.", to:"ledger_rebel",
+          effect:(st)=>{ setStat("hp",-6); shakeStory(); setStat("resolve",+6); addLog("You scratch stone. Stone scratches back."); }
+        },
+        { label:"Accept it and leave", hint:"Survive by not pulling threads.", to:"counting_steps",
+          effect:(st)=>{ setStat("resolve",-2); addLog("You accept it. That acceptance will follow you."); }
+        }
+      ]
+    },
+
+    ledger_rebel:{
+      layout:"inverted",
+      title:"A Note in the Margin",
+      text:(s)=>`You add a tiny mark beside your line.
+
+It does not erase anything.
+But it is evidence.
+
+Evidence that you were awake.
+
+As you leave, the crack stays open a fraction longer than it should.
+A kindness.
+Or a trap.`,
+      choices:[
+        { label:"Return to the Bridge", hint:"Reflections wait.", to:"mirror_gallery",
+          effect:(st)=>{ setStat("energy",-2); addLog("You step out. The Bridge feels slightly colder."); }
+        }
+      ]
+    },
+
+    inversion_span:{
+      layout:"inverted",
+      title:"Act III: The Inversion Span",
+      text:(s)=>`The Bridge tilts in your perception.
+Not physically, but in authority.
+
+Up feels negotiable.
+Down feels like a suggestion.
+
+You see something impossible:
+a faint outline of another bridge, inverted, crossing under yours.
+
+Two bridges.
+Two ledgers.
+Two versions of you.`,
+      choices:[
+        { label:"Walk carefully, eyes forward", hint:"Avoid inviting the wrong reality.", to:"mirror_gallery",
+          effect:(st)=>{ setStat("energy",-2); addLog("You refuse the illusion. The illusion refuses to leave."); }
+        },
+        { label:"Look at the inverted bridge", hint:"Curiosity can summon the Warden.", to:"warden_scene",
+          effect:(st)=>{ setStat("resolve",+2); addLog("You look down at the upside bridge. It looks back."); }
+        }
+      ]
+    },
+
+    mirror_gallery:{
+      layout:"claustrophobic",
+      title:"Act IV: The Mirror Gallery",
+      text:(s)=>`The Bridge narrows into a corridor of fog where sound becomes thin.
+The stone on either side rises like low walls, guiding you.
+
+Then you see reflections.
+Not in glass.
+In the fog itself.
+
+You see yourself walking.
+Then you see yourself standing still.
+Then you see yourself returning, old, blind, deaf, and mute.
+
+The reflections drift closer, as if they want to merge.`,
+      choices:[
+        { label:"Speak your name out loud", hint:"Bold. Can provoke a hostile presence.", to:"name_scene",
+          effect:(st)=>{ setStat("resolve", +4); addLog("You speak your name. The fog repeats it wrong."); }
+        },
+        { label:"Stay silent and observe", hint:"Safer, but time turns sticky.", to:"silence_scene",
+          effect:(st)=>{ setStat("energy",-2); addLog("You stay silent. Silence is also a statement."); }
+        },
+        { label:"Cut through the fog with your weapon", hint:"Direct approach. Risk of combat.", to:"combat_mirror_entry",
+          effect:(st)=>{ setStat("energy",-3); addLog("You slash the fog. The fog bleeds into shapes."); }
+        }
+      ]
+    },
+
+    name_scene:{
+      layout:"claustrophobic",
+      title:"A Name Is a Handle",
+      text:(s)=>`The fog shivers.
+A reflection smiles. You did not smile.
+
+It steps forward.
+It is you, but the timing is wrong, as if your life was edited.
+
+It wants your place.
+Or it wants to confirm you are real.`,
+      choices:[
+        { label:"Prepare to fight", hint:"Mist Mirror emerges.", to:"combat_mirror_entry" },
+        { label:"Offer the ash coin (if you have it)", hint:"A weird gamble.", to:"coin_bargain",
+          when:(st)=>st.flags.tookAshCoin,
+          effect:(st)=>{ setStat("resolve",-2); addLog("You hold out the coin. The fog leans in."); }
+        }
+      ]
+    },
+
+    coin_bargain:{
+      layout:"claustrophobic",
+      title:"Bargain With a Reflection",
+      text:(s)=>`The reflection stares at the ash coin.
+For the first time, it looks uncertain.
+
+The coin is not power.
+It is permission.
+
+The fog makes room, like a door opening without hinges.`,
+      choices:[
+        { label:"Trade the coin to pass", hint:"Skip this fight, but lose something else.", to:"toll_station",
+          effect:(st)=>{
+            st.flags.tookAshCoin = false;
+            setStat("hp",-8); shakeStory();
+            setStat("resolve", +8);
+            addLog("The coin vanishes. Your ribs ache, as if something was removed.");
+          }
+        },
+        { label:"Keep the coin and fight anyway", hint:"Keep leverage. Risk damage.", to:"combat_mirror_entry",
+          effect:(st)=>{ setStat("resolve", +2); addLog("You keep the coin. The reflection frowns like a judge."); }
+        }
+      ]
+    },
+
+    silence_scene:{
+      layout:"claustrophobic",
+      title:"The Price of Silence",
+      text:(s)=>`You watch the reflections.
+They loop: walk, stand, return.
+
+Time becomes sticky.
+
+A thin voice arrives, not from the fog, but from below the Bridge:
+"Do not look down."`,
+      choices:[
+        { label:"Obey", hint:"Move on with less risk.", to:"toll_station",
+          effect:(st)=>{ setStat("energy",-1); setStat("resolve",+3); addLog("You obey. Obedience feels strangely familiar."); }
+        },
+        { label:"Look down", hint:"Curiosity can summon a Warden.", to:"warden_scene",
+          effect:(st)=>{ setStat("resolve",+2); addLog("You look down. The columns look like teeth."); }
+        }
+      ]
+    },
+
+    warden_scene:{
+      layout:"wide",
+      title:"The Hollow Warden",
+      text:(s)=>`Between the columns, a shape rises.
+Not climbing.
+Rising, as if pulled by authority itself.
+
+Armor with nobody inside.
+Yet it still has posture, and rules, and the confidence of a stamp.
+
+It steps onto the stone.`,
+      choices:[
+        { label:"Fight", hint:"The Warden is tough.", to:"combat_warden_entry" },
+        { label:"Try to talk", hint:"Sometimes it works. Often it makes it worse.", to:"talk_warden",
+          effect:(st)=>{ setStat("resolve",-1); addLog("You speak carefully, as if addressing a council clerk."); }
+        }
+      ]
+    },
+
+    talk_warden:{
+      layout:"wide",
+      title:"Talking to an Empty Helmet",
+      text:(s)=>`The helmet tilts.
+A sound like pages turning.
+
+It does not answer with words.
+It answers with a step forward.
+
+Negotiation is denied.`,
+      choices:[
+        { label:"Fight", hint:"No more delays.", to:"combat_warden_entry" }
+      ]
+    },
+
+    toll_station:{
+      layout:"hall",
+      title:"Act V: The Toll Station",
+      text:(s)=>`A booth stands on the Bridge.
+No walls connect to it. No road leads to it.
+A toll station for a path that should be free.
+
+Inside, a clerk-shaped shadow holds a book of blank pages.
+A quill scratches without ink.
+
+The shadow looks up.
+
+It opens its mouth like a drawer and produces a single sentence:
+"PAY IN NAME, OR PAY IN BLOOD."`,
+      choices:[
+        { label:"Pay in name", hint:"Lose resolve, gain safety.", to:"pay_name",
+          effect:(st)=>{ st.flags.signatureSeen = true; st.flags.nameGiven = true; setStat("resolve",-8); addLog("You offer a piece of yourself as currency."); }
+        },
+        { label:"Pay in blood", hint:"Take damage, keep your name.", to:"pay_blood",
+          effect:(st)=>{ st.flags.signatureSeen = true; setStat("hp",-12); shakeStory(); setStat("resolve",+3); addLog("You pay with pain. The Bridge approves the transaction."); }
+        },
+        { label:"Refuse to pay", hint:"Combat.", to:"combat_toll_entry",
+          effect:(st)=>{ setStat("resolve",+2); addLog("You refuse. The booth becomes a mouth."); }
+        }
+      ]
+    },
+
+    pay_name:{
+      layout:"hall",
+      title:"A Receipt You Cannot Read",
+      text:(s)=>`The clerk scratches something into the blank book.
+The page remains blank.
+
+And yet you feel recorded.
+
+The booth slides away into fog as if it never existed.
+Your path continues, cleaner, colder.`,
+      choices:[
+        { label:"Continue", hint:"Toward the Choir of Columns.", to:"choir_of_columns",
+          effect:(st)=>{ setStat("energy",-2); addLog("You move on. The absence of resistance feels like a trap."); }
+        }
+      ]
+    },
+
+    pay_blood:{
+      layout:"hall",
+      title:"Clean Stone, Dirty Hands",
+      text:(s)=>`Your blood hits the stone and vanishes.
+No stain.
+No evidence.
+
+The booth slides away, satisfied.
+The Bridge stays quiet, which is not comfort.
+
+Ahead, the fog vibrates in thin rhythms, like humming.`,
+      choices:[
+        { label:"Continue", hint:"Toward the Choir of Columns.", to:"choir_of_columns",
+          effect:(st)=>{ setStat("energy",-2); addLog("You move on. The Bridge is listening."); }
+        }
+      ]
+    },
+
+    choir_of_columns:{
+      layout:"wide",
+      title:"Act VI: Choir of Columns",
+      text:(s)=>`The fog opens in bands.
+Below you, the columns form a pattern.
+Not random.
+A circle.
+
+Sound rises from them, low and synchronized.
+A choir without mouths.
+
+Each tone matches a step you took earlier.
+The Bridge is replaying you.
+
+A sudden thought hits you:
+if it can replay you, it can replace you.`,
+      choices:[
+        { label:"Move quickly across the singing span", hint:"Risk being corrected.", to:"singing_span",
+          effect:(st)=>{ setStat("energy",-6); addLog("You hurry. The choir changes key."); }
+        },
+        { label:"Hold your pace and listen for a safe rhythm", hint:"Safer, slower.", to:"safe_rhythm",
+          effect:(st)=>{ setStat("energy",-3); setStat("resolve",+3); addLog("You listen for patterns. The Bridge hates pattern recognition."); }
+        },
+        { label:"Challenge the choir", hint:"Combat against the chorus.", to:"combat_choir_entry",
+          effect:(st)=>{ setStat("resolve",+2); addLog("You refuse to be replayed."); }
+        }
+      ]
+    },
+
+    singing_span:{
+      layout:"inverted",
+      title:"The Span That Rewrites Steps",
+      text:(s)=>`Your steps begin to arrive a half-second late.
+Then early.
+Then not at all.
+
+You watch your own foot land twice on the same stone.
+
+The Bridge is testing whether you notice.
+
+Ahead: a silhouette in the fog that resembles rooftops.
+A hanging city, or a memory of one.`,
+      choices:[
+        { label:"Push through", hint:"Accept instability.", to:"hanging_city",
+          effect:(st)=>{ setStat("hp",-6); shakeStory(); addLog("Your stomach flips as your timing desyncs."); }
+        }
+      ]
+    },
+
+    safe_rhythm:{
+      layout:"wide",
+      title:"Safe Rhythm",
+      text:(s)=>`You match the choir carefully, step for step.
+A reluctant duet.
+
+The fog eases.
+The Bridge does not correct you.
+
+Ahead, a silhouette forms: structures suspended in mist.
+A hanging city, built of outlines and regret.`,
+      choices:[
+        { label:"Approach the hanging city", hint:"New kind of danger.", to:"hanging_city",
+          effect:(st)=>{ setStat("energy",-2); addLog("You approach. The air smells like old paper and wet stone."); }
+        }
+      ]
+    },
+
+    hanging_city:{
+      layout:"city",
+      title:"Act VII: The Hanging City",
+      text:(s)=>`Buildings appear in the fog, but they do not touch the Bridge.
+They hang just off to the side, suspended by nothing.
+
+Balconies. Windows. Stairs.
+All facing you, like an audience.
+
+You notice faint movement inside a window.
+Not a person.
+A shadow doing the shape of a person.
+
+A stairway descends from the city toward the Bridge, then stops one step short.
+A gap.
+
+The city is offering you a choice:
+jump, or leave.`,
+      choices:[
+        { label:"Jump the gap to the stair", hint:"High risk. High reward.", to:"jump_gap",
+          effect:(st)=>{ setStat("energy",-4); addLog("You prepare to jump. The fog holds its breath."); }
+        },
+        { label:"Refuse the city", hint:"Stay on the Bridge.", to:"scribe_approach",
+          effect:(st)=>{ setStat("resolve",+4); addLog("You refuse the detour. The city dims, offended."); }
+        }
+      ]
+    },
+
+    jump_gap:{
+      layout:"city",
+      title:"One Step Short of Reality",
+      text:(s)=>`You jump.
+
+For a moment, you are weightless.
+Then your foot finds the stair edge.
+
+It holds.
+
+Inside the hanging city, the air is warmer, like a lie.
+A corridor leads to a room filled with objects that look like crowns.
+
+One crown is missing its top.
+It is a ring of blade.
+
+It hums when you look at it.`,
+      choices:[
+        { label:"Take the Crown of Hunger", hint:"Legendary weapon. The Bridge will watch you harder.", to:"take_crown",
+          when:(st)=>!st.flags.crownEventSeen,
+          effect:(st)=>{ st.flags.crownEventSeen = true; setStat("resolve",-5); addLog("You touch the crown. Something in the fog smiles."); }
+        },
+        { label:"Back away slowly", hint:"Not everything is meant to be carried.", to:"city_escape",
+          effect:(st)=>{ setStat("resolve",+3); addLog("You back away. The room stays polite."); }
+        }
+      ]
+    },
+
+    take_crown:{
+      layout:"city",
+      title:"Crown of Hunger",
+      text:(s)=>`The ring-blade settles into your hands like it belongs there.
+It feels eager, but not for blood.
+
+For certainty.
+
+A whisper from the stone floor, almost affectionate:
+"Now you will be easier to file."`,
+      choices:[
+        { label:"Leave the hanging city", hint:"Return to the Bridge, changed.", to:"city_escape",
+          effect:(st)=>{
+            gainWeapon("crown_of_hunger");
+            equipWeapon("crown_of_hunger");
+            setStat("energy",-6);
+          }
+        }
+      ]
+    },
+
+    city_escape:{
+      layout:"wide",
+      title:"Back on the Stone",
+      text:(s)=>`You step back onto the Bridge.
+Behind you, the hanging city fades like a thought you regret having.
+
+Ahead, the fog narrows again.
+A kneeling figure scratches stone with something sharp.
+
+A scribe.
+Or a butcher of names.`,
+      choices:[
+        { label:"Approach the figure", hint:"The Scribe is waiting.", to:"scribe_approach",
+          effect:(st)=>{ setStat("energy",-2); addLog("You approach. The scratching stops."); }
+        }
+      ]
+    },
+
+    scribe_approach:{
+      layout:"wide",
+      title:"Act VIII: The Scribe on the Stone",
+      text:(s)=>`A figure kneels at the centerline, scraping stone with something sharp.
+
+It is not writing.
+It is carving.
+
+Marks gather into dense paragraphs.
+And then you realize what the paragraphs are:
+records of everyone who crossed.
+
+The figure lifts its head.
+Its eyes are full of chalk dust.`,
+      choices:[
+        { label:"Approach carefully", hint:"You might avoid combat.", to:"scribe_choice",
+          effect:(st)=>{ setStat("energy",-2); addLog("You step closer. The air tastes like chalk."); }
+        },
+        { label:"Attack first", hint:"High aggression. High consequence.", to:"combat_scribe_entry",
+          effect:(st)=>{ setStat("resolve",-2); addLog("You choose violence first. The Bridge watches."); }
+        }
+      ]
+    },
+
+    scribe_choice:{
+      layout:"wide",
+      title:"Stone Scribe",
+      text:(s)=>`The Scribe holds up a shard of bone like a pen.
+It points at you, then points at the stone.
+
+It wants your name.
+Or it wants to decide what to do with it.`,
+      choices:[
+        { label:"Give your name", hint:"Lose some control, gain speed.", to:"name_taken",
+          effect:(st)=>{ st.flags.nameGiven = true; setStat("resolve",-5); addLog("You give your name. The fog tastes it."); }
+        },
+        { label:"Refuse", hint:"Combat likely. Control maintained.", to:"combat_scribe_entry",
+          effect:(st)=>{ setStat("resolve",+3); addLog("You refuse. Refusal is a weapon."); }
+        }
+      ]
+    },
+
+    name_taken:{
+      layout:"claustrophobic",
+      title:"Your Name Becomes Ink",
+      text:(s)=>`The Scribe carves your name into stone.
+You feel a tug in your chest, like a string tied to the letters.
+
+Then the Bridge gets quieter.
+The path ahead becomes clearer, as if the fog stopped arguing.
+
+You suspect a trap.
+You also suspect progress.`,
+      choices:[
+        { label:"Continue", hint:"Toward the final threshold.", to:"final_approach",
+          effect:(st)=>{ setStat("energy",+4); addLog("The Bridge behaves. That is the scariest part."); }
+        }
       ]
     },
 
     final_approach:{
-      title:"The Last Fog",
+      layout:"wide",
+      title:"Act IX: The Last Fog",
       text:(s)=>`The air changes. It smells like soil, not stone.
 A sign the exit exists.
 
-You step toward the threshold.
-Whatever the Bridge did to you, it remembers.`,
+Light appears ahead in thin slices, like a door opening slowly.
+You also notice a new sensation:
+the Bridge feels almost satisfied.
+
+A final question forms:
+Did you cross it, or did it file you into place?`,
       choices:[
         { label:"Exit", hint:"Reach an ending.", to:"cross_ending" },
+        { label:"Turn around", hint:"A twist. Not all returns are allowed.", to:"turn_back_twist",
+          effect:(st)=>{ setStat("resolve",-2); addLog("You turn. The Bridge pretends not to notice."); }
+        },
         { label:"Restart", hint:"Try other branches.", to:"__restart" }
       ]
     },
 
+    turn_back_twist:{
+      layout:"claustrophobic",
+      title:"Turning Back",
+      text:(s)=>`Behind you, the Bridge looks shorter.
+Not by a little.
+By a lot.
+
+As if the distance you walked was never distance at all, but approvals.
+
+Far back, you see the Village gate.
+But it is not open.
+It is a painting of a gate, hung in fog.
+
+Arriving might not mean returning.`,
+      choices:[
+        { label:"Walk toward the painted gate", hint:"Risk an unnatural outcome.", to:"painted_gate",
+          effect:(st)=>{ setStat("energy",-4); addLog("You walk toward the painting. The fog smells like varnish."); }
+        },
+        { label:"Accept forward motion only", hint:"Return to the exit.", to:"final_approach",
+          effect:(st)=>{ setStat("resolve",+4); addLog("You refuse the trick. That feels like growth."); }
+        }
+      ]
+    },
+
+    painted_gate:{
+      layout:"hall",
+      title:"The Painted Gate",
+      text:(s)=>`Up close, it is not paint.
+It is memory, layered.
+
+A hand appears on the other side, pressing outward, as if the image is glass.
+
+A voice you recognize from the Council Hall:
+"Sign here."
+
+The Bridge offers you a return.
+You know how paperwork works: it changes the owner.`,
+      choices:[
+        { label:"Sign", hint:"An ending that feels procedural.", to:"return_ending",
+          effect:(st)=>{ setStat("resolve",-12); addLog("You sign. The ink is your pulse."); }
+        },
+        { label:"Refuse", hint:"Go forward. Keep yourself.", to:"final_approach",
+          effect:(st)=>{ setStat("resolve",+8); addLog("You refuse. The hand withdraws, offended."); }
+        }
+      ]
+    },
+
+    returned_one:{
+      layout:"claustrophobic",
+      title:"The Returned One",
+      text:(s)=>`You see him before you understand what you are seeing.
+
+An old figure stands on the stone, perfectly still.
+Blind eyes.
+A mouth that does not move.
+A posture that used to be a person.
+
+He turns his head toward you anyway.
+
+Then he raises a hand and points at the Bridge beneath your feet.
+He points at the fog.
+He points at you.
+
+A scratchy sound arrives inside your skull:
+
+"DO NOT LET IT WRITE YOU CLEAN."
+
+The fog behind him trembles.
+Something wants this moment erased.`,
+      choices:[
+        { label:"Take the relic he offers", hint:"Legendary weapon. The Bridge will notice.", to:"returned_take_relic",
+          effect:(st)=>{ setStat("resolve",-6); addLog("You accept a gift from a forbidden outcome."); }
+        },
+        { label:"Ask how to survive", hint:"Gain guidance, not power.", to:"returned_guidance",
+          effect:(st)=>{ setStat("resolve",+6); addLog("You ask without words. He answers without sound."); }
+        },
+        { label:"Refuse and keep moving", hint:"Keep innocence. Maybe.", to:"returned_refuse",
+          effect:(st)=>{ setStat("resolve",+3); addLog("You refuse. The Bridge hates restraint and loves it at once."); }
+        }
+      ]
+    },
+
+    returned_take_relic:{
+      layout:"inverted",
+      title:"Bridgeheart Relic",
+      text:(s)=>`He places something into your palm.
+
+It is warm.
+
+Not living warmth, but a memory of fire.
+The metal does not reflect the fog.
+It reflects a different room, a different time.
+
+The Bridge reacts.
+Not loudly.
+Not violently.
+
+You feel a line being added to a ledger somewhere, with your pulse as ink.`,
+      choices:[
+        { label:"Continue", hint:"Carry the relic forward.", to:"resume_after_returned",
+          effect:(st)=>{
+            gainWeapon("bridgeheart_relic");
+            equipWeapon("bridgeheart_relic");
+            setStat("energy",-6);
+            st.flags.rareReturnedMet = true;
+          }
+        }
+      ]
+    },
+
+    returned_guidance:{
+      layout:"claustrophobic",
+      title:"A Warning Without Language",
+      text:(s)=>`He taps the stone twice.
+Two travelers every year.
+
+He taps a third time.
+A lie.
+
+He drags a bridge shape in the air, then a line through it.
+Cancel. Deny. Void.
+
+He gestures toward your chest.
+
+The message lands like weight:
+the Bridge does not want you dead.
+It wants you categorized.
+
+Survival is not crossing.
+Survival is staying undefined.`,
+      choices:[
+        { label:"Continue", hint:"Try to remain undefined.", to:"resume_after_returned",
+          effect:(st)=>{
+            setStat("resolve",+8);
+            setStat("energy",-2);
+            st.flags.rareReturnedMet = true;
+          }
+        }
+      ]
+    },
+
+    returned_refuse:{
+      layout:"wide",
+      title:"Walking Away From a Miracle",
+      text:(s)=>`You keep walking.
+
+Behind you, the old figure fades into fog, as if he was always only an idea.
+But the Bridge is disturbed now.
+Its silence becomes sharp.
+
+You sense the Warden somewhere below, turning pages.`,
+      choices:[
+        { label:"Continue", hint:"Leave the miracle behind.", to:"resume_after_returned",
+          effect:(st)=>{
+            setStat("resolve",+4);
+            st.flags.rareReturnedMet = true;
+          }
+        }
+      ]
+    },
+
+    resume_after_returned:{
+      layout:"wide",
+      title:"After the Impossible",
+      text:(s)=>`The Bridge resumes its performance of being stone.
+But now you know it can be interrupted.
+
+Fog peels away in thin layers.
+Ahead: the final stretch.
+Behind: a person who should not exist.
+
+You feel the Bridge try to tidy you up.
+You resist.`,
+      choices:[
+        { label:"Continue", hint:"Toward the final threshold.", to:"final_approach",
+          effect:(st)=>{ setStat("energy",-1); addLog("You walk. This time, with your eyes open."); }
+        }
+      ]
+    },
+
     cross_ending:{
+      layout:"wide",
       title:"Ending: Beyond the Bridge",
       text:(s)=>`You step out of the fog.
 The light is harsh, honest, mortal.
@@ -895,7 +2280,31 @@ It simply remembers you.`,
       ]
     },
 
+    return_ending:{
+      layout:"hall",
+      title:"Ending: Returned, But Filed",
+      text:(s)=>`You blink and you are back in the Village.
+Everything is clean.
+Everything is calm.
+
+The Council nods like nothing unusual occurred.
+They welcome you.
+They also do not ask what you saw.
+
+Because the form you signed already answered for you.
+
+Final status
+Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}
+
+You returned.
+Changed.`,
+      choices:[
+        { label:"Restart", hint:"Try refusing the signature.", to:"__restart" }
+      ]
+    },
+
     forget_ending:{
+      layout:"hall",
       title:"Ending: Enter and Forget",
       text:(s)=>`You return to warmth.
 You live. You smile. You resume eternity.
@@ -915,13 +2324,16 @@ Changed.`,
   };
 
   function renderScene(){
-    $("sceneTitle").textContent = SCENES[S.scene].title;
-    $("sceneText").textContent = SCENES[S.scene].text(S);
+    const sc = SCENES[S.scene];
+    $("sceneTitle").textContent = sc.title;
+    $("sceneText").textContent = sc.text(S);
+
+    S.layout = sc.layout || "wide";
+    setLayout(S.layout);
 
     const choicesBox = $("choices");
     choicesBox.innerHTML = "";
 
-    // If we are in post-combat state, show ONLY Continue (prevents lock and prevents stray buttons)
     if(S.postCombat){
       const btn = document.createElement("button");
       btn.className = "choiceBtn";
@@ -929,7 +2341,7 @@ Changed.`,
       btn.innerHTML = `<div class="badge">C</div>
         <div class="choiceText">
           <div class="main">Continue</div>
-          <div class="hint">Leave the fight behind. Carry the consequences forward.</div>
+          <div class="hint">Leave the fight behind. Carry consequences forward.</div>
         </div>`;
       btn.addEventListener("click", ()=>{
         const next = S.postCombat.nextScene;
@@ -944,16 +2356,14 @@ Changed.`,
       return;
     }
 
-    // Combat active hides choices (combat UI has its own buttons)
     if(S.combat && S.combat.active){
       renderCombat();
       renderLog();
       return;
     } else {
-      renderCombat(); // hides combat box
+      renderCombat();
     }
 
-    const sc = SCENES[S.scene];
     const list = sc.choices || [];
     let visibleIndex = 0;
     list.forEach((c)=>{
@@ -966,6 +2376,7 @@ Changed.`,
       const btn = document.createElement("button");
       btn.className = "choiceBtn";
       btn.type = "button";
+
       const badgeLetter = String.fromCharCode(65 + (visibleIndex % 26));
       visibleIndex++;
 
@@ -1000,6 +2411,35 @@ Changed.`,
       toast("New run.");
       return;
     }
+
+    if(shouldTriggerReturnedOne(sceneId)){
+      S.flags.rareReturnedSeen = true;
+      addLog("The fog hesitates. Something old is near.");
+      save();
+      sceneId = "returned_one";
+    }
+
+    if(sceneId==="combat_mirror_entry"){
+      startCombat("mist_mirror", "toll_station", "toll_station");
+      return;
+    }
+    if(sceneId==="combat_scribe_entry"){
+      startCombat("stone_scribe", "final_approach", "final_approach");
+      return;
+    }
+    if(sceneId==="combat_warden_entry"){
+      startCombat("hollow_warden", "toll_station", "toll_station");
+      return;
+    }
+    if(sceneId==="combat_toll_entry"){
+      startCombat("toll_clerk", "choir_of_columns", "choir_of_columns");
+      return;
+    }
+    if(sceneId==="combat_choir_entry"){
+      startCombat("choir_column", "hanging_city", "hanging_city");
+      return;
+    }
+
     if(!SCENES[sceneId]){
       addLog("Missing scene. Resetting.");
       S.scene = "intro_scene";
@@ -1007,6 +2447,7 @@ Changed.`,
       renderAll();
       return;
     }
+
     S.scene = sceneId;
     save();
     renderAll();
@@ -1020,7 +2461,6 @@ Changed.`,
     renderLog();
   }
 
-  // Combat system
   function renderCombat(){
     const box = $("combatBox");
     if(!S.combat || !S.combat.active){
@@ -1034,7 +2474,12 @@ Changed.`,
     box.classList.add("show");
     const e = ENEMIES[S.combat.enemyId];
     $("enemyName").textContent = e.name;
-    $("enemyMeta").textContent = `HP ${S.combat.eHp}, AC ${S.combat.eAc}, Threat ${S.combat.eThreat}`;
+    $("enemyMeta").textContent = `HP ${S.combat.eHp} / ${S.combat.eHpMax}, AC ${S.combat.eAc}, Threat ${S.combat.eThreat}`;
+    $("enemyHpTxt").textContent = `${S.combat.eHp}/${S.combat.eHpMax}`;
+
+    const pct = (S.combat.eHpMax<=0) ? 0 : Math.max(0, Math.min(100, Math.floor((S.combat.eHp / S.combat.eHpMax)*100)));
+    $("enemyHpFill").style.width = pct + "%";
+
     $("attackBtn").disabled = false;
     $("focusBtn").disabled = false;
     $("guardBtn").disabled = false;
@@ -1052,14 +2497,17 @@ Changed.`,
     const e = ENEMIES[enemyId];
     if(!e) return;
 
-    const hpBonus = S.hardMode ? 4 : 0;
+    const hpBonus = S.hardMode ? 5 : 0;
     const acBonus = S.hardMode ? 1 : 0;
     const hitBonus = S.hardMode ? 1 : 0;
+
+    const eHpMax = e.hp + hpBonus;
 
     S.combat = {
       active:true,
       enemyId,
-      eHp: e.hp + hpBonus,
+      eHp: eHpMax,
+      eHpMax: eHpMax,
       eAc: e.ac + acBonus,
       eHit: e.hit + hitBonus,
       eDmg: e.dmg,
@@ -1083,29 +2531,28 @@ Changed.`,
     const enemy = ENEMIES[S.combat.enemyId];
     if(victory){
       addLog(`You survived ${enemy.name}. The Bridge does not congratulate you.`);
-      // small loot
       const drop = randInt(1,100) - (S.hardMode ? 10 : 0);
-      if(drop<=18){
+
+      if(drop<=10){
+        gainWeapon("glass_sabre");
+      }else if(drop<=18){
         gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
-      }else if(drop<=45){
-        S.supplies.salve += 1;
-        toast("Loot: Salve +1");
-        addLog("You found salve in a crack of the stone.");
-      }else if(drop<=70){
-        S.supplies.bread += 1;
-        toast("Loot: Bread +1");
-        addLog("You found bread that tastes like yesterday.");
+      }else if(drop<=32){
+        gainSupply("salve", 1, "You found salve in a crack of the stone. It smells like winter.");
+      }else if(drop<=58){
+        gainSupply("bread", 1, "Bread appears where bread should not be. The Bridge is mocking you.");
+      }else if(drop<=78){
+        gainSupply("water", 1, "A flask. The water is still. That should not be possible.");
       }else{
         addLog("Nothing useful remains, only the memory of impact.");
       }
+
       setStat("resolve", +6);
       setStat("energy", -3);
     } else {
       addLog("You endured. The Bridge calls that enough.");
     }
 
-    // IMPORTANT FIX: do not drop the player into a dead UI state
-    // We set a postCombat continuation that shows a Continue button.
     const nextScene = S.combat.returnScene || S.scene;
     S.postCombat = {
       nextScene: nextScene,
@@ -1121,6 +2568,7 @@ Changed.`,
   function enemyTurn(){
     if(!S.combat) return;
     const e = ENEMIES[S.combat.enemyId];
+
     const d20 = roll(20);
     animateDie("enemyDie", d20);
 
@@ -1128,7 +2576,7 @@ Changed.`,
     const playerAC = 12 + Math.floor(S.resolve/25) + (S.combat.guard ? 2 : 0) + (S.hardMode ? -1 : 0);
 
     if(d20===1){
-      combatLog(`${e.name} rolls a natural 1. Reality stutters. MISS.`);
+      combatLog(`${e.name} rolls a natural 1. MISS.`);
       S.combat.guard = false;
       S.combat.focusStacks = 0;
       save();
@@ -1143,8 +2591,10 @@ Changed.`,
       if(d20===20) taken += rollDice("1d6").total;
 
       setStat("hp", -taken);
+      shakeStory();
       setStat("resolve", -2);
       $("lastHit").textContent = String(taken);
+
       combatLog(`${e.name} rolls ${d20}. Attack ${enemyAtk} vs your AC ${playerAC}. HIT.`);
       combatLog(`Damage: ${dmg.detail} | You take ${taken}.`);
 
@@ -1162,11 +2612,13 @@ Changed.`,
     S.combat.guard = false;
     S.combat.focusStacks = 0;
     save();
+    renderCombat();
   }
 
   function playerAttack(){
     if(!S.combat) return;
     const wep = currentWeapon();
+
     const nat = roll(20);
     animateDie("playerDie", nat);
 
@@ -1177,13 +2629,15 @@ Changed.`,
     const attackTotal = nat + toHit + focusBonus + Math.floor((S.resolve-50)/20);
 
     if(nat===1){
-      combatLog("You roll a natural 1. The stone catches your angle. MISS.");
+      combatLog("You roll a natural 1. MISS.");
       setStat("energy",-3);
       enemyTurn();
       return;
     }
 
     const crit = (nat===20);
+    if(crit) showCritBadge();
+
     if(crit || attackTotal >= S.combat.eAc){
       const dmg = rollDice(wep.dmg);
       const bonus = crit ? rollDice("1d6").total : 0;
@@ -1191,13 +2645,17 @@ Changed.`,
 
       S.combat.eHp = Math.max(0, S.combat.eHp - finalDmg);
       $("lastHit").textContent = String(finalDmg);
+
       combatLog(`You roll ${nat}. Attack ${attackTotal} vs AC ${S.combat.eAc}. HIT.`);
       combatLog(`Damage: ${dmg.detail}${crit ? " | CRIT +1d6" : ""} => ${finalDmg}`);
 
+      enemyImpact();
       setStat("energy",-5);
 
+      renderCombat();
+
       if(S.combat.eHp<=0){
-        combatLog("Enemy collapses into fog and silence.");
+        combatLog("Enemy dissolves into fog and silence.");
         endCombat(true);
         return;
       }
@@ -1213,7 +2671,7 @@ Changed.`,
   function playerFocus(){
     if(!S.combat) return;
     if(S.energy<10){
-      combatLog("You try to focus, but your body refuses. Not enough energy.");
+      combatLog("Not enough energy to focus.");
       return;
     }
     setStat("energy",-10);
@@ -1237,10 +2695,10 @@ Changed.`,
   function playerFlee(){
     if(!S.combat || !S.combat.allowFleeTo) return;
     const fleeRoll = roll(20) + Math.floor(S.resolve/25) - (S.combat.eThreat*2) + (S.hardMode ? -1 : 0);
-    animateDie("playerDie", fleeRoll);
+    animateDie("playerDie", Math.max(1, Math.min(20, fleeRoll)));
     combatLog(`Flee attempt: ${fleeRoll}.`);
     if(fleeRoll>=14){
-      combatLog("You slip away into thicker fog. ESCAPE.");
+      combatLog("ESCAPE.");
       const to = S.combat.allowFleeTo;
       S.combat = null;
       S.postCombat = { nextScene: to, note:"You escaped. It feels like living." };
@@ -1248,31 +2706,11 @@ Changed.`,
       renderScene();
       return;
     }
-    combatLog("You turn to run. The enemy punishes the motion.");
+    combatLog("You fail to flee.");
     enemyTurn();
     save();
   }
 
-  // Combat entry points as scenes
-  function combatScene(enemyId, returnScene, fleeTo){
-    startCombat(enemyId, returnScene, fleeTo);
-  }
-
-  // Hook these "virtual scenes" into navigation
-  const originalGo = go;
-  go = function(sceneId){
-    if(sceneId==="combat_censor"){
-      combatScene("the_censor", "final_approach", "final_approach");
-      return;
-    }
-    if(sceneId==="combat_mirror"){
-      combatScene("mist_mirror", "final_approach", "final_approach");
-      return;
-    }
-    originalGo(sceneId);
-  };
-
-  // Buttons
   $("attackBtn").addEventListener("click", playerAttack);
   $("focusBtn").addEventListener("click", playerFocus);
   $("guardBtn").addEventListener("click", playerGuard);
@@ -1294,10 +2732,37 @@ Changed.`,
     renderHud();
   });
 
-  // Intro text
-  $("introText").textContent = INTRO;
+  function hardFailSafe(){
+    try{
+      normalizeState();
+      renderHud();
+      if(!SCENES[S.scene]) S.scene = "intro_scene";
+      renderScene();
+      renderLog();
+      save();
+    }catch(e){
+      console.error(e);
+      try{
+        S = structuredClone(DEFAULT_STATE);
+        save();
+        renderAll();
+      }catch(_){}
+    }
+  }
 
-  // Boot
+  function renderAll(){
+    $("introText").textContent = INTRO;
+    normalizeState();
+    renderHud();
+    renderScene();
+    renderLog();
+  }
+
+  window.addEventListener("error", ()=>{
+    addLog("A glitch ripples through the fog. The Bridge tries to recover.");
+    hardFailSafe();
+  });
+
   renderAll();
 })();
 </script>

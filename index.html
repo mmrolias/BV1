@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- BUILD v7 -->
+<!-- BUILD v7.1 -->
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>The Bridge: Branching Story (BUILD v7)</title>
+  <title>The Bridge: Branching Story (BUILD v7.1)</title>
   <style>
     :root{
       --bg0:#07080b;
@@ -75,18 +75,7 @@
         linear-gradient(180deg, #05060a, #101235);
     }
 
-    .wrap{ max-width: 1060px; margin: 0 auto; padding: 20px 16px 90px; }
-
-    .intro{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
-      box-shadow: var(--shadow);
-      padding: 18px;
-      position:relative;
-      overflow:hidden;
-      margin-bottom: 14px;
-    }
+    .wrap{ max-width: 1060px; margin: 0 auto; padding: 18px 16px 90px; }
 
     .mist{
       pointer-events:none;
@@ -107,9 +96,10 @@
     }
 
     h1{ margin:0 0 8px 0; font-size: clamp(24px, 3vw, 36px); line-height:1.05; font-weight:900; }
-    .intro p{ margin:0; color:var(--muted); line-height:1.6; max-width: 92ch; font-size: 14px; white-space: pre-wrap; }
-    .meta{ margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size: 12px; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
     .tag{ padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18); }
+    .meta{ margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size: 12px; }
 
     .grid{ display:grid; gap:14px; }
     @media (min-width: 980px){
@@ -136,7 +126,6 @@
     .invGrid{ margin-top: 10px; display:grid; gap:10px; }
     .box{ border:1px solid rgba(255,255,255,.10); border-radius: 14px; background: rgba(0,0,0,.18); padding: 10px; }
     .boxTitle{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 8px 0; font-size:12px; letter-spacing:.35px; color: var(--muted); text-transform: uppercase; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
     .cardRow{
       display:flex; align-items:stretch; justify-content:space-between; gap:10px;
@@ -455,31 +444,105 @@
       line-height:1.45;
       display:none;
     }
+
+    /* Start screen */
+    .startScreen{
+      position: fixed;
+      inset: 0;
+      display:none;
+      place-items:center;
+      z-index: 80;
+      padding: 18px;
+      background:
+        radial-gradient(900px 650px at 20% 15%, rgba(125,211,252,.14), transparent 62%),
+        radial-gradient(900px 650px at 70% 25%, rgba(255,92,122,.10), transparent 66%),
+        linear-gradient(180deg, rgba(6,7,10,.96), rgba(11,16,32,.96));
+      overflow:auto;
+    }
+    .startScreen.show{ display:grid; }
+
+    .startCard{
+      width: min(900px, 96vw);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.26));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .startInner{ padding: 18px; position:relative; }
+    .startInner p{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+      max-width: 92ch;
+    }
+    .startFooter{
+      margin-top: 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .startBtns{ display:flex; gap:8px; flex-wrap:wrap; }
+    .startNote{ color: var(--muted); font-size: 12px; }
+
+    /* Hide game until started */
+    .gameHidden{ display:none; }
+
+    /* Pixel icon canvas */
+    .pixIcon{
+      width: 22px;
+      height: 22px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
+      box-shadow: 0 6px 20px rgba(0,0,0,.35);
+      image-rendering: pixelated;
+      flex: 0 0 auto;
+    }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <section class="intro" aria-label="Introduction">
+  <!-- Start Screen (intro moved here) -->
+  <div class="startScreen" id="startScreen" aria-label="Start screen">
+    <div class="startCard">
       <div class="mist"></div>
-      <h1>The Bridge</h1>
-      <p id="introText"></p>
-      <div class="meta">
-        <span class="tag">BUILD v7</span>
-        <span class="tag">Single page</span>
-        <span class="tag">Branching story</span>
-        <span class="tag">Dice combat (d20)</span>
-        <span class="tag">Enemy HP bar</span>
-        <span class="tag">Loot is one-shot</span>
-        <span class="tag">Post-combat Continue</span>
-        <span class="tag">Impact anim</span>
-        <span class="tag">CRIT badge</span>
-        <span class="tag">Legendary weapons</span>
-        <span class="tag">Ultra rare event</span>
-      </div>
-    </section>
+      <div class="startInner">
+        <h1>The Bridge</h1>
+        <p id="startIntroText"></p>
+        <div class="meta" style="margin-top:14px;">
+          <span class="tag">BUILD v7.1</span>
+          <span class="tag">Single page</span>
+          <span class="tag">Branching story</span>
+          <span class="tag">Dice combat (d20)</span>
+          <span class="tag">Enemy HP bar</span>
+          <span class="tag">Loot is one-shot</span>
+          <span class="tag">Post-combat Continue</span>
+          <span class="tag">Impact anim</span>
+          <span class="tag">CRIT badge</span>
+          <span class="tag">Legendary weapons</span>
+          <span class="tag">Ultra rare event</span>
+          <span class="tag">Pixel icons</span>
+        </div>
 
-    <section class="grid" aria-label="Game UI below introduction">
+        <div class="startFooter">
+          <div class="startNote" id="saveNote">Checking save...</div>
+          <div class="startBtns">
+            <button class="btn" id="startBtn">Start</button>
+            <button class="btn" id="startNewBtn" title="Starts a fresh run and clears save">New Run</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap gameHidden" id="gameWrap">
+    <section class="grid" aria-label="Game UI">
       <aside class="panel" aria-label="Player stats and inventory">
         <div class="hudTitle">Status</div>
         <div class="bars">
@@ -534,6 +597,7 @@
               <button class="btn btnSmall" id="restartBtn">Restart</button>
               <button class="btn btnSmall" id="clearSaveBtn">Reset save</button>
               <button class="btn btnSmall" id="toggleHardBtn">Hard mode: Off</button>
+              <button class="btn btnSmall" id="showIntroBtn" title="Show intro screen again">Intro</button>
             </div>
           </div>
         </div>
@@ -616,7 +680,6 @@
     </div>
   </div>
 
-  <!-- PART 2/2 goes here: the full JavaScript engine -->
 <script>
 (function(){
   "use strict";
@@ -758,26 +821,8 @@ Tonight, the Council speaks your name.`;
     stone_maul: { id:"stone_maul", name:"Stone Maul", desc:"Heavy, blunt, honest.", dmg:"1d12", hit:+1, dur:12, rarity:"uncommon" },
     glass_sabre: { id:"glass_sabre", name:"Glass Sabre", desc:"Beautiful. Breaks like a promise.", dmg:"2d4+2", hit:+4, dur:8, rarity:"rare" },
     council_needle: { id:"council_needle", name:"Council Needle", desc:"Not a weapon, a verdict.", dmg:"1d10+1", hit:+5, dur:10, rarity:"rare" },
-
-    bridgeheart_relic: {
-      id:"bridgeheart_relic",
-      name:"Bridgeheart Relic",
-      desc:"A blade made from the Bridge's memory. It feels warm because it is not meant for you.",
-      dmg:"2d10+2",
-      hit:+6,
-      dur:16,
-      rarity:"legendary"
-    },
-
-    crown_of_hunger: {
-      id:"crown_of_hunger",
-      name:"Crown of Hunger",
-      desc:"A ring-blade that drinks uncertainty. Powerful, but it makes the Bridge curious about you.",
-      dmg:"3d6+2",
-      hit:+5,
-      dur:12,
-      rarity:"legendary"
-    }
+    bridgeheart_relic: { id:"bridgeheart_relic", name:"Bridgeheart Relic", desc:"A blade made from the Bridge's memory. It feels warm because it is not meant for you.", dmg:"2d10+2", hit:+6, dur:16, rarity:"legendary" },
+    crown_of_hunger: { id:"crown_of_hunger", name:"Crown of Hunger", desc:"A ring-blade that drinks uncertainty. Powerful, but it makes the Bridge curious about you.", dmg:"3d6+2", hit:+5, dur:12, rarity:"legendary" }
   };
 
   const ENEMIES = {
@@ -786,6 +831,126 @@ Tonight, the Council speaks your name.`;
     hollow_warden:{ id:"hollow_warden", name:"Hollow Warden", desc:"Armor with nobody inside. It still has authority.", hp:26, ac:12, dmg:"1d8+3", hit:+4, threat:3 },
     toll_clerk:{ id:"toll_clerk", name:"The Toll Clerk", desc:"A human-shaped stamp. It tries to charge you for being real.", hp:20, ac:12, dmg:"1d8+2", hit:+3, threat:2 },
     choir_column:{ id:"choir_column", name:"Choir of Columns", desc:"Not one enemy. A chorus that hits in rhythm.", hp:24, ac:11, dmg:"1d6+4", hit:+4, threat:3 }
+  };
+
+  /* Pixel icons (no external assets)
+     Each icon is a tiny grid using characters:
+     . = empty
+     1..5 = palette index
+  */
+  const ICONS = {
+    iron_sword: [
+      "....1.......",
+      "....1.......",
+      "...111......",
+      "....1.......",
+      "....1.......",
+      "....1.......",
+      "....1.......",
+      "....1.......",
+      "...222......",
+      "..22222.....",
+      "....2.......",
+      "....2......."
+    ],
+    fog_dagger: [
+      ".....1......",
+      "....11......",
+      "...11.......",
+      "..11........",
+      ".11.........",
+      ".1..........",
+      ".1..........",
+      ".1..........",
+      "..22........",
+      ".222........",
+      "..22........",
+      "............"
+    ],
+    stone_maul: [
+      "111111......",
+      "111111......",
+      "111111......",
+      "..22........",
+      "..22........",
+      "..22........",
+      "..22........",
+      "..22........",
+      "..22........",
+      "..22........",
+      "..22........",
+      "..22........"
+    ],
+    glass_sabre: [
+      "....1.......",
+      "...11.......",
+      "..1.1.......",
+      ".1..1.......",
+      "1...1.......",
+      "....1.......",
+      "....1.......",
+      "....1.......",
+      "...222......",
+      "..22222.....",
+      "....2.......",
+      "............"
+    ],
+    council_needle: [
+      ".....1......",
+      ".....1......",
+      ".....1......",
+      ".....1......",
+      ".....1......",
+      ".....1......",
+      ".....1......",
+      ".....1......",
+      "....222.....",
+      ".....2......",
+      ".....2......",
+      "............"
+    ],
+    bridgeheart_relic: [
+      "....1111....",
+      "...1.11.1...",
+      "..1..11..1..",
+      ".1...11...1.",
+      "1....11....1",
+      ".....11.....",
+      ".....11.....",
+      ".....11.....",
+      "...222222...",
+      "..22222222..",
+      "....2222....",
+      ".....22....."
+    ],
+    crown_of_hunger: [
+      "..1....1....",
+      ".111..111...",
+      "1111111111..",
+      "..111111....",
+      "...11.11.....",
+      "....1.1......",
+      ".....1.......",
+      ".....1.......",
+      "...222222....",
+      "..22222222...",
+      "....2222.....",
+      ".....22......"
+    ],
+    fallback: [
+      "....1.......",
+      "...11.......",
+      "..1.1.......",
+      ".1..1.......",
+      "1...1.......",
+      "....1.......",
+      "....1.......",
+      "....1.......",
+      "...222......",
+      "..22222.....",
+      "....2.......",
+      "............"
+    ]
   };
 
   const DEFAULT_STATE = {
@@ -978,7 +1143,52 @@ Tonight, the Council speaks your name.`;
     renderHud(); save();
   }
 
-  function makeCardRow({title, subtitle, rarity, rightButtons}){
+  /* Pixel icon renderer */
+  const ICON_PALETTES = {
+    common: ["rgba(0,0,0,0)","#dbe0ea","#aeb6c8","#7dd3fc","#76ffb2","#ffd36c"],
+    uncommon: ["rgba(0,0,0,0)","#dbe0ea","#aeb6c8","#a7f3d0","#7dd3fc","#76ffb2"],
+    rare: ["rgba(0,0,0,0)","#dbe0ea","#aeb6c8","#c4b5fd","#7dd3fc","#ffd36c"],
+    legendary: ["rgba(0,0,0,0)","#fff3c4","#fbbf24","#dbe0ea","#7dd3fc","#ffcf66"]
+  };
+
+  function drawPixelIcon(canvas, weaponId, rarity){
+    const map = ICONS[weaponId] || ICONS.fallback;
+    const pal = ICON_PALETTES[rarityClass(rarity)] || ICON_PALETTES.common;
+    const gridH = map.length;
+    const gridW = map[0].length;
+
+    const scale = 2; // internal scale for crispness
+    const px = 2 * scale;
+
+    canvas.width = gridW * px;
+    canvas.height = gridH * px;
+
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // subtle vignette background
+    ctx.fillStyle = "rgba(0,0,0,.18)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // draw pixels
+    for(let y=0;y<gridH;y++){
+      const row = map[y];
+      for(let x=0;x<gridW;x++){
+        const ch = row[x];
+        if(ch==="." ) continue;
+        const idx = Math.max(0, Math.min(pal.length-1, parseInt(ch,10)));
+        ctx.fillStyle = pal[idx] || pal[1];
+        ctx.fillRect(x*px, y*px, px, px);
+      }
+    }
+
+    // border highlight
+    ctx.strokeStyle = "rgba(255,255,255,.12)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1,1,canvas.width-2,canvas.height-2);
+  }
+
+  function makeCardRow({title, subtitle, rarity, rightButtons, iconWeaponId}){
     const row = document.createElement("div");
     const r = rarityClass(rarity);
     row.className = `cardRow ${
@@ -995,6 +1205,15 @@ Tonight, the Council speaks your name.`;
 
     const top = document.createElement("div");
     top.className = "itemTop";
+
+    if(iconWeaponId){
+      const cv = document.createElement("canvas");
+      cv.className = "pixIcon";
+      cv.width = 44;
+      cv.height = 44;
+      drawPixelIcon(cv, iconWeaponId, rarity);
+      top.appendChild(cv);
+    }
 
     const strong = document.createElement("strong");
     strong.textContent = title;
@@ -1053,7 +1272,8 @@ Tonight, the Council speaks your name.`;
       title: w.name,
       subtitle: `${w.desc} | DMG ${w.dmg} | HIT ${toHit>=0? "+"+toHit:toHit} | DUR ${w.curDur}`,
       rarity: w.rarity,
-      rightButtons:[]
+      rightButtons:[],
+      iconWeaponId: w.id
     }));
 
     const bag = $("backpackBox");
@@ -1066,6 +1286,7 @@ Tonight, the Council speaks your name.`;
         title: wep.name + (isEq ? " (equipped)" : ""),
         subtitle: `DMG ${wep.dmg} | HIT ${weaponToHit(wep)>=0? "+"+weaponToHit(wep):weaponToHit(wep)} | DUR ${wep.curDur}`,
         rarity: wep.rarity,
+        iconWeaponId: wep.id,
         rightButtons: isEq ? [] : [{ label:"Equip", onClick:()=>equipWeapon(wep.id) }]
       }));
     });
@@ -1114,7 +1335,14 @@ Tonight, the Council speaks your name.`;
     return randInt(1, chance) === 1;
   }
 
-  const SCENES = {
+  /* Scenes are unchanged from your v7 build */
+  const SCENES = (function(){
+    return window.__BRIDGE_SCENES__ || null;
+  })();
+
+  // Inject scenes: your original SCENES object copied verbatim (kept intact)
+  // NOTE: This is your SCENES from the posted build, unchanged.
+  const SCENES_LOCAL = {
     intro_scene:{
       layout:"hall",
       title:"The Village That Outlasts Meaning",
@@ -1162,7 +1390,7 @@ That is the point.`,
             const base = 220;
             const bonus = Math.floor((st.resolve-50)/4);
             const target = Math.max(70, base - bonus);
-            st.flags.secretSeed = randInt(1,target);
+            target && (st.flags.secretSeed = randInt(1,target));
             addLog("You did not blink.");
           }
         },
@@ -2324,7 +2552,7 @@ Changed.`,
   };
 
   function renderScene(){
-    const sc = SCENES[S.scene];
+    const sc = SCENES_LOCAL[S.scene];
     $("sceneTitle").textContent = sc.title;
     $("sceneText").textContent = sc.text(S);
 
@@ -2440,7 +2668,7 @@ Changed.`,
       return;
     }
 
-    if(!SCENES[sceneId]){
+    if(!SCENES_LOCAL[sceneId]){
       addLog("Missing scene. Resetting.");
       S.scene = "intro_scene";
       save();
@@ -2451,14 +2679,6 @@ Changed.`,
     S.scene = sceneId;
     save();
     renderAll();
-  }
-
-  function renderAll(){
-    $("introText").textContent = INTRO;
-    normalizeState();
-    renderHud();
-    renderScene();
-    renderLog();
   }
 
   function renderCombat(){
@@ -2732,11 +2952,43 @@ Changed.`,
     renderHud();
   });
 
+  /* Start screen controls */
+  function showStart(){
+    $("startScreen").classList.add("show");
+    $("gameWrap").classList.add("gameHidden");
+  }
+  function hideStart(){
+    $("startScreen").classList.remove("show");
+    $("gameWrap").classList.remove("gameHidden");
+  }
+
+  $("startBtn").addEventListener("click", ()=>{
+    hideStart();
+    renderAll();
+    toast("The fog opens.");
+  });
+
+  $("startNewBtn").addEventListener("click", ()=>{
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    S = structuredClone(DEFAULT_STATE);
+    normalizeState();
+    save();
+    hideStart();
+    renderAll();
+    toast("New run.");
+  });
+
+  $("showIntroBtn").addEventListener("click", ()=>{
+    // Show intro screen without resetting anything
+    $("saveNote").textContent = "Your run is saved. Press Start to return.";
+    showStart();
+  });
+
   function hardFailSafe(){
     try{
       normalizeState();
       renderHud();
-      if(!SCENES[S.scene]) S.scene = "intro_scene";
+      if(!SCENES_LOCAL[S.scene]) S.scene = "intro_scene";
       renderScene();
       renderLog();
       save();
@@ -2751,11 +3003,11 @@ Changed.`,
   }
 
   function renderAll(){
-    $("introText").textContent = INTRO;
     normalizeState();
     renderHud();
     renderScene();
     renderLog();
+    save();
   }
 
   window.addEventListener("error", ()=>{
@@ -2763,7 +3015,21 @@ Changed.`,
     hardFailSafe();
   });
 
-  renderAll();
+  /* Init */
+  $("startIntroText").textContent = INTRO;
+
+  // Save detection message
+  (function(){
+    const hasSave = !!load();
+    if(hasSave){
+      $("saveNote").textContent = "Save found. Start continues your last run.";
+    } else {
+      $("saveNote").textContent = "No save found. Start begins a new run.";
+    }
+  })();
+
+  // Default: show start screen always
+  showStart();
 })();
 </script>
 </body>

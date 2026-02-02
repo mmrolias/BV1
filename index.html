@@ -1,692 +1,144 @@
 <!doctype html>
-<!-- BUILD v7.1 -->
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>The Bridge: Branching Story (BUILD v7.1)</title>
-  <style>
-    :root{
-      --bg0:#07080b;
-      --bg1:#0b1020;
-      --ink:#e8e9ee;
-      --muted:#a9adbb;
-      --accent:#7dd3fc;
-      --danger:#ff5c7a;
-      --ok:#76ffb2;
-      --warn:#ffd36c;
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>The Bridge – 1.0.8</title>
 
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(0,0,0,.22);
-      --border:rgba(255,255,255,.12);
-      --shadow: 0 12px 40px rgba(0,0,0,.55);
-      --radius:16px;
-      --focus:0 0 0 3px rgba(125,211,252,.28);
+<style>
+:root{
+  --bg:#07080b;
+  --ink:#e8e9ee;
+  --muted:#a9adbb;
+  --accent:#7dd3fc;
+  --danger:#ff5c7a;
+  --card:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.12);
+  --radius:16px;
+}
 
-      --legendary:#fbbf24;
-      --rare:#c4b5fd;
-      --uncommon:#a7f3d0;
-      --common:#93c5fd;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(180deg,#05060a,#0b1020);
+  color:var(--ink);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      color:var(--ink);
-      background:
-        radial-gradient(1200px 700px at 10% 10%, rgba(125,211,252,.10), transparent 55%),
-        radial-gradient(900px 500px at 80% 30%, rgba(255,92,122,.08), transparent 60%),
-        radial-gradient(800px 600px at 40% 90%, rgba(118,255,178,.06), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      min-height:100vh;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      letter-spacing:.2px;
-      transition: background 350ms ease;
-    }
+.hidden{display:none}
 
-    body.layout-wide{
-      background:
-        radial-gradient(1400px 900px at 20% 15%, rgba(125,211,252,.12), transparent 58%),
-        radial-gradient(900px 600px at 70% 25%, rgba(255,211,108,.07), transparent 62%),
-        linear-gradient(180deg, #06070a, #0a1230);
-    }
-    body.layout-claustrophobic{
-      background:
-        radial-gradient(700px 500px at 50% 15%, rgba(255,92,122,.10), transparent 55%),
-        radial-gradient(700px 500px at 50% 85%, rgba(125,211,252,.08), transparent 55%),
-        linear-gradient(180deg, #050507, #090a12);
-    }
-    body.layout-hall{
-      background:
-        radial-gradient(900px 600px at 50% 20%, rgba(255,255,255,.06), transparent 60%),
-        radial-gradient(900px 600px at 50% 80%, rgba(125,211,252,.08), transparent 60%),
-        linear-gradient(180deg, #07080c, #0d1430);
-    }
-    body.layout-inverted{
-      background:
-        radial-gradient(900px 700px at 50% 10%, rgba(251,191,36,.08), transparent 62%),
-        radial-gradient(900px 700px at 50% 90%, rgba(125,211,252,.08), transparent 62%),
-        linear-gradient(180deg, #05060a, #121535);
-    }
-    body.layout-city{
-      background:
-        radial-gradient(1100px 700px at 60% 12%, rgba(255,255,255,.05), transparent 62%),
-        radial-gradient(900px 600px at 30% 85%, rgba(196,181,253,.08), transparent 62%),
-        linear-gradient(180deg, #05060a, #101235);
-    }
+.startScreen{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:
+    max(24px, env(safe-area-inset-top))
+    18px
+    max(24px, env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,#04050a,#0b1020);
+  z-index:10;
+}
 
-    .wrap{ max-width: 1060px; margin: 0 auto; padding: 18px 16px 90px; }
+.startCard{
+  max-width:880px;
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:20px;
+  background:rgba(0,0,0,.4);
+  padding:22px;
+}
 
-    .mist{
-      pointer-events:none;
-      position:absolute; inset:-35%;
-      background:
-        radial-gradient(closest-side at 20% 40%, rgba(255,255,255,.10), transparent 65%),
-        radial-gradient(closest-side at 60% 30%, rgba(255,255,255,.07), transparent 70%),
-        radial-gradient(closest-side at 70% 70%, rgba(255,255,255,.05), transparent 65%),
-        radial-gradient(closest-side at 35% 85%, rgba(255,255,255,.06), transparent 70%);
-      filter: blur(10px);
-      opacity:.42;
-      animation: drift 12s ease-in-out infinite alternate;
-      mix-blend-mode: screen;
-    }
-    @keyframes drift{
-      from{ transform: translate3d(-1%, -1%, 0) scale(1.02); }
-      to{ transform: translate3d(1%, 1%, 0) scale(1.04); }
-    }
+.startCard h1{
+  margin:0 0 10px;
+  font-size:clamp(28px,5vw,44px);
+}
 
-    h1{ margin:0 0 8px 0; font-size: clamp(24px, 3vw, 36px); line-height:1.05; font-weight:900; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+.startCard p{
+  color:var(--muted);
+  line-height:1.6;
+}
 
-    .tag{ padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.18); }
-    .meta{ margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size: 12px; }
+button{
+  border:1px solid var(--border);
+  background:#10162d;
+  color:var(--ink);
+  padding:10px 14px;
+  border-radius:14px;
+  cursor:pointer;
+}
 
-    .grid{ display:grid; gap:14px; }
-    @media (min-width: 980px){
-      .grid{ grid-template-columns: 360px 1fr; align-items:start; }
-      body.layout-wide .grid{ grid-template-columns: 320px 1fr; }
-    }
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:20px 16px 80px;
+}
 
-    .panel{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
-      box-shadow: var(--shadow);
-      padding: 12px;
-    }
+.grid{
+  display:grid;
+  gap:16px;
+}
 
-    .hudTitle{ margin: 0 0 10px 0; font-size: 13px; letter-spacing:.5px; color: var(--muted); text-transform: uppercase; }
-    .bars{ display:grid; gap:8px; }
-    .barRow{ display:grid; grid-template-columns: 92px 1fr 44px; align-items:center; gap:10px; font-size:12px; color:var(--muted); }
-    .bar{ position:relative; height:10px; border-radius: 999px; background: rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.10); }
-    .fill{ position:absolute; inset:0; width:50%; border-radius:999px; transition: width .25s ease; box-shadow: 0 0 18px rgba(125,211,252,.18); background: linear-gradient(90deg, rgba(125,211,252,.95), rgba(118,255,178,.85)); }
-    .fill.danger{ background: linear-gradient(90deg, rgba(255,92,122,.95), rgba(255,211,108,.85)); box-shadow: 0 0 18px rgba(255,92,122,.16); }
-    .fill.warn{ background: linear-gradient(90deg, rgba(255,211,108,.92), rgba(125,211,252,.78)); box-shadow: 0 0 18px rgba(255,211,108,.14); }
+@media(min-width:900px){
+  .grid{grid-template-columns:360px 1fr}
+}
 
-    .invGrid{ margin-top: 10px; display:grid; gap:10px; }
-    .box{ border:1px solid rgba(255,255,255,.10); border-radius: 14px; background: rgba(0,0,0,.18); padding: 10px; }
-    .boxTitle{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 8px 0; font-size:12px; letter-spacing:.35px; color: var(--muted); text-transform: uppercase; }
+.panel{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--card);
+  padding:12px;
+}
 
-    .cardRow{
-      display:flex; align-items:stretch; justify-content:space-between; gap:10px;
-      padding: 10px 10px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.16));
-      margin-bottom: 10px;
-      position:relative;
-      overflow:hidden;
-    }
-    .cardRow:last-child{ margin-bottom: 0; }
+#story{
+  min-height:320px;
+}
 
-    .rarityGlow{
-      pointer-events:none;
-      position:absolute; inset:-30%;
-      opacity:.38;
-      filter: blur(14px);
-      transform: rotate(12deg);
-      mix-blend-mode: screen;
-    }
-    .cardRow.r-common .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(147,197,253,.20), transparent 65%); }
-    .cardRow.r-uncommon .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(167,243,208,.20), transparent 65%); }
-    .cardRow.r-rare .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(196,181,253,.22), transparent 65%); }
-    .cardRow.r-legendary .rarityGlow{ background: radial-gradient(closest-side at 35% 45%, rgba(251,191,36,.22), transparent 65%); opacity:.55; }
-
-    .itemLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
-    .itemTop{ display:flex; align-items:center; gap:8px; min-width:0; }
-    .itemTop strong{ font-size: 13px; color: var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .itemSub{ font-size: 12px; color: var(--muted); line-height:1.25; }
-
-    .pill{
-      flex:0 0 auto;
-      font-size:10px;
-      letter-spacing:.5px;
-      text-transform: uppercase;
-      padding: 4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-    }
-    .pill.common{ border-color: rgba(147,197,253,.25); color: var(--common); }
-    .pill.uncommon{ border-color: rgba(167,243,208,.25); color: var(--uncommon); }
-    .pill.rare{ border-color: rgba(196,181,253,.25); color: var(--rare); }
-    .pill.legendary{ border-color: rgba(251,191,36,.30); color: var(--legendary); }
-
-    .btn{
-      border:1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, rgba(17,26,51,.90), rgba(12,18,38,.90));
-      color: var(--ink);
-      padding: 8px 10px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-size:12px;
-      transition: transform .06s ease, border-color .15s ease, background .15s ease;
-      white-space:nowrap;
-    }
-    .btn:hover{ border-color: rgba(125,211,252,.35); background: linear-gradient(180deg, rgba(17,26,51,.98), rgba(12,18,38,.98)); }
-    .btn:active{ transform: translateY(1px); }
-    .btn:focus{ outline:none; box-shadow: var(--focus); }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; }
-    .btnSmall{ padding: 6px 9px; border-radius: 10px; font-size: 12px; background: rgba(0,0,0,.18); }
-
-    .rightCard{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-      transform: translateZ(0);
-    }
-    .rightCardInner{ padding: 18px; position:relative; }
-
-    .rightCard.shake{ animation: shake 240ms ease-in-out; }
-    @keyframes shake{
-      0%{ transform: translateX(0); }
-      20%{ transform: translateX(-6px); }
-      40%{ transform: translateX(6px); }
-      60%{ transform: translateX(-4px); }
-      80%{ transform: translateX(4px); }
-      100%{ transform: translateX(0); }
-    }
-
-    .sceneTitle{ font-weight:900; letter-spacing:.4px; margin:0 0 8px 0; font-size: 16px; }
-    .text{ margin:0; color: var(--ink); line-height:1.65; font-size: 15px; white-space: pre-wrap; }
-
-    .choices{ display:grid; grid-template-columns: 1fr; gap:10px; margin-top: 16px; }
-    @media (min-width: 820px){ .choices{ grid-template-columns: 1fr 1fr; } }
-
-    .choiceBtn{
-      display:flex; gap:10px; align-items:flex-start;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, rgba(17,26,51,.82), rgba(12,18,38,.82));
-      color: var(--ink);
-      cursor:pointer;
-      transition: transform .06s ease, border-color .15s ease, background .15s ease;
-      text-align:left;
-      min-height: 58px;
-    }
-    .choiceBtn:hover{ border-color: rgba(125,211,252,.35); background: linear-gradient(180deg, rgba(17,26,51,.95), rgba(12,18,38,.95)); }
-    .choiceBtn:active{ transform: translateY(1px); }
-    .choiceBtn:focus{ outline:none; box-shadow: var(--focus); }
-
-    .badge{
-      flex:0 0 auto; width: 30px; height:30px;
-      border-radius: 10px; display:grid; place-items:center;
-      font-weight:900;
-      background: rgba(125,211,252,.16);
-      border:1px solid rgba(125,211,252,.22);
-      color: var(--accent);
-      margin-top:2px;
-    }
-    .choiceText{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-    .choiceText .main{ font-weight:800; font-size: 14px; line-height:1.25; }
-    .choiceText .hint{ font-size: 12px; color: var(--muted); line-height:1.25; }
-
-    .log{
-      margin-top:12px;
-      padding:10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-      font-size: 12px;
-      line-height:1.5;
-      max-height: 180px;
-      overflow:auto;
-      white-space: pre-wrap;
-    }
-
-    .combat{
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      display:none;
-    }
-    .combat.show{ display:block; }
-
-    .combatTop{
-      display:flex; justify-content:space-between; gap:10px;
-      align-items:flex-start; flex-wrap:wrap; margin-bottom: 10px;
-    }
-    .combatTop h3{ margin:0; font-size: 13px; letter-spacing:.35px; text-transform: uppercase; color: var(--muted); }
-
-    .enemyCard{
-      display:flex; flex-direction:column; gap:6px;
-      padding: 10px; border:1px solid rgba(255,255,255,.10);
-      border-radius: 14px; background: rgba(255,255,255,.03);
-      min-width: 260px;
-      position: relative;
-      overflow: hidden;
-      transform: translateZ(0);
-    }
-    .enemyCard strong{ font-size: 14px; }
-    .enemyCard span{ font-size: 12px; color: var(--muted); }
-
-    .enemyImpact{
-      pointer-events:none;
-      position:absolute;
-      inset:-40%;
-      opacity:0;
-      filter: blur(10px);
-      transform: scale(0.92) rotate(8deg);
-      background: radial-gradient(closest-side at 45% 40%, rgba(125,211,252,.22), transparent 62%);
-      transition: opacity 120ms ease, transform 120ms ease;
-      mix-blend-mode: screen;
-    }
-    .enemyCard.impact .enemyImpact{
-      opacity:1;
-      transform: scale(1.05) rotate(8deg);
-    }
-    .enemyCard.impact{
-      animation: enemyPunch 160ms ease-in-out;
-    }
-    @keyframes enemyPunch{
-      0%{ transform: translateX(0); }
-      35%{ transform: translateX(-4px); }
-      70%{ transform: translateX(4px); }
-      100%{ transform: translateX(0); }
-    }
-
-    .critBadge{
-      pointer-events:none;
-      position:absolute;
-      top: 10px;
-      right: 10px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(251,191,36,.35);
-      background: rgba(251,191,36,.14);
-      color: var(--legendary);
-      font-weight: 900;
-      letter-spacing: .6px;
-      font-size: 11px;
-      opacity: 0;
-      transform: scale(.92);
-      transition: opacity 120ms ease, transform 120ms ease;
-      text-transform: uppercase;
-    }
-    .critBadge.show{
-      opacity: 1;
-      transform: scale(1);
-      animation: critFlash 420ms ease-in-out;
-    }
-    @keyframes critFlash{
-      0%{ filter: blur(0); }
-      40%{ filter: blur(.2px); }
-      100%{ filter: blur(0); }
-    }
-
-    .enemyHpRow{
-      display:grid; grid-template-columns: 44px 1fr 60px;
-      gap:8px; align-items:center;
-      font-size:11px; color: var(--muted);
-    }
-    .enemyHpBar{
-      position:relative; height:10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-    }
-    .enemyHpFill{
-      position:absolute; inset:0;
-      width:100%;
-      border-radius:999px;
-      background: linear-gradient(90deg, rgba(255,92,122,.92), rgba(255,211,108,.74));
-      transition: width 180ms ease;
-      box-shadow: 0 0 16px rgba(255,92,122,.14);
-    }
-
-    .combatDice{ display:flex; gap:12px; margin-bottom: 10px; flex-wrap:wrap; }
-    .dieBox{
-      background: rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 12px;
-      padding: 6px 10px;
-      min-width: 100px;
-      text-align:center;
-    }
-    .dieLabel{ font-size: 10px; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; }
-    .dieNum{ font-size: 22px; font-weight:700; color: var(--accent); min-height:24px; }
-    .dieNum.enemy{ color: var(--danger); }
-
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      padding: 10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.55);
-      color: var(--ink);
-      font-size: 12px;
-      box-shadow: var(--shadow);
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .2s ease, transform .2s ease;
-      white-space: nowrap;
-      z-index: 50;
-    }
-    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-4px); }
-
-    .lootOverlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.42);
-      display:none;
-      place-items:center;
-      z-index: 60;
-      padding: 18px;
-    }
-    .lootOverlay.show{ display:grid; }
-    .lootCard{
-      width: min(580px, 96vw);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.24));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-    .lootCard .mist{ opacity:.30; }
-    .lootCardInner{ padding: 14px; position:relative; }
-    .lootHeader{
-      display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom: 10px;
-    }
-    .lootHeader h4{ margin:0; font-size: 13px; letter-spacing:.35px; text-transform: uppercase; color: var(--muted); }
-    .lootBody{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.20);
-      border-radius: 16px;
-      padding: 12px;
-      position:relative;
-      overflow:hidden;
-    }
-    .lootBody strong{ display:block; font-size: 16px; margin-bottom: 6px; }
-    .lootBody p{ margin:0; color: var(--muted); line-height:1.5; font-size: 13px; white-space: pre-wrap; }
-    .lootFooter{ margin-top: 12px; display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
-
-    .splitHint{
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border:1px dashed rgba(255,255,255,.16);
-      background: rgba(0,0,0,.14);
-      color: var(--muted);
-      font-size: 12px;
-      line-height:1.45;
-      display:none;
-    }
-
-    /* Start screen */
-    .startScreen{
-      position: fixed;
-      inset: 0;
-      display:none;
-      place-items:center;
-      z-index: 80;
-      padding: 18px;
-      background:
-        radial-gradient(900px 650px at 20% 15%, rgba(125,211,252,.14), transparent 62%),
-        radial-gradient(900px 650px at 70% 25%, rgba(255,92,122,.10), transparent 66%),
-        linear-gradient(180deg, rgba(6,7,10,.96), rgba(11,16,32,.96));
-      overflow:auto;
-    }
-    .startScreen.show{ display:grid; }
-
-    .startCard{
-      width: min(900px, 96vw);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.26));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
-    .startInner{ padding: 18px; position:relative; }
-    .startInner p{
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-      white-space: pre-wrap;
-      max-width: 92ch;
-    }
-    .startFooter{
-      margin-top: 14px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .startBtns{ display:flex; gap:8px; flex-wrap:wrap; }
-    .startNote{ color: var(--muted); font-size: 12px; }
-
-    /* Hide game until started */
-    .gameHidden{ display:none; }
-
-    /* Pixel icon canvas */
-    .pixIcon{
-      width: 22px;
-      height: 22px;
-      border-radius: 8px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      box-shadow: 0 6px 20px rgba(0,0,0,.35);
-      image-rendering: pixelated;
-      flex: 0 0 auto;
-    }
-  </style>
+</style>
 </head>
 
 <body>
-  <!-- Start Screen (intro moved here) -->
-  <div class="startScreen" id="startScreen" aria-label="Start screen">
-    <div class="startCard">
-      <div class="mist"></div>
-      <div class="startInner">
-        <h1>The Bridge</h1>
-        <p id="startIntroText"></p>
-        <div class="meta" style="margin-top:14px;">
-          <span class="tag">BUILD v7.1</span>
-          <span class="tag">Single page</span>
-          <span class="tag">Branching story</span>
-          <span class="tag">Dice combat (d20)</span>
-          <span class="tag">Enemy HP bar</span>
-          <span class="tag">Loot is one-shot</span>
-          <span class="tag">Post-combat Continue</span>
-          <span class="tag">Impact anim</span>
-          <span class="tag">CRIT badge</span>
-          <span class="tag">Legendary weapons</span>
-          <span class="tag">Ultra rare event</span>
-          <span class="tag">Pixel icons</span>
-        </div>
 
-        <div class="startFooter">
-          <div class="startNote" id="saveNote">Checking save...</div>
-          <div class="startBtns">
-            <button class="btn" id="startBtn">Start</button>
-            <button class="btn" id="startNewBtn" title="Starts a fresh run and clears save">New Run</button>
-          </div>
-        </div>
-      </div>
+<!-- INTRO -->
+<div class="startScreen" id="startScreen">
+  <div class="startCard">
+    <h1>The Bridge</h1>
+    <p id="introText"></p>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <button id="startBtn">Start</button>
+      <button id="resetBtn">Reset</button>
     </div>
   </div>
+</div>
 
-  <div class="wrap gameHidden" id="gameWrap">
-    <section class="grid" aria-label="Game UI">
-      <aside class="panel" aria-label="Player stats and inventory">
-        <div class="hudTitle">Status</div>
-        <div class="bars">
-          <div class="barRow">
-            <div>Health</div>
-            <div class="bar"><div id="hpFill" class="fill danger"></div></div>
-            <div id="hpTxt" style="text-align:right;">100</div>
-          </div>
-          <div class="barRow">
-            <div>Energy</div>
-            <div class="bar"><div id="enFill" class="fill warn"></div></div>
-            <div id="enTxt" style="text-align:right;">100</div>
-          </div>
-          <div class="barRow">
-            <div>Resolve</div>
-            <div class="bar"><div id="reFill" class="fill"></div></div>
-            <div id="reTxt" style="text-align:right;">50</div>
-          </div>
-        </div>
+<!-- GAME UI -->
+<div class="wrap">
+  <section class="grid">
+    <aside class="panel">
+      <h3>Status</h3>
+      <div id="stats"></div>
 
-        <div class="invGrid">
-          <div class="box">
-            <div class="boxTitle">
-              <span>Equipped weapon</span>
-              <span class="mono" id="weaponBadge"></span>
-            </div>
-            <div id="equippedBox"></div>
-          </div>
+      <h3>Inventory</h3>
+      <div id="inventory"></div>
+    </aside>
 
-          <div class="box">
-            <div class="boxTitle">
-              <span>Backpack</span>
-              <span class="mono" id="carryBadge"></span>
-            </div>
-            <div id="backpackBox"></div>
-          </div>
-
-          <div class="box">
-            <div class="boxTitle">
-              <span>Supplies</span>
-              <span class="mono">Use wisely</span>
-            </div>
-            <div id="suppliesBox"></div>
-          </div>
-
-          <div class="box">
-            <div class="boxTitle">
-              <span>Controls</span>
-              <span class="mono">autosave</span>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn btnSmall" id="restartBtn">Restart</button>
-              <button class="btn btnSmall" id="clearSaveBtn">Reset save</button>
-              <button class="btn btnSmall" id="toggleHardBtn">Hard mode: Off</button>
-              <button class="btn btnSmall" id="showIntroBtn" title="Show intro screen again">Intro</button>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <main class="rightCard" id="storyCard" aria-label="Story and choices">
-        <div class="mist"></div>
-        <div class="rightCardInner">
-          <h2 class="sceneTitle" id="sceneTitle">Loading...</h2>
-          <p class="text" id="sceneText"></p>
-
-          <div class="combat" id="combatBox" aria-label="Combat box">
-            <div class="combatTop">
-              <h3>Combat</h3>
-              <div class="enemyCard" id="enemyCard">
-                <div class="enemyImpact" id="enemyImpact"></div>
-                <div class="critBadge" id="critBadge">CRIT</div>
-
-                <strong id="enemyName">Enemy</strong>
-                <span id="enemyMeta">HP ?, AC ?, Threat ?</span>
-                <div class="enemyHpRow">
-                  <div>HP</div>
-                  <div class="enemyHpBar"><div id="enemyHpFill" class="enemyHpFill"></div></div>
-                  <div id="enemyHpTxt" style="text-align:right;">?</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="combatDice">
-              <div class="dieBox">
-                <div class="dieLabel">Your d20</div>
-                <div id="playerDie" class="dieNum">-</div>
-              </div>
-              <div class="dieBox">
-                <div class="dieLabel">Enemy d20</div>
-                <div id="enemyDie" class="dieNum enemy">-</div>
-              </div>
-              <div class="dieBox">
-                <div class="dieLabel">Last hit</div>
-                <div id="lastHit" class="dieNum" style="color:var(--ok);">-</div>
-              </div>
-            </div>
-
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn" id="attackBtn">Attack</button>
-              <button class="btn" id="focusBtn" title="Spend energy to gain accuracy">Focus</button>
-              <button class="btn" id="guardBtn" title="Reduce incoming damage this round">Guard</button>
-              <button class="btn" id="fleeBtn" title="Attempt to flee">Flee</button>
-            </div>
-            <div class="log" id="combatLog"></div>
-          </div>
-
-          <div class="splitHint" id="layoutHint"></div>
-
-          <div class="choices" id="choices"></div>
-          <div class="log" id="log"></div>
-        </div>
-      </main>
-    </section>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <div class="lootOverlay" id="lootOverlay" aria-label="Loot overlay">
-    <div class="lootCard" role="dialog" aria-modal="true">
-      <div class="mist"></div>
-      <div class="lootCardInner">
-        <div class="lootHeader">
-          <h4>Loot</h4>
-          <span id="lootPill" class="pill common">COMMON</span>
-        </div>
-        <div class="lootBody" id="lootBody">
-          <strong id="lootTitle">Item</strong>
-          <p id="lootDesc">Description</p>
-        </div>
-        <div class="lootFooter">
-          <button class="btn" id="lootOkBtn">Continue</button>
-        </div>
-      </div>
-    </div>
-  </div>
+    <main class="panel" id="story">
+      <h2 id="sceneTitle"></h2>
+      <p id="sceneText"></p>
+      <div id="combat"></div>
+      <div id="choices"></div>
+    </main>
+  </section>
+</div>
 
 <script>
 (function(){
-  "use strict";
+"use strict";
 
-  const STORAGE_KEY = "the_bridge_build_v7";
+const STORAGE_KEY = "the_bridge_1_0_8";
 
-  const INTRO = `Some places are built to last.
+const INTRO = `Some places are built to last.
 Some places are built to keep you.
 
 In the Village of Immortals, death is a myth you study like an old language.
@@ -695,2342 +147,1656 @@ Every year, two must cross the Bridge.
 
 The Bridge is stone, massive, and wrong.
 It looks suspended over nothing, but columns sink into fog like drowned towers.
-Its surface is so cold and rough it can make your head spin through your fingertips.
 
 Almost no one returns.
 Exactly one did, once: old, blind, deaf, and mute.
 
 Tonight, the Council speaks your name.`;
 
-  const $ = (id)=>document.getElementById(id);
-  const clamp = (n,a,b)=>Math.max(a, Math.min(b,n));
-  const randInt = (min,max)=>Math.floor(Math.random()*(max-min+1))+min;
-  const roll = (sides)=>randInt(1,sides);
+const $ = (id)=>document.getElementById(id);
+const clamp = (n,a,b)=>Math.max(a, Math.min(b,n));
+const randInt = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const roll = (sides)=>randInt(1,sides);
 
-  function toast(msg){
-    const el = $("toast");
-    el.textContent = msg;
-    el.classList.add("show");
-    window.setTimeout(()=>el.classList.remove("show"), 1400);
+function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+
+/* Inject extra CSS for combat cards, dice, shake, sprites */
+(function injectCss(){
+  const css = `
+  .muted{color:var(--muted)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .card{
+    border:1px solid var(--border);
+    background:rgba(0,0,0,.22);
+    border-radius:16px;
+    padding:12px;
+    margin-top:10px;
   }
-
-  function shakeStory(){
-    const card = $("storyCard");
-    if(!card) return;
-    card.classList.remove("shake");
-    void card.offsetWidth;
-    card.classList.add("shake");
-    window.setTimeout(()=>card.classList.remove("shake"), 320);
+  .choiceBtn{
+    width:100%;
+    text-align:left;
+    margin-top:10px;
+    padding:12px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    background:rgba(16,22,45,.9);
   }
-
-  function enemyImpact(){
-    const c = $("enemyCard");
-    if(!c) return;
-    c.classList.remove("impact");
-    void c.offsetWidth;
-    c.classList.add("impact");
-    window.setTimeout(()=>c.classList.remove("impact"), 220);
+  .choiceBtn:active{transform:translateY(1px)}
+  .hpBar{
+    height:10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.10);
   }
-
-  function showCritBadge(){
-    const b = $("critBadge");
-    if(!b) return;
-    b.classList.remove("show");
-    void b.offsetWidth;
-    b.classList.add("show");
-    window.setTimeout(()=>b.classList.remove("show"), 520);
+  .hpFill{
+    height:100%;
+    width:50%;
+    background:linear-gradient(90deg, rgba(125,211,252,.95), rgba(118,255,178,.85));
+    transition:width .2s ease;
   }
-
-  function setLayout(mode){
-    const b = document.body;
-    b.classList.remove("layout-wide","layout-claustrophobic","layout-hall","layout-inverted","layout-city");
-    const hint = $("layoutHint");
-    if(hint){
-      hint.style.display = "none";
-      hint.textContent = "";
-    }
-
-    function showHint(t){
-      if(!hint) return;
-      hint.style.display = "block";
-      hint.textContent = t;
-    }
-
-    if(mode==="wide"){
-      b.classList.add("layout-wide");
-      showHint("Distance returns. The fog behaves like an ocean that forgot its tide.");
-    }
-    if(mode==="claustrophobic"){
-      b.classList.add("layout-claustrophobic");
-      showHint("Space tightens. Sound gets trapped. Even your thoughts feel narrower.");
-    }
-    if(mode==="hall"){
-      b.classList.add("layout-hall");
-      showHint("Clean light. Procedural silence. The Bridge pretends it is only architecture.");
-    }
-    if(mode==="inverted"){
-      b.classList.add("layout-inverted");
-      showHint("Up and down lose authority. The Bridge stops pretending it is harmless stone.");
-    }
-    if(mode==="city"){
-      b.classList.add("layout-city");
-      showHint("A hanging silhouette of structures appears in the fog, like a city remembered, not built.");
-    }
+  .hpFill.danger{
+    background:linear-gradient(90deg, rgba(255,92,122,.95), rgba(255,211,108,.85));
   }
-
-  function rollDice(expr){
-    const m = String(expr).trim().match(/^(\d+)d(\d+)([+-]\d+)?$/i);
-    if(!m) return { total:0, detail:"0" };
-    const n = parseInt(m[1],10);
-    const d = parseInt(m[2],10);
-    const mod = m[3] ? parseInt(m[3],10) : 0;
-    let rolls = [];
-    let sum = 0;
-    for(let i=0;i<n;i++){ const r=roll(d); rolls.push(r); sum+=r; }
-    const total = sum + mod;
-    const detail = `${n}d${d}${mod? (mod>0? "+"+mod : mod):""} = [${rolls.join(", ")}]${mod? (mod>0? " + "+mod : " - "+Math.abs(mod)):""} => ${total}`;
-    return { total, detail };
+  .shake{animation:shk 220ms ease-in-out}
+  @keyframes shk{
+    0%{transform:translateX(0)}
+    20%{transform:translateX(-6px)}
+    40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(4px)}
+    100%{transform:translateX(0)}
   }
-
-  function animateDie(elId, finalVal, ms=520){
-    const el = $(elId);
-    if(!el) return;
-    const ticks = Math.max(8, Math.floor(ms/40));
-    let i = 0;
-    clearInterval(el._anim);
-    el._anim = setInterval(()=>{
-      el.textContent = randInt(1,20);
-      i++;
-      if(i>=ticks){
-        clearInterval(el._anim);
-        el.textContent = String(finalVal);
-      }
-    }, 40);
+  .diceBox{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .die{
+    min-width:96px;
+    padding:10px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04);
+    text-align:center;
   }
-
-  function rarityClass(r){
-    if(r==="legendary") return "legendary";
-    if(r==="rare") return "rare";
-    if(r==="uncommon") return "uncommon";
-    return "common";
+  .die .lbl{font-size:11px;color:var(--muted);text-transform:uppercase}
+  .die .num{font-size:24px;font-weight:800;margin-top:2px}
+  .num.enemy{color:var(--danger)}
+  .num.good{color:rgba(118,255,178,.95)}
+  .crit{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,211,108,.35);
+    background:rgba(255,211,108,.12);
+    color:rgba(255,211,108,.95);
+    font-weight:900;
+    letter-spacing:.6px;
+    text-transform:uppercase;
+    font-size:11px;
+    opacity:0;
+    transform:scale(.92);
+    transition:opacity .12s ease, transform .12s ease;
   }
-
-  const WEAPONS = {
-    iron_sword: { id:"iron_sword", name:"Iron Sword", desc:"Reliable steel. Familiar weight.", dmg:"1d8+1", hit:+2, dur:18, rarity:"common" },
-    fog_dagger: { id:"fog_dagger", name:"Fog Dagger", desc:"A thin blade colder than air.", dmg:"1d6+2", hit:+3, dur:14, rarity:"uncommon" },
-    stone_maul: { id:"stone_maul", name:"Stone Maul", desc:"Heavy, blunt, honest.", dmg:"1d12", hit:+1, dur:12, rarity:"uncommon" },
-    glass_sabre: { id:"glass_sabre", name:"Glass Sabre", desc:"Beautiful. Breaks like a promise.", dmg:"2d4+2", hit:+4, dur:8, rarity:"rare" },
-    council_needle: { id:"council_needle", name:"Council Needle", desc:"Not a weapon, a verdict.", dmg:"1d10+1", hit:+5, dur:10, rarity:"rare" },
-    bridgeheart_relic: { id:"bridgeheart_relic", name:"Bridgeheart Relic", desc:"A blade made from the Bridge's memory. It feels warm because it is not meant for you.", dmg:"2d10+2", hit:+6, dur:16, rarity:"legendary" },
-    crown_of_hunger: { id:"crown_of_hunger", name:"Crown of Hunger", desc:"A ring-blade that drinks uncertainty. Powerful, but it makes the Bridge curious about you.", dmg:"3d6+2", hit:+5, dur:12, rarity:"legendary" }
-  };
-
-  const ENEMIES = {
-    mist_mirror: { id:"mist_mirror", name:"Mist Mirror", desc:"Looks like you, with wrong timing.", hp:16, ac:13, dmg:"1d6+3", hit:+4, threat:2 },
-    stone_scribe:{ id:"stone_scribe", name:"Stone Scribe", desc:"Carves marks into stone using bone.", hp:22, ac:11, dmg:"1d10", hit:+2, threat:3 },
-    hollow_warden:{ id:"hollow_warden", name:"Hollow Warden", desc:"Armor with nobody inside. It still has authority.", hp:26, ac:12, dmg:"1d8+3", hit:+4, threat:3 },
-    toll_clerk:{ id:"toll_clerk", name:"The Toll Clerk", desc:"A human-shaped stamp. It tries to charge you for being real.", hp:20, ac:12, dmg:"1d8+2", hit:+3, threat:2 },
-    choir_column:{ id:"choir_column", name:"Choir of Columns", desc:"Not one enemy. A chorus that hits in rhythm.", hp:24, ac:11, dmg:"1d6+4", hit:+4, threat:3 }
-  };
-
-  /* Pixel icons (no external assets)
-     Each icon is a tiny grid using characters:
-     . = empty
-     1..5 = palette index
-  */
-  const ICONS = {
-    iron_sword: [
-      "....1.......",
-      "....1.......",
-      "...111......",
-      "....1.......",
-      "....1.......",
-      "....1.......",
-      "....1.......",
-      "....1.......",
-      "...222......",
-      "..22222.....",
-      "....2.......",
-      "....2......."
-    ],
-    fog_dagger: [
-      ".....1......",
-      "....11......",
-      "...11.......",
-      "..11........",
-      ".11.........",
-      ".1..........",
-      ".1..........",
-      ".1..........",
-      "..22........",
-      ".222........",
-      "..22........",
-      "............"
-    ],
-    stone_maul: [
-      "111111......",
-      "111111......",
-      "111111......",
-      "..22........",
-      "..22........",
-      "..22........",
-      "..22........",
-      "..22........",
-      "..22........",
-      "..22........",
-      "..22........",
-      "..22........"
-    ],
-    glass_sabre: [
-      "....1.......",
-      "...11.......",
-      "..1.1.......",
-      ".1..1.......",
-      "1...1.......",
-      "....1.......",
-      "....1.......",
-      "....1.......",
-      "...222......",
-      "..22222.....",
-      "....2.......",
-      "............"
-    ],
-    council_needle: [
-      ".....1......",
-      ".....1......",
-      ".....1......",
-      ".....1......",
-      ".....1......",
-      ".....1......",
-      ".....1......",
-      ".....1......",
-      "....222.....",
-      ".....2......",
-      ".....2......",
-      "............"
-    ],
-    bridgeheart_relic: [
-      "....1111....",
-      "...1.11.1...",
-      "..1..11..1..",
-      ".1...11...1.",
-      "1....11....1",
-      ".....11.....",
-      ".....11.....",
-      ".....11.....",
-      "...222222...",
-      "..22222222..",
-      "....2222....",
-      ".....22....."
-    ],
-    crown_of_hunger: [
-      "..1....1....",
-      ".111..111...",
-      "1111111111..",
-      "..111111....",
-      "...11.11.....",
-      "....1.1......",
-      ".....1.......",
-      ".....1.......",
-      "...222222....",
-      "..22222222...",
-      "....2222.....",
-      ".....22......"
-    ],
-    fallback: [
-      "....1.......",
-      "...11.......",
-      "..1.1.......",
-      ".1..1.......",
-      "1...1.......",
-      "....1.......",
-      "....1.......",
-      "....1.......",
-      "...222......",
-      "..22222.....",
-      "....2.......",
-      "............"
-    ]
-  };
-
-  const DEFAULT_STATE = {
-    hp:100, energy:100, resolve:50,
-    hardMode:false,
-    supplies:{ bread:1, water:1, salve:0 },
-    weapons:["iron_sword"],
-    equipped:"iron_sword",
-    weaponDur:{},
-    flags:{
-      searchedSeam:false,
-      searchedDoor:false,
-      searchedPedestal:false,
-      tookAshCoin:false,
-      listenedArch:false,
-      ledgerSeen:false,
-      countedSteps:false,
-      brokeCount:false,
-      nameGiven:false,
-
-      rareReturnedSeen:false,
-      rareReturnedMet:false,
-
-      crownEventSeen:false,
-      signatureSeen:false,
-
-      secretSeed:0
-    },
-    scene:"intro_scene",
-    log:["The wind is still. In the Village, that is always the first omen."],
-    combat:null,
-    postCombat:null,
-    layout:"hall"
-  };
-
-  let S = load() || structuredClone(DEFAULT_STATE);
-  normalizeState();
-
-  function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){} }
-  function load(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return null;
-      return JSON.parse(raw);
-    }catch(e){ return null; }
+  .crit.show{opacity:1;transform:scale(1)}
+  .spriteBox{
+    width:96px;height:96px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.25);
+    display:grid;
+    place-items:center;
+    overflow:hidden;
   }
-
-  function normalizeState(){
-    if(!S.weaponDur) S.weaponDur = {};
-    if(!S.flags) S.flags = {};
-    if(!S.supplies) S.supplies = { bread:1, water:1, salve:0 };
-
-    const f = S.flags;
-    const boolKeys = [
-      "searchedSeam","searchedDoor","searchedPedestal","tookAshCoin","listenedArch",
-      "ledgerSeen","countedSteps","brokeCount","nameGiven",
-      "rareReturnedSeen","rareReturnedMet","crownEventSeen","signatureSeen"
-    ];
-    boolKeys.forEach(k=>{
-      if(typeof f[k] !== "boolean") f[k] = false;
-    });
-
-    if(!Array.isArray(S.weapons)) S.weapons = ["iron_sword"];
-    S.weapons.forEach(id=>{
-      if(typeof S.weaponDur[id] !== "number"){
-        S.weaponDur[id] = WEAPONS[id]?.dur ?? 0;
-      }
-    });
-    if(!S.weapons.includes(S.equipped)){
-      S.equipped = S.weapons[0] || "iron_sword";
-    }
-    if(!S.layout) S.layout = "hall";
+  .enemyTop{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-between;
   }
-
-  function addLog(line){
-    S.log.push(line);
-    if(S.log.length>160) S.log.shift();
-    renderLog();
+  .enemyMeta{font-size:12px;color:var(--muted);line-height:1.35}
+  .invItem{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:10px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.18);
+    margin-top:10px;
   }
-  function renderLog(){
-    const el = $("log");
-    if(!el) return;
-    el.textContent = S.log.slice(-18).join("\n");
-    el.scrollTop = el.scrollHeight;
-  }
+  .invLeft{display:flex;gap:10px;align-items:flex-start}
+  .rar{font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);color:var(--muted)}
+  .rar.common{border-color:rgba(147,197,253,.22);color:rgba(147,197,253,.95)}
+  .rar.uncommon{border-color:rgba(167,243,208,.22);color:rgba(167,243,208,.95)}
+  .rar.rare{border-color:rgba(196,181,253,.22);color:rgba(196,181,253,.95)}
+  .rar.legendary{border-color:rgba(255,211,108,.28);color:rgba(255,211,108,.95)}
+  .smallBtn{padding:8px 10px;border-radius:12px}
+  `;
+  const style = document.createElement("style");
+  style.textContent = css;
+  document.head.appendChild(style);
+})();
 
-  function setStat(key, delta){
-    if(key==="hp") S.hp = clamp(S.hp+delta,0,100);
-    if(key==="energy") S.energy = clamp(S.energy+delta,0,100);
-    if(key==="resolve") S.resolve = clamp(S.resolve+delta,0,100);
-    renderHud();
-    save();
-  }
+/* Pixel helpers stubs (Part 3 will replace with colored versions) */
+window.renderWeaponIcon = window.renderWeaponIcon || function(weaponId){
+  const d = document.createElement("div");
+  d.style.width = "34px";
+  d.style.height = "34px";
+  d.style.borderRadius = "10px";
+  d.style.border = "1px solid rgba(255,255,255,.12)";
+  d.style.background = "rgba(125,211,252,.10)";
+  d.style.display = "grid";
+  d.style.placeItems = "center";
+  d.style.fontWeight = "900";
+  d.style.color = "rgba(125,211,252,.9)";
+  d.textContent = (weaponId||"?")[0].toUpperCase();
+  return d;
+};
 
-  function getDur(id){
-    const base = WEAPONS[id]?.dur ?? 0;
-    const cur = S.weaponDur[id];
-    return (typeof cur === "number") ? cur : base;
-  }
-  function setDur(id, v){
-    const base = WEAPONS[id]?.dur ?? 0;
-    S.weaponDur[id] = clamp(v,0,base);
-  }
-  function decDur(id, amt){ setDur(id, getDur(id)-amt); }
+window.renderEnemySprite = window.renderEnemySprite || function(enemyId, mount){
+  mount.innerHTML = "";
+  const d = document.createElement("div");
+  d.style.width = "88px";
+  d.style.height = "88px";
+  d.style.borderRadius = "12px";
+  d.style.background = "rgba(255,92,122,.10)";
+  d.style.border = "1px solid rgba(255,255,255,.10)";
+  d.style.display = "grid";
+  d.style.placeItems = "center";
+  d.style.fontWeight = "900";
+  d.style.color = "rgba(255,92,122,.95)";
+  d.textContent = (enemyId||"ENEMY").slice(0,2).toUpperCase();
+  mount.appendChild(d);
+};
 
-  function weaponSnapshot(id){
-    const w = WEAPONS[id];
-    if(!w) return null;
-    return { ...w, curDur:getDur(id) };
-  }
-  function currentWeapon(){
-    return weaponSnapshot(S.equipped) || weaponSnapshot("iron_sword");
-  }
-  function weaponToHit(w){
-    const brokenPenalty = (w.curDur<=0) ? -3 : 0;
-    return (w.hit||0) + brokenPenalty;
-  }
-
-  function showLootCard(title, desc, rarity){
-    $("lootTitle").textContent = title;
-    $("lootDesc").textContent = desc;
-
-    const pill = $("lootPill");
-    const cls = rarityClass(rarity);
-    pill.className = "pill " + cls;
-    pill.textContent = cls.toUpperCase();
-
-    $("lootOverlay").classList.add("show");
-  }
-
-  $("lootOkBtn").addEventListener("click", ()=> $("lootOverlay").classList.remove("show"));
-
-  function gainWeapon(id){
-    if(!WEAPONS[id]) return;
-    if(!S.weapons.includes(id)){
-      S.weapons.push(id);
-      S.weaponDur[id] = WEAPONS[id].dur;
-      addLog(`You obtained: ${WEAPONS[id].name}.`);
-      showLootCard(
-        WEAPONS[id].name,
-        `${WEAPONS[id].desc}\n\nDMG ${WEAPONS[id].dmg} | HIT ${WEAPONS[id].hit>=0? "+"+WEAPONS[id].hit:WEAPONS[id].hit} | DUR ${WEAPONS[id].dur}`,
-        WEAPONS[id].rarity
-      );
-      renderHud();
-      save();
+function animateNumber(el, finalVal, durationMs, min, max){
+  const start = performance.now();
+  const span = max - min;
+  let raf = 0;
+  function tick(t){
+    const p = clamp((t - start)/durationMs, 0, 1);
+    if(p < 1){
+      const v = min + Math.floor(Math.random() * (span + 1));
+      el.textContent = String(v);
+      raf = requestAnimationFrame(tick);
     } else {
-      addLog(`You found ${WEAPONS[id].name} again, but you already carry it.`);
+      el.textContent = String(finalVal);
     }
   }
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+}
 
-  function equipWeapon(id){
-    if(!WEAPONS[id]) return;
-    if(!S.weapons.includes(id)) return;
-    S.equipped = id;
-    addLog(`Equipped: ${WEAPONS[id].name}.`);
-    toast("Weapon equipped.");
-    renderHud();
+const WEAPONS = {
+  iron_sword:{ id:"iron_sword", name:"Iron Sword", rarity:"common", dmg:"1d8+1", hit:+2, dur:18, desc:"Reliable steel. Familiar weight." },
+  oak_club:{ id:"oak_club", name:"Oak Club", rarity:"common", dmg:"1d10", hit:+1, dur:16, desc:"Crude, stubborn, honest." },
+  chipped_spear:{ id:"chipped_spear", name:"Chipped Spear", rarity:"common", dmg:"1d8+2", hit:+1, dur:14, desc:"Reach matters on narrow stone." },
+  river_knife:{ id:"river_knife", name:"River Knife", rarity:"common", dmg:"1d6+2", hit:+3, dur:12, desc:"Quick, cold, impatient." },
+
+  fog_dagger:{ id:"fog_dagger", name:"Fog Dagger", rarity:"uncommon", dmg:"1d6+3", hit:+3, dur:14, desc:"A thin blade colder than air." },
+  stone_maul:{ id:"stone_maul", name:"Stone Maul", rarity:"uncommon", dmg:"1d12", hit:+1, dur:12, desc:"Heavy, blunt, loud." },
+
+  glass_sabre:{ id:"glass_sabre", name:"Glass Sabre", rarity:"rare", dmg:"2d4+3", hit:+4, dur:8, desc:"Beautiful. Breaks like a promise." },
+  council_needle:{ id:"council_needle", name:"Council Needle", rarity:"rare", dmg:"1d10+2", hit:+5, dur:10, desc:"Not a weapon, a verdict." },
+
+  bridgeheart_relic:{ id:"bridgeheart_relic", name:"Bridgeheart Relic", rarity:"legendary", dmg:"2d10+2", hit:+6, dur:16, desc:"A blade made from the Bridge's memory." }
+};
+
+const COMMON_POOL = ["oak_club","chipped_spear","river_knife"];
+
+const ENEMIES = {
+  batling:{ id:"batling", name:"Batling", hp:14, ac:12, hit:+3, dmg:"1d6+2", threat:1, desc:"A winged mistake with teeth." },
+  mist_mirror:{ id:"mist_mirror", name:"Mist Mirror", hp:18, ac:13, hit:+4, dmg:"1d6+3", threat:2, desc:"Looks like you, with wrong timing." },
+  hollow_warden:{ id:"hollow_warden", name:"Hollow Warden", hp:26, ac:12, hit:+4, dmg:"1d8+3", threat:3, desc:"Armor with nobody inside. Still has authority." },
+  stone_scribe:{ id:"stone_scribe", name:"Stone Scribe", hp:22, ac:11, hit:+2, dmg:"1d10", threat:3, desc:"Carves marks into stone using bone." }
+};
+
+const DEFAULT = {
+  hp:100, energy:100, resolve:50,
+  supplies:{ bread:1, water:1, salve:0 },
+  weapons:[],
+  equipped:"",
+  weaponDur:{},
+  flags:{
+    tookSeamLoot:false,
+    tookDoorLoot:false,
+    tookPedestalLoot:false,
+    hasAshCoin:false,
+    listenedArch:false,
+    secretTried:false,
+    returnedSeen:false,
+    returnedMet:false
+  },
+  scene:"s_intro",
+  log:[],
+  combat:null,
+  postCombat:null
+};
+
+let S = load() || deepClone(DEFAULT);
+bootNormalize();
+
+function bootNormalize(){
+  $("introText").textContent = INTRO;
+
+  // Ensure two starting weapons: iron sword + random common
+  if(!Array.isArray(S.weapons)) S.weapons = [];
+  if(!S.weaponDur) S.weaponDur = {};
+  if(!S.supplies) S.supplies = { bread:1, water:1, salve:0 };
+  if(!S.flags) S.flags = deepClone(DEFAULT.flags);
+
+  if(S.weapons.length === 0){
+    const second = COMMON_POOL[randInt(0, COMMON_POOL.length-1)];
+    S.weapons = ["iron_sword", second];
+    S.equipped = "iron_sword";
+    S.weaponDur["iron_sword"] = WEAPONS.iron_sword.dur;
+    S.weaponDur[second] = WEAPONS[second].dur;
+    S.log = ["The wind is still. In the Village, that is always the first omen."];
     save();
   }
 
-  function gainSupply(kind, qty, note){
-    S.supplies[kind] = (S.supplies[kind]||0) + qty;
-    addLog(note || `You gained ${kind} x${qty}.`);
-    const nice = kind[0].toUpperCase() + kind.slice(1);
-    showLootCard(`${nice} x${qty}`, note || "Supplies found.", "common");
-    renderHud(); save();
+  if(!S.equipped || !S.weapons.includes(S.equipped)){
+    S.equipped = S.weapons[0] || "iron_sword";
   }
+  S.weapons.forEach(id=>{
+    if(typeof S.weaponDur[id] !== "number"){
+      S.weaponDur[id] = WEAPONS[id] ? WEAPONS[id].dur : 0;
+    }
+  });
+}
 
-  function useBread(){
+/* Save / Load */
+function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+
+/* UI helpers */
+function addLog(line){
+  S.log.push(line);
+  if(S.log.length > 140) S.log.shift();
+  renderStats();
+  save();
+}
+
+function shakeStory(){
+  const st = $("story");
+  st.classList.remove("shake");
+  void st.offsetWidth;
+  st.classList.add("shake");
+  setTimeout(()=>st.classList.remove("shake"), 260);
+}
+
+function setStat(key, delta){
+  if(key==="hp") S.hp = clamp(S.hp+delta, 0, 100);
+  if(key==="energy") S.energy = clamp(S.energy+delta, 0, 100);
+  if(key==="resolve") S.resolve = clamp(S.resolve+delta, 0, 100);
+}
+
+function currentWeapon(){
+  const w = WEAPONS[S.equipped] || WEAPONS.iron_sword;
+  const curDur = typeof S.weaponDur[w.id] === "number" ? S.weaponDur[w.id] : w.dur;
+  return { ...w, curDur };
+}
+function weaponToHit(w){
+  const broken = (w.curDur<=0) ? -3 : 0;
+  return (w.hit||0) + broken;
+}
+function decDur(id, amt){
+  const w = WEAPONS[id];
+  if(!w) return;
+  const base = w.dur;
+  const cur = typeof S.weaponDur[id] === "number" ? S.weaponDur[id] : base;
+  S.weaponDur[id] = clamp(cur-amt, 0, base);
+}
+
+/* Render stats and inventory */
+function renderStats(){
+  const stats = $("stats");
+  const inv = $("inventory");
+
+  const w = currentWeapon();
+  const toHit = weaponToHit(w);
+
+  stats.innerHTML = `
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div><strong>Health</strong> <span class="muted">${S.hp}/100</span></div>
+      </div>
+      <div class="hpBar"><div class="hpFill danger" style="width:${S.hp}%"></div></div>
+
+      <div style="height:10px"></div>
+
+      <div class="row" style="justify-content:space-between">
+        <div><strong>Energy</strong> <span class="muted">${S.energy}/100</span></div>
+      </div>
+      <div class="hpBar"><div class="hpFill" style="width:${S.energy}%"></div></div>
+
+      <div style="height:10px"></div>
+
+      <div class="row" style="justify-content:space-between">
+        <div><strong>Resolve</strong> <span class="muted">${S.resolve}/100</span></div>
+      </div>
+      <div class="hpBar"><div class="hpFill" style="width:${S.resolve}%"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div><strong>Supplies</strong></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="smallBtn" id="useBread">Bread x${S.supplies.bread||0}</button>
+        <button class="smallBtn" id="useWater">Water x${S.supplies.water||0}</button>
+        <button class="smallBtn" id="useSalve">Salve x${S.supplies.salve||0}</button>
+      </div>
+      <div class="muted" style="margin-top:8px;font-size:12px;line-height:1.4">
+        Bread restores energy and a bit of resolve. Water restores health. Salve is emergency healing.
+      </div>
+    </div>
+
+    <div class="card">
+      <div><strong>Recent</strong></div>
+      <div class="muted" style="white-space:pre-wrap;font-size:12px;line-height:1.5;margin-top:8px">${S.log.slice(-10).join("\n")}</div>
+    </div>
+  `;
+
+  inv.innerHTML = `
+    <div class="card">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <strong>Equipped</strong><div class="muted" style="font-size:12px;margin-top:2px">${w.name}</div>
+          <div class="muted" style="font-size:12px;margin-top:6px">DMG ${w.dmg} | HIT ${toHit>=0? "+"+toHit:toHit} | DUR ${w.curDur}</div>
+        </div>
+        <span class="rar ${w.rarity}">${w.rarity}</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div><strong>Weapons</strong> <span class="muted" style="font-size:12px">(${S.weapons.length})</span></div>
+      <div id="weaponList"></div>
+    </div>
+  `;
+
+  const list = $("weaponList");
+  list.innerHTML = "";
+  S.weapons.forEach(id=>{
+    const ww = WEAPONS[id];
+    if(!ww) return;
+    const cur = typeof S.weaponDur[id] === "number" ? S.weaponDur[id] : ww.dur;
+    const isEq = (id === S.equipped);
+
+    const row = document.createElement("div");
+    row.className = "invItem";
+
+    const left = document.createElement("div");
+    left.className = "invLeft";
+
+    const icon = window.renderWeaponIcon(id);
+
+    const text = document.createElement("div");
+    text.innerHTML = `
+      <div class="row" style="gap:8px">
+        <strong>${ww.name}${isEq ? " (equipped)" : ""}</strong>
+        <span class="rar ${ww.rarity}">${ww.rarity}</span>
+      </div>
+      <div class="muted" style="font-size:12px;margin-top:4px;line-height:1.35">
+        DMG ${ww.dmg} | HIT ${ww.hit>=0? "+"+ww.hit:ww.hit} | DUR ${cur}
+      </div>
+      <div class="muted" style="font-size:12px;margin-top:4px;line-height:1.35">${ww.desc}</div>
+    `;
+    left.appendChild(icon);
+    left.appendChild(text);
+
+    const right = document.createElement("div");
+    right.className = "row";
+    right.style.justifyContent = "flex-end";
+
+    const btn = document.createElement("button");
+    btn.className = "smallBtn";
+    btn.textContent = isEq ? "Equipped" : "Equip";
+    btn.disabled = isEq;
+    btn.addEventListener("click", ()=>{
+      S.equipped = id;
+      addLog(`Equipped: ${ww.name}.`);
+      save();
+      renderAll();
+    });
+
+    right.appendChild(btn);
+    row.appendChild(left);
+    row.appendChild(right);
+    list.appendChild(row);
+  });
+
+  $("useBread").disabled = (S.supplies.bread||0) <= 0;
+  $("useWater").disabled = (S.supplies.water||0) <= 0;
+  $("useSalve").disabled = (S.supplies.salve||0) <= 0;
+
+  $("useBread").onclick = ()=>{
     if((S.supplies.bread||0)<=0) return;
     S.supplies.bread--;
     setStat("energy", +18);
     setStat("resolve", +4);
     addLog("You eat bread. Your body remembers being mortal.");
-    renderHud(); save();
-  }
-  function useWater(){
+    save(); renderAll();
+  };
+  $("useWater").onclick = ()=>{
     if((S.supplies.water||0)<=0) return;
     S.supplies.water--;
     setStat("hp", +16);
     setStat("energy", +8);
     addLog("You drink water. Stone feels less hungry.");
-    renderHud(); save();
-  }
-  function useSalve(){
+    save(); renderAll();
+  };
+  $("useSalve").onclick = ()=>{
     if((S.supplies.salve||0)<=0) return;
     S.supplies.salve--;
     setStat("hp", +28);
     addLog("You apply salve. Pain steps back.");
-    renderHud(); save();
-  }
-
-  /* Pixel icon renderer */
-  const ICON_PALETTES = {
-    common: ["rgba(0,0,0,0)","#dbe0ea","#aeb6c8","#7dd3fc","#76ffb2","#ffd36c"],
-    uncommon: ["rgba(0,0,0,0)","#dbe0ea","#aeb6c8","#a7f3d0","#7dd3fc","#76ffb2"],
-    rare: ["rgba(0,0,0,0)","#dbe0ea","#aeb6c8","#c4b5fd","#7dd3fc","#ffd36c"],
-    legendary: ["rgba(0,0,0,0)","#fff3c4","#fbbf24","#dbe0ea","#7dd3fc","#ffcf66"]
+    save(); renderAll();
   };
+}
 
-  function drawPixelIcon(canvas, weaponId, rarity){
-    const map = ICONS[weaponId] || ICONS.fallback;
-    const pal = ICON_PALETTES[rarityClass(rarity)] || ICON_PALETTES.common;
-    const gridH = map.length;
-    const gridW = map[0].length;
-
-    const scale = 2; // internal scale for crispness
-    const px = 2 * scale;
-
-    canvas.width = gridW * px;
-    canvas.height = gridH * px;
-
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // subtle vignette background
-    ctx.fillStyle = "rgba(0,0,0,.18)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    // draw pixels
-    for(let y=0;y<gridH;y++){
-      const row = map[y];
-      for(let x=0;x<gridW;x++){
-        const ch = row[x];
-        if(ch==="." ) continue;
-        const idx = Math.max(0, Math.min(pal.length-1, parseInt(ch,10)));
-        ctx.fillStyle = pal[idx] || pal[1];
-        ctx.fillRect(x*px, y*px, px, px);
-      }
-    }
-
-    // border highlight
-    ctx.strokeStyle = "rgba(255,255,255,.12)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(1,1,canvas.width-2,canvas.height-2);
+/* Loot helpers */
+function gainWeapon(id){
+  const w = WEAPONS[id];
+  if(!w) return;
+  if(S.weapons.includes(id)){
+    addLog(`You found ${w.name} again, but you already carry it.`);
+    return;
   }
+  S.weapons.push(id);
+  S.weaponDur[id] = w.dur;
+  addLog(`You obtained: ${w.name}.`);
+}
+function gainSupply(kind, qty, line){
+  S.supplies[kind] = (S.supplies[kind]||0) + qty;
+  addLog(line || `You gained ${kind} x${qty}.`);
+}
 
-  function makeCardRow({title, subtitle, rarity, rightButtons, iconWeaponId}){
-    const row = document.createElement("div");
-    const r = rarityClass(rarity);
-    row.className = `cardRow ${
-      r==="legendary" ? "r-legendary" :
-      (r==="rare" ? "r-rare" : (r==="uncommon" ? "r-uncommon" : "r-common"))
-    }`;
+/* Scenes */
+const SCENES = {
+  s_intro:{
+    title:"The Village That Outlasts Meaning",
+    text:()=>`Urgency is treated as a mortal habit.\n\nThe Council enforces one rule:\nEvery year, two must cross the Bridge.\n\nTonight, your name is chosen.`,
+    choices:[
+      { label:"Go to the Council Hall", hint:"Your life becomes a procedure.", to:"s_council" }
+    ]
+  },
 
-    const glow = document.createElement("div");
-    glow.className = "rarityGlow";
-    row.appendChild(glow);
-
-    const left = document.createElement("div");
-    left.className = "itemLeft";
-
-    const top = document.createElement("div");
-    top.className = "itemTop";
-
-    if(iconWeaponId){
-      const cv = document.createElement("canvas");
-      cv.className = "pixIcon";
-      cv.width = 44;
-      cv.height = 44;
-      drawPixelIcon(cv, iconWeaponId, rarity);
-      top.appendChild(cv);
-    }
-
-    const strong = document.createElement("strong");
-    strong.textContent = title;
-
-    const pill = document.createElement("span");
-    pill.className = "pill " + rarityClass(rarity);
-    pill.textContent = rarityClass(rarity).toUpperCase();
-
-    top.appendChild(strong);
-    top.appendChild(pill);
-
-    const sub = document.createElement("div");
-    sub.className = "itemSub";
-    sub.textContent = subtitle;
-
-    left.appendChild(top);
-    left.appendChild(sub);
-
-    const right = document.createElement("div");
-    right.style.display="flex";
-    right.style.gap="6px";
-    right.style.flexWrap="wrap";
-    right.style.alignItems="center";
-
-    (rightButtons||[]).forEach(b=>{
-      const btn = document.createElement("button");
-      btn.className = "btn btnSmall";
-      btn.type = "button";
-      btn.textContent = b.label;
-      if(b.disabled) btn.disabled = true;
-      btn.addEventListener("click", b.onClick);
-      right.appendChild(btn);
-    });
-
-    row.appendChild(left);
-    row.appendChild(right);
-    return row;
-  }
-
-  function renderHud(){
-    $("hpFill").style.width = S.hp + "%";
-    $("enFill").style.width = S.energy + "%";
-    $("reFill").style.width = S.resolve + "%";
-    $("hpTxt").textContent = S.hp;
-    $("enTxt").textContent = S.energy;
-    $("reTxt").textContent = S.resolve;
-    $("toggleHardBtn").textContent = `Hard mode: ${S.hardMode ? "On" : "Off"}`;
-
-    const w = currentWeapon();
-    const toHit = weaponToHit(w);
-    $("weaponBadge").textContent = `DMG ${w.dmg}  HIT ${toHit>=0? "+"+toHit:toHit}`;
-
-    const eq = $("equippedBox");
-    eq.innerHTML = "";
-    eq.appendChild(makeCardRow({
-      title: w.name,
-      subtitle: `${w.desc} | DMG ${w.dmg} | HIT ${toHit>=0? "+"+toHit:toHit} | DUR ${w.curDur}`,
-      rarity: w.rarity,
-      rightButtons:[],
-      iconWeaponId: w.id
-    }));
-
-    const bag = $("backpackBox");
-    bag.innerHTML = "";
-    const owned = S.weapons.map(id=>weaponSnapshot(id)).filter(Boolean);
-    $("carryBadge").textContent = `${owned.length} weapons`;
-    owned.forEach(wep=>{
-      const isEq = wep.id === S.equipped;
-      bag.appendChild(makeCardRow({
-        title: wep.name + (isEq ? " (equipped)" : ""),
-        subtitle: `DMG ${wep.dmg} | HIT ${weaponToHit(wep)>=0? "+"+weaponToHit(wep):weaponToHit(wep)} | DUR ${wep.curDur}`,
-        rarity: wep.rarity,
-        iconWeaponId: wep.id,
-        rightButtons: isEq ? [] : [{ label:"Equip", onClick:()=>equipWeapon(wep.id) }]
-      }));
-    });
-
-    const sup = $("suppliesBox");
-    sup.innerHTML = "";
-    sup.appendChild(makeCardRow({
-      title:`Bread x${S.supplies.bread||0}`,
-      subtitle:"Restore energy and some resolve.",
-      rarity:"common",
-      rightButtons:[{ label:"Use", disabled:(S.supplies.bread||0)<=0, onClick:useBread }]
-    }));
-    sup.appendChild(makeCardRow({
-      title:`Water x${S.supplies.water||0}`,
-      subtitle:"Restore health and energy.",
-      rarity:"common",
-      rightButtons:[{ label:"Use", disabled:(S.supplies.water||0)<=0, onClick:useWater }]
-    }));
-    sup.appendChild(makeCardRow({
-      title:`Salve x${S.supplies.salve||0}`,
-      subtitle:"Emergency healing.",
-      rarity:"uncommon",
-      rightButtons:[{ label:"Use", disabled:(S.supplies.salve||0)<=0, onClick:useSalve }]
-    }));
-  }
-
-  function shouldTriggerReturnedOne(nextSceneId){
-    if(S.flags.rareReturnedSeen) return false;
-
-    const eligibleScenes = new Set([
-      "mirror_gallery",
-      "counting_steps",
-      "inversion_span",
-      "toll_station",
-      "final_approach"
-    ]);
-    if(!eligibleScenes.has(nextSceneId)) return false;
-
-    const resolveGate = S.resolve >= 72;
-    const listened = S.flags.listenedArch === true;
-    const selfConsistent = (S.flags.tookAshCoin === false) || (S.flags.tookAshCoin === true && S.flags.nameGiven === true);
-
-    if(!(resolveGate && listened && selfConsistent)) return false;
-
-    const chance = 260;
-    return randInt(1, chance) === 1;
-  }
-
-  /* Scenes are unchanged from your v7 build */
-  const SCENES = (function(){
-    return window.__BRIDGE_SCENES__ || null;
-  })();
-
-  // Inject scenes: your original SCENES object copied verbatim (kept intact)
-  // NOTE: This is your SCENES from the posted build, unchanged.
-  const SCENES_LOCAL = {
-    intro_scene:{
-      layout:"hall",
-      title:"The Village That Outlasts Meaning",
-      text:(s)=>`The Village of Immortals does not rot. Roofs do not leak. Arguments do not end.
-Urgency is treated as a mortal habit.
-
-To keep the village from overflowing, the Council maintains the Rule:
-Every year, two cross the Bridge.
-
-Tonight, your name is chosen.`,
-      choices:[
-        { label:"Go to the Council Hall", hint:"Your life becomes a procedure.", to:"council_hall" }
-      ]
-    },
-
-    council_hall:{
-      layout:"hall",
-      title:"Council Hall, Under Perfect Lamps",
-      text:(s)=>`The Council speaks calmly, like the Rule is weather.
-Two will cross. No exceptions.
-
-A custodian stands aside, fingers scarred.
-The other chosen stands near the door, too quiet, as if saving words for a different life.
-
-The Bridge is not described as danger.
-It is described as maintenance.`,
-      choices:[
-        { label:"Follow procedure to the gate", hint:"No more delays.", to:"gate" },
-        { label:"Attempt the impossible objection", hint:"Tiny chance of a hidden ending.", to:"secret_roll" }
-      ]
-    },
-
-    secret_roll:{
-      layout:"hall",
-      title:"The Impossible Probability",
-      text:(s)=>`You challenge the Rule.
-The room tilts, as if reality is deciding whether you are allowed to be unique.
-
-Hold your ground.
-The odds are absurd.
-That is the point.`,
-      choices:[
-        { label:"Hold your ground", hint:"Ridiculously low chance to skip the journey.", to:"secret_result",
-          effect:(st)=>{
-            const base = 220;
-            const bonus = Math.floor((st.resolve-50)/4);
-            const target = Math.max(70, base - bonus);
-            target && (st.flags.secretSeed = randInt(1,target));
-            addLog("You did not blink.");
-          }
-        },
-        { label:"Back down", hint:"Return to procedure.", to:"council_hall", effect:(st)=>setStat("resolve",-3) }
-      ]
-    },
-
-    secret_result:{
-      layout:"hall",
-      title:"Secret Outcome",
-      text:(s)=>{
-        if(s.flags.secretSeed===1){
-          return `The Rule bends.
-An exception.
-
-You are dismissed.
-
-SECRET ENDING UNLOCKED
-You avoided the journey.
-
-Final status
-Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}`;
-        }
-        return `Nothing happens. The Village swallows anomalies.
-Procedure resumes.`;
+  s_council:{
+    title:"Council Hall, Under Perfect Lamps",
+    text:()=>`Two will cross. No exceptions.\n\nA custodian watches you like a bracket in a sentence.\nThe other chosen stands near the door, too quiet.\n\nThe Bridge is not described as danger.\nIt is described as maintenance.`,
+    choices:[
+      { label:"Follow procedure to the gate", hint:"No more delays.", to:"s_gate",
+        effect:()=>{ setStat("resolve", +2); addLog("You swallow the urge to argue with eternity."); }
       },
-      choices:[
-        { label:"Continue", hint:"Normal path.", to:"gate" },
-        { label:"Restart", hint:"Clean run.", to:"__restart" }
-      ]
-    },
-
-    gate:{
-      layout:"wide",
-      title:"The Gate and the Fog",
-      text:(s)=>`Night. The gate opens. The Bridge waits beyond it, swallowing moonlight.
-The stone is cold enough to make your head spin through your palm.
-
-Columns disappear into fog below, thick as drowned cotton.
-The Bridge looks suspended over nothing, but your feet know better.
-
-A sound arrives.
-Maybe a bell.
-Maybe blood.`,
-      choices:[
-        { label:"Step onto the Bridge", hint:"Forward is the only direction that matters.", to:"first_steps",
-          effect:(st)=>setStat("energy",-2)
-        }
-      ]
-    },
-
-    first_steps:{
-      layout:"wide",
-      title:"Act I: The Bridge Learns Your Name",
-      text:(s)=>`The Bridge is longer than it should be. Fog lies to distance.
-At first, it behaves like stone.
-
-Then your skin notices small inconsistencies:
-a seam that feels warmer than the rest,
-a drip of water where no roof exists,
-a faint humming like speech held behind teeth.
-
-Farther ahead, an impossible door stands on bare stone.
-Beyond that, an arch rises out of the fog as if the Bridge grew a rib.`,
-      choices:[
-        { label:"Search the stone seams", hint:"One time only loot.", to:"seam_loot",
-          when:(st)=>!st.flags.searchedSeam,
-          effect:(st)=>{ setStat("energy",-4); addLog("You search the seams. The stone feels like a locked drawer."); }
-        },
-        { label:"Approach the impossible door", hint:"A shortcut with a price.", to:"door_scene",
-          effect:(st)=>{ setStat("energy",-3); addLog("You approach the door. The handle looks warm, which is suspicious."); }
-        },
-        { label:"Walk under the arch", hint:"Listen, and the Bridge answers back.", to:"arch_scene",
-          effect:(st)=>{ setStat("energy",-2); addLog("You step toward the arch. The fog narrows, as if to hear you."); }
-        },
-        { label:"Push forward into thicker fog", hint:"Higher risk, faster progress.", to:"fog_run",
-          effect:(st)=>{ setStat("energy",-5); addLog("You move faster. The Bridge corrects you."); }
-        }
-      ]
-    },
-
-    seam_loot:{
-      layout:"wide",
-      title:"Stone Seams",
-      text:(s)=>`Your fingers slide into cracks where blocks meet.
-The stone is colder inside, like it keeps secrets refrigerated.
-
-You unwrap a cloth bundle slowly.
-The fabric is old, but not decayed.
-Immortal fabric, you think.
-That alone feels wrong.`,
-      choices:[
-        { label:"Take the bundle", hint:"After taking it, this option disappears.", to:"first_steps",
-          effect:(st)=>{
-            st.flags.searchedSeam = true;
-            const r = randInt(1,100);
-            if(r<=22){
-              gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
-              setStat("resolve", +4);
-            }else if(r<=58){
-              gainSupply("water", 1, "You found water sealed in a small flask. It tastes like a different year.");
-            }else if(r<=85){
-              gainSupply("bread", 1, "You found bread that tastes like yesterday, stubbornly fresh.");
-            }else{
-              setStat("hp",-7);
-              shakeStory();
-              addLog("The cloth cuts you like paper. The Bridge dislikes theft.");
-            }
-          }
-        }
-      ]
-    },
-
-    door_scene:{
-      layout:"claustrophobic",
-      title:"The Door Standing Alone",
-      text:(s)=>`A door on bare stone. No walls. No house. Just a door.
-Carved into it: ENTER AND FORGET.
-
-The air around it feels warmer.
-That is always a trap.
-
-On the other side, you can almost hear a room breathing.`,
-      choices:[
-        { label:"Search around the doorframe", hint:"One time only loot.", to:"door_loot",
-          when:(st)=>!st.flags.searchedDoor,
-          effect:(st)=>{ setStat("energy",-3); addLog("You search around the door. The fog watches your hands."); }
-        },
-        { label:"Open the door", hint:"Short path. Long consequences.", to:"forget_ending",
-          effect:(st)=>{ setStat("resolve",-6); addLog("Your hand touches the handle. Warmth is a crime here."); }
-        },
-        { label:"Refuse and move on", hint:"Harder path. Cleaner self.", to:"arch_scene",
-          effect:(st)=>{ setStat("resolve", +5); addLog("You refuse the anesthetic. The Bridge seems disappointed."); }
-        }
-      ]
-    },
-
-    door_loot:{
-      layout:"claustrophobic",
-      title:"Around the Door",
-      text:(s)=>`Near the frame, a thin metal sliver is embedded in stone.
-It is painfully sharp, like it wants to make decisions for you.`,
-      choices:[
-        { label:"Keep it", hint:"After taking it, this option disappears.", to:"door_scene",
-          effect:(st)=>{
-            st.flags.searchedDoor = true;
-            const r = randInt(1,100);
-            if(r<=12){
-              gainWeapon("council_needle");
-              setStat("resolve", +6);
-            }else if(r<=45){
-              gainWeapon("glass_sabre");
-              setStat("resolve", +4);
-            }else{
-              setStat("hp",-8);
-              shakeStory();
-              addLog("The metal bites you like a verdict. The Bridge dislikes greed.");
-            }
-          }
-        }
-      ]
-    },
-
-    arch_scene:{
-      layout:"wide",
-      title:"The Listening Arch",
-      text:(s)=>`The arch rises from nothing, a rib of stone over the path.
-Marks cover it. Not writing, not quite.
-The kind of shapes you see when you press your face against your eyelids.
-
-The hum you heard earlier starts to match your breathing.
-
-Under the arch, the Bridge becomes a question.`,
-      choices:[
-        { label:"Stand under it and listen", hint:"One time only. Knowledge can hurt.", to:"arch_listen",
-          when:(st)=>!st.flags.listenedArch,
-          effect:(st)=>{ st.flags.listenedArch = true; setStat("energy",-2); addLog("You listen. The fog shifts like a throat."); }
-        },
-        { label:"Walk through without listening", hint:"Safer, but you remain blind.", to:"column_forest",
-          effect:(st)=>{ setStat("resolve",-1); addLog("You refuse the answer. Sometimes that is wisdom."); }
-        }
-      ]
-    },
-
-    arch_listen:{
-      layout:"claustrophobic",
-      title:"A Voice With No Mouth",
-      text:(s)=>`A whisper arrives from inside the stone.
-
-Not words.
-Instructions.
-
-The Bridge tells you, gently, that it does not kill travelers.
-It sorts them.
-It corrects the village.
-It balances a ledger nobody remembers signing.
-
-The idea settles into your ribs like cold iron.`,
-      choices:[
-        { label:"Accept the knowledge", hint:"Resolve up, but your body pays.", to:"column_forest",
-          effect:(st)=>{ setStat("resolve", +10); setStat("hp",-6); shakeStory(); addLog("Your heartbeat stutters. Knowledge is heavy."); }
-        },
-        { label:"Reject it", hint:"Lighter mind, heavier risk.", to:"column_forest",
-          effect:(st)=>{ setStat("resolve",-6); addLog("You reject it. The whisper laughs without sound."); }
-        }
-      ]
-    },
-
-    fog_run:{
-      layout:"wide",
-      title:"Faster Than Meaning",
-      text:(s)=>`You move fast enough to feel almost mortal.
-The fog resists. The Bridge dislikes being treated like a simple road.
-
-Ahead, the columns beneath become visible, briefly, as the mist thins:
-massive stone trunks disappearing into infinite white.
-
-Something moves between them.`,
-      choices:[
-        { label:"Slow down and look", hint:"Attention is safer than speed.", to:"column_forest",
-          effect:(st)=>{ setStat("energy",-1); addLog("You slow down. The Bridge seems to inhale."); }
-        },
-        { label:"Keep running", hint:"High risk. You may be corrected.", to:"punish_scene",
-          effect:(st)=>{ setStat("energy",-4); addLog("You keep running. The fog tightens around your ankles."); }
-        }
-      ]
-    },
-
-    punish_scene:{
-      layout:"claustrophobic",
-      title:"Correction",
-      text:(s)=>`The Bridge does not shout.
-It corrects.
-
-Your foot catches a seam that was not there a second ago.
-Stone rises like a lip and bites your momentum.
-
-You fall.
-Not far.
-Enough.`,
-      choices:[
-        { label:"Get up, slower", hint:"Pain is punctuation here.", to:"column_forest",
-          effect:(st)=>{ setStat("hp",-10); shakeStory(); setStat("resolve",+3); addLog("Pain is the Bridge's punctuation."); }
-        }
-      ]
-    },
-
-    column_forest:{
-      layout:"wide",
-      title:"Act II: The Column Forest",
-      text:(s)=>`The fog thins in bands. In those bands, you see below the Bridge:
-columns, countless, like a forest of stone trunks.
-
-Some are carved with faces.
-Some are carved with hands.
-Most are carved with names.
-
-Then you notice something worse:
-some names are fresh.
-
-Ahead, the Bridge widens into a small platform with a broken pedestal.
-A coin of gray ash rests there, too clean to be real.`,
-      choices:[
-        { label:"Inspect the pedestal", hint:"One time only loot.", to:"pedestal_loot",
-          when:(st)=>!st.flags.searchedPedestal,
-          effect:(st)=>{ st.flags.searchedPedestal = true; setStat("energy",-2); addLog("The pedestal is chipped, like it survived an argument."); }
-        },
-        { label:"Take the ash coin", hint:"This can twist later scenes.", to:"take_coin",
-          when:(st)=>!st.flags.tookAshCoin,
-          effect:(st)=>{ st.flags.tookAshCoin = true; setStat("resolve",-2); addLog("The coin feels like absence pretending to be metal."); }
-        },
-        { label:"Move on", hint:"The Bridge continues.", to:"counting_steps",
-          effect:(st)=>{ setStat("resolve",+2); addLog("You move on. The Bridge respects restraint, sometimes."); }
-        }
-      ]
-    },
-
-    pedestal_loot:{
-      layout:"wide",
-      title:"Pedestal",
-      text:(s)=>`Inside the pedestal is a compartment.
-It is not hidden well. It is hidden politely.
-
-The Bridge wants you to find it.`,
-      choices:[
-        { label:"Open it", hint:"Gain supplies or a weapon.", to:"column_forest",
-          effect:(st)=>{
-            const r = randInt(1,100);
-            if(r<=18){
-              gainWeapon("fog_dagger");
-              setStat("resolve", +3);
-            }else if(r<=36){
-              gainWeapon("stone_maul");
-            }else if(r<=70){
-              gainSupply("salve", 1, "You found salve wrapped in cloth that smells faintly like pine.");
-            }else{
-              gainSupply("water", 1, "A flask. The water is still. That should not be possible.");
-            }
-          }
-        }
-      ]
-    },
-
-    take_coin:{
-      layout:"wide",
-      title:"The Ash Coin",
-      text:(s)=>`You take the coin.
-It does not weigh much.
-Yet you feel heavier, like you agreed to something.
-
-On the coin, a mark:
-a simple bridge shape, then a line through it.
-
-Cancel. Deny. Void.
-
-A bargaining tool, or a warning.`,
-      choices:[
-        { label:"Pocket it and continue", hint:"The Bridge will remember.", to:"counting_steps" }
-      ]
-    },
-
-    counting_steps:{
-      layout:"wide",
-      title:"Act II.5: The Counting",
-      text:(s)=>`The Bridge begins to count your steps.
-
-Not out loud.
-In your teeth.
-
-One.
-Two.
-Three.
-
-Then it stops.
-Then it starts again from one, as if the last few minutes were rejected.
-
-A straight run of stone ahead looks identical, yet your body insists it is a loop.
-
-A crack forms in the right wall of fog, like a seam in fabric.`,
-      choices:[
-        { label:"Count along", hint:"Obedience can become leverage.", to:"count_along",
-          effect:(st)=>{ st.flags.countedSteps = true; setStat("resolve",+4); addLog("You count. The Bridge seems pleased by your compliance."); }
-        },
-        { label:"Stop counting", hint:"Defiance risks a correction.", to:"break_count",
-          effect:(st)=>{ st.flags.brokeCount = true; setStat("resolve",+3); addLog("You stop counting. The fog tightens as if offended."); }
-        },
-        { label:"Touch the crack in the fog", hint:"A hidden ledger might exist.", to:"ledger_crack",
-          effect:(st)=>{ setStat("energy",-3); addLog("You touch the crack. The air feels paper thin."); }
-        },
-        { label:"Keep walking, ignore it all", hint:"Refuse the game.", to:"inversion_span",
-          effect:(st)=>{ setStat("energy",-2); addLog("You keep walking. The Bridge hates being ignored."); }
-        }
-      ]
-    },
-
-    count_along:{
-      layout:"claustrophobic",
-      title:"The Rhythm of Approval",
-      text:(s)=>`Counting becomes easier than thinking.
-That is the danger.
-
-The Bridge starts to synchronize with you:
-your breath, your pace, your pulse.
-
-For a moment, the fog parts.
-You glimpse a figure far ahead, perfectly still.`,
-      choices:[
-        { label:"Approach the still figure", hint:"This may lead to something that should not exist.", to:"mirror_gallery",
-          effect:(st)=>{ setStat("energy",-2); addLog("You move toward the stillness. The Bridge watches quietly."); }
-        },
-        { label:"Break rhythm, change pace", hint:"Refuse synchronization.", to:"break_count",
-          effect:(st)=>{ st.flags.brokeCount = true; setStat("resolve",+2); addLog("You break the rhythm. The Bridge loses its grip, briefly."); }
-        }
-      ]
-    },
-
-    break_count:{
-      layout:"claustrophobic",
-      title:"Manual Control",
-      text:(s)=>`You change pace. You reclaim your timing.
-
-The Bridge responds with a small cruelty:
-the stone becomes slightly rougher under your next step.
-Not enough to harm.
-Enough to remind.
-
-Ahead, reflections begin to form in the fog.`,
-      choices:[
-        { label:"Continue", hint:"Toward the Mirror Gallery.", to:"mirror_gallery",
-          effect:(st)=>{ setStat("energy",-1); addLog("You continue. Reflections gather like witnesses."); }
-        }
-      ]
-    },
-
-    ledger_crack:{
-      layout:"inverted",
-      title:"The Ledger Room",
-      text:(s)=>`You press into the crack and the Bridge gives way.
-
-For a second, you are not on the Bridge.
-You are inside it.
-
-Shelves of stone. Lines carved like accounting.
-Names. Dates. Outcomes.
-Not written, etched as if the world itself was forced to remember.
-
-In the center: a blank line, waiting.
-
-You understand something simple and brutal:
-the Bridge does not test you.
-It records you.`,
-      choices:[
-        { label:"Look for your name", hint:"Knowledge hurts. But it is real.", to:"ledger_self",
-          effect:(st)=>{ st.flags.ledgerSeen = true; setStat("resolve",+8); setStat("energy",-4); addLog("You search for yourself. The room feels amused."); }
-        },
-        { label:"Leave immediately", hint:"Some truths are hooks.", to:"counting_steps",
-          effect:(st)=>{ setStat("resolve",+2); addLog("You back out. The crack seals like skin."); }
-        }
-      ]
-    },
-
-    ledger_self:{
-      layout:"inverted",
-      title:"An Entry That Should Not Exist",
-      text:(s)=>`You find your line.
-
-It is already there.
-
-Not complete, but present, like a form prepared in advance.
-A space is reserved for your return.
-A space is reserved for your change.
-
-Immortals do not sweat from fear.
-They sweat from realization.`,
-      choices:[
-        { label:"Scratch the line with your nail", hint:"Tiny rebellion, real risk.", to:"ledger_rebel",
-          effect:(st)=>{ setStat("hp",-6); shakeStory(); setStat("resolve",+6); addLog("You scratch stone. Stone scratches back."); }
-        },
-        { label:"Accept it and leave", hint:"Survive by not pulling threads.", to:"counting_steps",
-          effect:(st)=>{ setStat("resolve",-2); addLog("You accept it. That acceptance will follow you."); }
-        }
-      ]
-    },
-
-    ledger_rebel:{
-      layout:"inverted",
-      title:"A Note in the Margin",
-      text:(s)=>`You add a tiny mark beside your line.
-
-It does not erase anything.
-But it is evidence.
-
-Evidence that you were awake.
-
-As you leave, the crack stays open a fraction longer than it should.
-A kindness.
-Or a trap.`,
-      choices:[
-        { label:"Return to the Bridge", hint:"Reflections wait.", to:"mirror_gallery",
-          effect:(st)=>{ setStat("energy",-2); addLog("You step out. The Bridge feels slightly colder."); }
-        }
-      ]
-    },
-
-    inversion_span:{
-      layout:"inverted",
-      title:"Act III: The Inversion Span",
-      text:(s)=>`The Bridge tilts in your perception.
-Not physically, but in authority.
-
-Up feels negotiable.
-Down feels like a suggestion.
-
-You see something impossible:
-a faint outline of another bridge, inverted, crossing under yours.
-
-Two bridges.
-Two ledgers.
-Two versions of you.`,
-      choices:[
-        { label:"Walk carefully, eyes forward", hint:"Avoid inviting the wrong reality.", to:"mirror_gallery",
-          effect:(st)=>{ setStat("energy",-2); addLog("You refuse the illusion. The illusion refuses to leave."); }
-        },
-        { label:"Look at the inverted bridge", hint:"Curiosity can summon the Warden.", to:"warden_scene",
-          effect:(st)=>{ setStat("resolve",+2); addLog("You look down at the upside bridge. It looks back."); }
-        }
-      ]
-    },
-
-    mirror_gallery:{
-      layout:"claustrophobic",
-      title:"Act IV: The Mirror Gallery",
-      text:(s)=>`The Bridge narrows into a corridor of fog where sound becomes thin.
-The stone on either side rises like low walls, guiding you.
-
-Then you see reflections.
-Not in glass.
-In the fog itself.
-
-You see yourself walking.
-Then you see yourself standing still.
-Then you see yourself returning, old, blind, deaf, and mute.
-
-The reflections drift closer, as if they want to merge.`,
-      choices:[
-        { label:"Speak your name out loud", hint:"Bold. Can provoke a hostile presence.", to:"name_scene",
-          effect:(st)=>{ setStat("resolve", +4); addLog("You speak your name. The fog repeats it wrong."); }
-        },
-        { label:"Stay silent and observe", hint:"Safer, but time turns sticky.", to:"silence_scene",
-          effect:(st)=>{ setStat("energy",-2); addLog("You stay silent. Silence is also a statement."); }
-        },
-        { label:"Cut through the fog with your weapon", hint:"Direct approach. Risk of combat.", to:"combat_mirror_entry",
-          effect:(st)=>{ setStat("energy",-3); addLog("You slash the fog. The fog bleeds into shapes."); }
-        }
-      ]
-    },
-
-    name_scene:{
-      layout:"claustrophobic",
-      title:"A Name Is a Handle",
-      text:(s)=>`The fog shivers.
-A reflection smiles. You did not smile.
-
-It steps forward.
-It is you, but the timing is wrong, as if your life was edited.
-
-It wants your place.
-Or it wants to confirm you are real.`,
-      choices:[
-        { label:"Prepare to fight", hint:"Mist Mirror emerges.", to:"combat_mirror_entry" },
-        { label:"Offer the ash coin (if you have it)", hint:"A weird gamble.", to:"coin_bargain",
-          when:(st)=>st.flags.tookAshCoin,
-          effect:(st)=>{ setStat("resolve",-2); addLog("You hold out the coin. The fog leans in."); }
-        }
-      ]
-    },
-
-    coin_bargain:{
-      layout:"claustrophobic",
-      title:"Bargain With a Reflection",
-      text:(s)=>`The reflection stares at the ash coin.
-For the first time, it looks uncertain.
-
-The coin is not power.
-It is permission.
-
-The fog makes room, like a door opening without hinges.`,
-      choices:[
-        { label:"Trade the coin to pass", hint:"Skip this fight, but lose something else.", to:"toll_station",
-          effect:(st)=>{
-            st.flags.tookAshCoin = false;
-            setStat("hp",-8); shakeStory();
-            setStat("resolve", +8);
-            addLog("The coin vanishes. Your ribs ache, as if something was removed.");
-          }
-        },
-        { label:"Keep the coin and fight anyway", hint:"Keep leverage. Risk damage.", to:"combat_mirror_entry",
-          effect:(st)=>{ setStat("resolve", +2); addLog("You keep the coin. The reflection frowns like a judge."); }
-        }
-      ]
-    },
-
-    silence_scene:{
-      layout:"claustrophobic",
-      title:"The Price of Silence",
-      text:(s)=>`You watch the reflections.
-They loop: walk, stand, return.
-
-Time becomes sticky.
-
-A thin voice arrives, not from the fog, but from below the Bridge:
-"Do not look down."`,
-      choices:[
-        { label:"Obey", hint:"Move on with less risk.", to:"toll_station",
-          effect:(st)=>{ setStat("energy",-1); setStat("resolve",+3); addLog("You obey. Obedience feels strangely familiar."); }
-        },
-        { label:"Look down", hint:"Curiosity can summon a Warden.", to:"warden_scene",
-          effect:(st)=>{ setStat("resolve",+2); addLog("You look down. The columns look like teeth."); }
-        }
-      ]
-    },
-
-    warden_scene:{
-      layout:"wide",
-      title:"The Hollow Warden",
-      text:(s)=>`Between the columns, a shape rises.
-Not climbing.
-Rising, as if pulled by authority itself.
-
-Armor with nobody inside.
-Yet it still has posture, and rules, and the confidence of a stamp.
-
-It steps onto the stone.`,
-      choices:[
-        { label:"Fight", hint:"The Warden is tough.", to:"combat_warden_entry" },
-        { label:"Try to talk", hint:"Sometimes it works. Often it makes it worse.", to:"talk_warden",
-          effect:(st)=>{ setStat("resolve",-1); addLog("You speak carefully, as if addressing a council clerk."); }
-        }
-      ]
-    },
-
-    talk_warden:{
-      layout:"wide",
-      title:"Talking to an Empty Helmet",
-      text:(s)=>`The helmet tilts.
-A sound like pages turning.
-
-It does not answer with words.
-It answers with a step forward.
-
-Negotiation is denied.`,
-      choices:[
-        { label:"Fight", hint:"No more delays.", to:"combat_warden_entry" }
-      ]
-    },
-
-    toll_station:{
-      layout:"hall",
-      title:"Act V: The Toll Station",
-      text:(s)=>`A booth stands on the Bridge.
-No walls connect to it. No road leads to it.
-A toll station for a path that should be free.
-
-Inside, a clerk-shaped shadow holds a book of blank pages.
-A quill scratches without ink.
-
-The shadow looks up.
-
-It opens its mouth like a drawer and produces a single sentence:
-"PAY IN NAME, OR PAY IN BLOOD."`,
-      choices:[
-        { label:"Pay in name", hint:"Lose resolve, gain safety.", to:"pay_name",
-          effect:(st)=>{ st.flags.signatureSeen = true; st.flags.nameGiven = true; setStat("resolve",-8); addLog("You offer a piece of yourself as currency."); }
-        },
-        { label:"Pay in blood", hint:"Take damage, keep your name.", to:"pay_blood",
-          effect:(st)=>{ st.flags.signatureSeen = true; setStat("hp",-12); shakeStory(); setStat("resolve",+3); addLog("You pay with pain. The Bridge approves the transaction."); }
-        },
-        { label:"Refuse to pay", hint:"Combat.", to:"combat_toll_entry",
-          effect:(st)=>{ setStat("resolve",+2); addLog("You refuse. The booth becomes a mouth."); }
-        }
-      ]
-    },
-
-    pay_name:{
-      layout:"hall",
-      title:"A Receipt You Cannot Read",
-      text:(s)=>`The clerk scratches something into the blank book.
-The page remains blank.
-
-And yet you feel recorded.
-
-The booth slides away into fog as if it never existed.
-Your path continues, cleaner, colder.`,
-      choices:[
-        { label:"Continue", hint:"Toward the Choir of Columns.", to:"choir_of_columns",
-          effect:(st)=>{ setStat("energy",-2); addLog("You move on. The absence of resistance feels like a trap."); }
-        }
-      ]
-    },
-
-    pay_blood:{
-      layout:"hall",
-      title:"Clean Stone, Dirty Hands",
-      text:(s)=>`Your blood hits the stone and vanishes.
-No stain.
-No evidence.
-
-The booth slides away, satisfied.
-The Bridge stays quiet, which is not comfort.
-
-Ahead, the fog vibrates in thin rhythms, like humming.`,
-      choices:[
-        { label:"Continue", hint:"Toward the Choir of Columns.", to:"choir_of_columns",
-          effect:(st)=>{ setStat("energy",-2); addLog("You move on. The Bridge is listening."); }
-        }
-      ]
-    },
-
-    choir_of_columns:{
-      layout:"wide",
-      title:"Act VI: Choir of Columns",
-      text:(s)=>`The fog opens in bands.
-Below you, the columns form a pattern.
-Not random.
-A circle.
-
-Sound rises from them, low and synchronized.
-A choir without mouths.
-
-Each tone matches a step you took earlier.
-The Bridge is replaying you.
-
-A sudden thought hits you:
-if it can replay you, it can replace you.`,
-      choices:[
-        { label:"Move quickly across the singing span", hint:"Risk being corrected.", to:"singing_span",
-          effect:(st)=>{ setStat("energy",-6); addLog("You hurry. The choir changes key."); }
-        },
-        { label:"Hold your pace and listen for a safe rhythm", hint:"Safer, slower.", to:"safe_rhythm",
-          effect:(st)=>{ setStat("energy",-3); setStat("resolve",+3); addLog("You listen for patterns. The Bridge hates pattern recognition."); }
-        },
-        { label:"Challenge the choir", hint:"Combat against the chorus.", to:"combat_choir_entry",
-          effect:(st)=>{ setStat("resolve",+2); addLog("You refuse to be replayed."); }
-        }
-      ]
-    },
-
-    singing_span:{
-      layout:"inverted",
-      title:"The Span That Rewrites Steps",
-      text:(s)=>`Your steps begin to arrive a half-second late.
-Then early.
-Then not at all.
-
-You watch your own foot land twice on the same stone.
-
-The Bridge is testing whether you notice.
-
-Ahead: a silhouette in the fog that resembles rooftops.
-A hanging city, or a memory of one.`,
-      choices:[
-        { label:"Push through", hint:"Accept instability.", to:"hanging_city",
-          effect:(st)=>{ setStat("hp",-6); shakeStory(); addLog("Your stomach flips as your timing desyncs."); }
-        }
-      ]
-    },
-
-    safe_rhythm:{
-      layout:"wide",
-      title:"Safe Rhythm",
-      text:(s)=>`You match the choir carefully, step for step.
-A reluctant duet.
-
-The fog eases.
-The Bridge does not correct you.
-
-Ahead, a silhouette forms: structures suspended in mist.
-A hanging city, built of outlines and regret.`,
-      choices:[
-        { label:"Approach the hanging city", hint:"New kind of danger.", to:"hanging_city",
-          effect:(st)=>{ setStat("energy",-2); addLog("You approach. The air smells like old paper and wet stone."); }
-        }
-      ]
-    },
-
-    hanging_city:{
-      layout:"city",
-      title:"Act VII: The Hanging City",
-      text:(s)=>`Buildings appear in the fog, but they do not touch the Bridge.
-They hang just off to the side, suspended by nothing.
-
-Balconies. Windows. Stairs.
-All facing you, like an audience.
-
-You notice faint movement inside a window.
-Not a person.
-A shadow doing the shape of a person.
-
-A stairway descends from the city toward the Bridge, then stops one step short.
-A gap.
-
-The city is offering you a choice:
-jump, or leave.`,
-      choices:[
-        { label:"Jump the gap to the stair", hint:"High risk. High reward.", to:"jump_gap",
-          effect:(st)=>{ setStat("energy",-4); addLog("You prepare to jump. The fog holds its breath."); }
-        },
-        { label:"Refuse the city", hint:"Stay on the Bridge.", to:"scribe_approach",
-          effect:(st)=>{ setStat("resolve",+4); addLog("You refuse the detour. The city dims, offended."); }
-        }
-      ]
-    },
-
-    jump_gap:{
-      layout:"city",
-      title:"One Step Short of Reality",
-      text:(s)=>`You jump.
-
-For a moment, you are weightless.
-Then your foot finds the stair edge.
-
-It holds.
-
-Inside the hanging city, the air is warmer, like a lie.
-A corridor leads to a room filled with objects that look like crowns.
-
-One crown is missing its top.
-It is a ring of blade.
-
-It hums when you look at it.`,
-      choices:[
-        { label:"Take the Crown of Hunger", hint:"Legendary weapon. The Bridge will watch you harder.", to:"take_crown",
-          when:(st)=>!st.flags.crownEventSeen,
-          effect:(st)=>{ st.flags.crownEventSeen = true; setStat("resolve",-5); addLog("You touch the crown. Something in the fog smiles."); }
-        },
-        { label:"Back away slowly", hint:"Not everything is meant to be carried.", to:"city_escape",
-          effect:(st)=>{ setStat("resolve",+3); addLog("You back away. The room stays polite."); }
-        }
-      ]
-    },
-
-    take_crown:{
-      layout:"city",
-      title:"Crown of Hunger",
-      text:(s)=>`The ring-blade settles into your hands like it belongs there.
-It feels eager, but not for blood.
-
-For certainty.
-
-A whisper from the stone floor, almost affectionate:
-"Now you will be easier to file."`,
-      choices:[
-        { label:"Leave the hanging city", hint:"Return to the Bridge, changed.", to:"city_escape",
-          effect:(st)=>{
-            gainWeapon("crown_of_hunger");
-            equipWeapon("crown_of_hunger");
-            setStat("energy",-6);
-          }
-        }
-      ]
-    },
-
-    city_escape:{
-      layout:"wide",
-      title:"Back on the Stone",
-      text:(s)=>`You step back onto the Bridge.
-Behind you, the hanging city fades like a thought you regret having.
-
-Ahead, the fog narrows again.
-A kneeling figure scratches stone with something sharp.
-
-A scribe.
-Or a butcher of names.`,
-      choices:[
-        { label:"Approach the figure", hint:"The Scribe is waiting.", to:"scribe_approach",
-          effect:(st)=>{ setStat("energy",-2); addLog("You approach. The scratching stops."); }
-        }
-      ]
-    },
-
-    scribe_approach:{
-      layout:"wide",
-      title:"Act VIII: The Scribe on the Stone",
-      text:(s)=>`A figure kneels at the centerline, scraping stone with something sharp.
-
-It is not writing.
-It is carving.
-
-Marks gather into dense paragraphs.
-And then you realize what the paragraphs are:
-records of everyone who crossed.
-
-The figure lifts its head.
-Its eyes are full of chalk dust.`,
-      choices:[
-        { label:"Approach carefully", hint:"You might avoid combat.", to:"scribe_choice",
-          effect:(st)=>{ setStat("energy",-2); addLog("You step closer. The air tastes like chalk."); }
-        },
-        { label:"Attack first", hint:"High aggression. High consequence.", to:"combat_scribe_entry",
-          effect:(st)=>{ setStat("resolve",-2); addLog("You choose violence first. The Bridge watches."); }
-        }
-      ]
-    },
-
-    scribe_choice:{
-      layout:"wide",
-      title:"Stone Scribe",
-      text:(s)=>`The Scribe holds up a shard of bone like a pen.
-It points at you, then points at the stone.
-
-It wants your name.
-Or it wants to decide what to do with it.`,
-      choices:[
-        { label:"Give your name", hint:"Lose some control, gain speed.", to:"name_taken",
-          effect:(st)=>{ st.flags.nameGiven = true; setStat("resolve",-5); addLog("You give your name. The fog tastes it."); }
-        },
-        { label:"Refuse", hint:"Combat likely. Control maintained.", to:"combat_scribe_entry",
-          effect:(st)=>{ setStat("resolve",+3); addLog("You refuse. Refusal is a weapon."); }
-        }
-      ]
-    },
-
-    name_taken:{
-      layout:"claustrophobic",
-      title:"Your Name Becomes Ink",
-      text:(s)=>`The Scribe carves your name into stone.
-You feel a tug in your chest, like a string tied to the letters.
-
-Then the Bridge gets quieter.
-The path ahead becomes clearer, as if the fog stopped arguing.
-
-You suspect a trap.
-You also suspect progress.`,
-      choices:[
-        { label:"Continue", hint:"Toward the final threshold.", to:"final_approach",
-          effect:(st)=>{ setStat("energy",+4); addLog("The Bridge behaves. That is the scariest part."); }
-        }
-      ]
-    },
-
-    final_approach:{
-      layout:"wide",
-      title:"Act IX: The Last Fog",
-      text:(s)=>`The air changes. It smells like soil, not stone.
-A sign the exit exists.
-
-Light appears ahead in thin slices, like a door opening slowly.
-You also notice a new sensation:
-the Bridge feels almost satisfied.
-
-A final question forms:
-Did you cross it, or did it file you into place?`,
-      choices:[
-        { label:"Exit", hint:"Reach an ending.", to:"cross_ending" },
-        { label:"Turn around", hint:"A twist. Not all returns are allowed.", to:"turn_back_twist",
-          effect:(st)=>{ setStat("resolve",-2); addLog("You turn. The Bridge pretends not to notice."); }
-        },
-        { label:"Restart", hint:"Try other branches.", to:"__restart" }
-      ]
-    },
-
-    turn_back_twist:{
-      layout:"claustrophobic",
-      title:"Turning Back",
-      text:(s)=>`Behind you, the Bridge looks shorter.
-Not by a little.
-By a lot.
-
-As if the distance you walked was never distance at all, but approvals.
-
-Far back, you see the Village gate.
-But it is not open.
-It is a painting of a gate, hung in fog.
-
-Arriving might not mean returning.`,
-      choices:[
-        { label:"Walk toward the painted gate", hint:"Risk an unnatural outcome.", to:"painted_gate",
-          effect:(st)=>{ setStat("energy",-4); addLog("You walk toward the painting. The fog smells like varnish."); }
-        },
-        { label:"Accept forward motion only", hint:"Return to the exit.", to:"final_approach",
-          effect:(st)=>{ setStat("resolve",+4); addLog("You refuse the trick. That feels like growth."); }
-        }
-      ]
-    },
-
-    painted_gate:{
-      layout:"hall",
-      title:"The Painted Gate",
-      text:(s)=>`Up close, it is not paint.
-It is memory, layered.
-
-A hand appears on the other side, pressing outward, as if the image is glass.
-
-A voice you recognize from the Council Hall:
-"Sign here."
-
-The Bridge offers you a return.
-You know how paperwork works: it changes the owner.`,
-      choices:[
-        { label:"Sign", hint:"An ending that feels procedural.", to:"return_ending",
-          effect:(st)=>{ setStat("resolve",-12); addLog("You sign. The ink is your pulse."); }
-        },
-        { label:"Refuse", hint:"Go forward. Keep yourself.", to:"final_approach",
-          effect:(st)=>{ setStat("resolve",+8); addLog("You refuse. The hand withdraws, offended."); }
-        }
-      ]
-    },
-
-    returned_one:{
-      layout:"claustrophobic",
-      title:"The Returned One",
-      text:(s)=>`You see him before you understand what you are seeing.
-
-An old figure stands on the stone, perfectly still.
-Blind eyes.
-A mouth that does not move.
-A posture that used to be a person.
-
-He turns his head toward you anyway.
-
-Then he raises a hand and points at the Bridge beneath your feet.
-He points at the fog.
-He points at you.
-
-A scratchy sound arrives inside your skull:
-
-"DO NOT LET IT WRITE YOU CLEAN."
-
-The fog behind him trembles.
-Something wants this moment erased.`,
-      choices:[
-        { label:"Take the relic he offers", hint:"Legendary weapon. The Bridge will notice.", to:"returned_take_relic",
-          effect:(st)=>{ setStat("resolve",-6); addLog("You accept a gift from a forbidden outcome."); }
-        },
-        { label:"Ask how to survive", hint:"Gain guidance, not power.", to:"returned_guidance",
-          effect:(st)=>{ setStat("resolve",+6); addLog("You ask without words. He answers without sound."); }
-        },
-        { label:"Refuse and keep moving", hint:"Keep innocence. Maybe.", to:"returned_refuse",
-          effect:(st)=>{ setStat("resolve",+3); addLog("You refuse. The Bridge hates restraint and loves it at once."); }
-        }
-      ]
-    },
-
-    returned_take_relic:{
-      layout:"inverted",
-      title:"Bridgeheart Relic",
-      text:(s)=>`He places something into your palm.
-
-It is warm.
-
-Not living warmth, but a memory of fire.
-The metal does not reflect the fog.
-It reflects a different room, a different time.
-
-The Bridge reacts.
-Not loudly.
-Not violently.
-
-You feel a line being added to a ledger somewhere, with your pulse as ink.`,
-      choices:[
-        { label:"Continue", hint:"Carry the relic forward.", to:"resume_after_returned",
-          effect:(st)=>{
+      { label:"Attempt the impossible objection", hint:"Extremely unlikely secret ending.", to:"s_secret" }
+    ]
+  },
+
+  s_secret:{
+    title:"The Impossible Probability",
+    text:()=>`You challenge the Rule.\nThe room tilts, as if reality is deciding whether you are allowed to be unique.\n\nHold your ground.\nThe odds are absurd.\nThat is the point.`,
+    choices:[
+      { label:"Hold your ground", hint:"A ridiculous roll of fate.", to:(s)=> (trySecret() ? "s_secret_win" : "s_gate") },
+      { label:"Back down", hint:"Return to procedure.", to:"s_council",
+        effect:()=>{ setStat("resolve",-3); addLog("You step back. The lamps stop staring."); }
+      }
+    ]
+  },
+
+  s_secret_win:{
+    title:"SECRET ENDING: Exception Filed",
+    text:()=>`The Rule bends.\nAn exception.\n\nYou are dismissed.\n\nFinal status\nHealth: ${S.hp}  Energy: ${S.energy}  Resolve: ${S.resolve}`,
+    choices:[
+      { label:"Reset", hint:"New run.", to:"__reset" }
+    ]
+  },
+
+  s_gate:{
+    title:"The Gate and the Fog",
+    text:()=>`Night. The gate opens.\nThe Bridge waits beyond it, swallowing moonlight.\n\nThe stone is cold enough to make your head spin through your palm.\nColumns disappear into fog below.\n\nForward stops being a direction.\nIt becomes a decision.`,
+    choices:[
+      { label:"Step onto the Bridge", hint:"The Bridge learns your weight.", to:"s_first",
+        effect:()=>{ setStat("energy",-2); addLog("Cold stone, immediate regret."); }
+      }
+    ]
+  },
+
+  s_first:{
+    title:"Act I: The Bridge Learns Your Name",
+    text:()=>`The Bridge is longer than it should be.\nFog lies to distance.\n\nYou notice:\n- a warm seam in the stone\n- an impossible door on bare rock\n- an arch that hums like speech held behind teeth\n\nThe Bridge behaves like architecture.\nFor now.`,
+    choices:[
+      { label:"Search the warm seam", hint:"One time only loot.", to:"s_first",
+        when:()=>!S.flags.tookSeamLoot,
+        effect:()=>seamLoot()
+      },
+      { label:"Approach the impossible door", hint:"A shortcut with a price.", to:"s_door" },
+      { label:"Walk under the humming arch", hint:"Listen and the Bridge answers back.", to:"s_arch" },
+      { label:"Push forward into thicker fog", hint:"Higher risk, faster progress.", to:"s_fogrun",
+        effect:()=>{ setStat("energy",-5); addLog("You move fast. The fog resents it."); }
+      }
+    ]
+  },
+
+  s_door:{
+    title:"The Door Standing Alone",
+    text:()=>`A door. No walls.\nCarved into it: ENTER AND FORGET.\n\nWarmth leaks around the frame.\nThat is always a trap.`,
+    choices:[
+      { label:"Search around the doorframe", hint:"One time only loot.", to:"s_door",
+        when:()=>!S.flags.tookDoorLoot,
+        effect:()=>doorLoot()
+      },
+      { label:"Open the door", hint:"An ending that feels comfortable.", to:"s_forget_end",
+        effect:()=>{ setStat("resolve",-6); addLog("Warmth is a bribe."); }
+      },
+      { label:"Refuse and move on", hint:"Harder path. Cleaner self.", to:"s_arch",
+        effect:()=>{ setStat("resolve",+5); addLog("You refuse the anesthetic."); }
+      }
+    ]
+  },
+
+  s_forget_end:{
+    title:"Ending: Enter and Forget",
+    text:()=>`You return to warmth.\nYou live. You smile. You resume eternity.\n\nAnd yet, sometimes someone says a simple word and you do not understand it.\n\nFinal status\nHealth: ${S.hp}  Energy: ${S.energy}  Resolve: ${S.resolve}`,
+    choices:[ { label:"Reset", hint:"New run.", to:"__reset" } ]
+  },
+
+  s_arch:{
+    title:"The Listening Arch",
+    text:()=>`Marks cover the arch.\nNot writing.\nNot quite.\n\nThe hum starts to match your breathing.\n\nUnder the arch, the Bridge becomes a question.`,
+    choices:[
+      { label:"Stand under it and listen", hint:"One time only. Knowledge can hurt.", to:"s_columns",
+        when:()=>!S.flags.listenedArch,
+        effect:()=>{ S.flags.listenedArch=true; setStat("energy",-2); setStat("resolve",+10); setStat("hp",-6); shakeStory(); addLog("A voice with no mouth teaches you fear."); }
+      },
+      { label:"Walk through without listening", hint:"Safer, but you remain blind.", to:"s_columns",
+        effect:()=>{ setStat("resolve",-1); addLog("You refuse the answer."); }
+      }
+    ]
+  },
+
+  s_fogrun:{
+    title:"Correction",
+    text:()=>`The Bridge does not shout.\nIt corrects.\n\nStone rises like a lip and bites your momentum.\nYou fall.\nNot far.\nEnough.`,
+    choices:[
+      { label:"Get up, slower", hint:"Pain is punctuation here.", to:"s_columns",
+        effect:()=>{ setStat("hp",-10); setStat("resolve",+3); shakeStory(); addLog("Pain is the Bridge's punctuation."); }
+      }
+    ]
+  },
+
+  s_columns:{
+    title:"Act II: The Column Forest",
+    text:()=>`Fog thins in bands.\nBelow: columns, countless, like a forest of stone trunks.\n\nSome are carved with faces.\nSome with hands.\nMost with names.\n\nThen you notice something worse:\nsome names are fresh.\n\nAhead: a platform with a broken pedestal.\nA coin of gray ash rests there.`,
+    choices:[
+      { label:"Inspect the pedestal", hint:"One time only loot.", to:"s_columns",
+        when:()=>!S.flags.tookPedestalLoot,
+        effect:()=>pedestalLoot()
+      },
+      { label:"Take the ash coin", hint:"It can twist later scenes.", to:"s_columns",
+        when:()=>!S.flags.hasAshCoin,
+        effect:()=>{ S.flags.hasAshCoin=true; setStat("resolve",-2); addLog("The coin feels like absence pretending to be metal."); }
+      },
+      { label:"Move on", hint:"Toward the Mirror Gallery.", to:"s_mirrors",
+        effect:()=>{ setStat("energy",-2); addLog("You move on. The Bridge respects restraint, sometimes."); }
+      }
+    ]
+  },
+
+  s_mirrors:{
+    title:"Act III: The Mirror Gallery",
+    text:()=>`The Bridge narrows into a corridor of fog.\n\nReflections form.\nNot in glass.\nIn the fog itself.\n\nYou see yourself walking.\nThen standing still.\nThen returning, old, blind, deaf, and mute.\n\nThe reflections drift closer.`,
+    choices:[
+      { label:"Speak your name out loud", hint:"Bold. Can provoke hostility.", to:"s_mirrors",
+        effect:()=>{ addLog("You speak your name. The fog repeats it wrong."); startCombat("mist_mirror","s_toll"); }
+      },
+      { label:"Stay silent and observe", hint:"Safer, but time turns sticky.", to:"s_toll",
+        effect:()=>{ setStat("resolve",+3); addLog("Silence is also a statement."); maybeReturnedEvent("s_toll"); }
+      },
+      { label:"Cut through the fog", hint:"Direct approach. Combat risk.", to:"s_mirrors",
+        effect:()=>{ setStat("energy",-3); addLog("You slash the fog. The fog bleeds into shapes."); startCombat("batling","s_toll"); }
+      },
+      { label:"Offer the ash coin (if you have it)", hint:"A weird bargain.", to:"s_toll",
+        when:()=>S.flags.hasAshCoin,
+        effect:()=>{ S.flags.hasAshCoin=false; setStat("hp",-8); shakeStory(); setStat("resolve",+8); addLog("The coin vanishes. Your ribs ache as if something was removed."); maybeReturnedEvent("s_toll"); }
+      }
+    ]
+  },
+
+  s_toll:{
+    title:"Act IV: The Toll Station",
+    text:()=>`A booth stands on the Bridge.\nNo walls connect to it.\nA toll station for a path that should be free.\n\nA clerk-shaped shadow holds a book of blank pages.\nIt speaks:\n"PAY IN NAME, OR PAY IN BLOOD."`,
+    choices:[
+      { label:"Pay in name", hint:"Safer, but you feel recorded.", to:"s_warden",
+        effect:()=>{ setStat("resolve",-8); addLog("You offer a piece of yourself as currency."); }
+      },
+      { label:"Pay in blood", hint:"Pain, but your name stays yours.", to:"s_warden",
+        effect:()=>{ setStat("hp",-12); shakeStory(); setStat("resolve",+3); addLog("Your blood vanishes. No stain. No evidence."); }
+      },
+      { label:"Refuse to pay", hint:"Combat.", to:"s_toll",
+        effect:()=>{ setStat("resolve",+2); addLog("You refuse. The booth becomes a mouth."); startCombat("stone_scribe","s_warden"); }
+      }
+    ]
+  },
+
+  s_warden:{
+    title:"Act V: The Hollow Warden",
+    text:()=>`Between the columns, a shape rises.\nNot climbing.\nRising, as if pulled by authority itself.\n\nArmor with nobody inside.\nYet it still has posture, and rules.\n\nIt steps onto the stone.`,
+    choices:[
+      { label:"Fight", hint:"Hard combat.", to:"s_warden",
+        effect:()=>{ startCombat("hollow_warden","s_final"); }
+      },
+      { label:"Try to slip past", hint:"A risky check.", to:"s_final",
+        effect:()=>{ slipPast(); }
+      }
+    ]
+  },
+
+  s_final:{
+    title:"Act VI: The Last Fog",
+    text:()=>`The air changes. It smells like soil, not stone.\nA sign the exit exists.\n\nLight appears ahead in thin slices.\n\nA final question forms:\nDid you cross it, or did it file you into place?`,
+    choices:[
+      { label:"Exit", hint:"Reach an ending.", to:"s_cross_end",
+        effect:()=>{ addLog("You step out of the fog."); }
+      },
+      { label:"Turn around", hint:"Not all returns are allowed.", to:"s_turn",
+        effect:()=>{ setStat("resolve",-2); addLog("You turn. The Bridge pretends not to notice."); }
+      },
+      { label:"Reset", hint:"New run.", to:"__reset" }
+    ]
+  },
+
+  s_turn:{
+    title:"Turning Back",
+    text:()=>`Behind you, the Bridge looks shorter.\nNot by a little.\nBy a lot.\n\nFar back, you see the Village gate.\nBut it is not open.\nIt is a painting of a gate, hung in fog.`,
+    choices:[
+      { label:"Walk toward the painted gate", hint:"An ending that feels procedural.", to:"s_return_end",
+        effect:()=>{ setStat("resolve",-10); addLog("Paperwork reaches for you through fog."); }
+      },
+      { label:"Refuse and go forward", hint:"Keep yourself.", to:"s_final",
+        effect:()=>{ setStat("resolve",+6); addLog("You refuse the trick."); }
+      }
+    ]
+  },
+
+  s_cross_end:{
+    title:"Ending: Beyond the Bridge",
+    text:()=>`Light is harsh, honest, mortal.\n\nFinal status\nHealth: ${S.hp}  Energy: ${S.energy}  Resolve: ${S.resolve}\n\nThe Bridge does not threaten you.\nIt simply remembers you.`,
+    choices:[ { label:"Reset", hint:"New run.", to:"__reset" } ]
+  },
+
+  s_return_end:{
+    title:"Ending: Returned, But Filed",
+    text:()=>`You blink and you are back in the Village.\nEverything is clean.\nEverything is calm.\n\nThe Council nods like nothing unusual occurred.\n\nFinal status\nHealth: ${S.hp}  Energy: ${S.energy}  Resolve: ${S.resolve}\n\nYou returned.\nChanged.`,
+    choices:[ { label:"Reset", hint:"New run.", to:"__reset" } ]
+  },
+
+  s_returned:{
+    title:"The Returned One",
+    text:()=>`An old figure stands on the stone, perfectly still.\nBlind eyes.\nA mouth that does not move.\n\nHe points at the Bridge beneath your feet.\nThen at you.\n\nA scratchy thought arrives inside your skull:\n"DO NOT LET IT WRITE YOU CLEAN."`,
+    choices:[
+      { label:"Take the relic he offers", hint:"Legendary weapon. Consequences.", to:"s_final",
+        effect:()=>{
+          if(!S.flags.returnedMet){
             gainWeapon("bridgeheart_relic");
-            equipWeapon("bridgeheart_relic");
+            S.equipped = "bridgeheart_relic";
+            S.flags.returnedMet = true;
+            setStat("resolve",-6);
             setStat("energy",-6);
-            st.flags.rareReturnedMet = true;
+            addLog("You accept a gift from a forbidden outcome.");
           }
         }
-      ]
-    },
-
-    returned_guidance:{
-      layout:"claustrophobic",
-      title:"A Warning Without Language",
-      text:(s)=>`He taps the stone twice.
-Two travelers every year.
-
-He taps a third time.
-A lie.
-
-He drags a bridge shape in the air, then a line through it.
-Cancel. Deny. Void.
-
-He gestures toward your chest.
-
-The message lands like weight:
-the Bridge does not want you dead.
-It wants you categorized.
-
-Survival is not crossing.
-Survival is staying undefined.`,
-      choices:[
-        { label:"Continue", hint:"Try to remain undefined.", to:"resume_after_returned",
-          effect:(st)=>{
-            setStat("resolve",+8);
-            setStat("energy",-2);
-            st.flags.rareReturnedMet = true;
-          }
+      },
+      { label:"Ask how to survive", hint:"Guidance, not power.", to:"s_final",
+        effect:()=>{
+          S.flags.returnedMet = true;
+          setStat("resolve",+10);
+          setStat("energy",-2);
+          addLog("Survival is staying undefined.");
         }
-      ]
-    },
+      }
+    ]
+  }
+};
 
-    returned_refuse:{
-      layout:"wide",
-      title:"Walking Away From a Miracle",
-      text:(s)=>`You keep walking.
+function trySecret(){
+  // very low chance, but still plausible
+  // About 1/80 baseline, slightly better with high resolve
+  const base = 80;
+  const bonus = Math.floor((S.resolve - 50)/6);
+  const target = clamp(base - bonus, 35, 120);
+  return randInt(1, target) === 1;
+}
 
-Behind you, the old figure fades into fog, as if he was always only an idea.
-But the Bridge is disturbed now.
-Its silence becomes sharp.
+/* One-shot loot that removes the option by setting flags */
+function seamLoot(){
+  S.flags.tookSeamLoot = true;
+  setStat("energy",-4);
+  const r = randInt(1,100);
+  if(r<=35){
+    gainSupply("water",1,"You found water sealed in a small flask. It tastes like a different year.");
+    setStat("resolve",+2);
+  }else if(r<=70){
+    gainSupply("bread",1,"You found bread that tastes like yesterday, stubbornly fresh.");
+    setStat("resolve",+2);
+  }else if(r<=88){
+    gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
+    setStat("resolve",+4);
+  }else{
+    setStat("hp",-8);
+    shakeStory();
+    addLog("The seam cuts you like paper. The Bridge dislikes theft.");
+  }
+  save(); renderAll();
+}
+function doorLoot(){
+  S.flags.tookDoorLoot = true;
+  setStat("energy",-3);
+  const r = randInt(1,100);
+  if(r<=18){
+    gainWeapon("council_needle");
+    setStat("resolve",+6);
+  }else if(r<=45){
+    gainWeapon("glass_sabre");
+    setStat("resolve",+4);
+  }else{
+    setStat("hp",-8);
+    shakeStory();
+    addLog("The metal bites you like a verdict.");
+  }
+  save(); renderAll();
+}
+function pedestalLoot(){
+  S.flags.tookPedestalLoot = true;
+  setStat("energy",-2);
+  const r = randInt(1,100);
+  if(r<=22){
+    gainSupply("salve",1,"You found salve wrapped in cloth that smells faintly like pine.");
+    setStat("resolve",+3);
+  }else if(r<=55){
+    gainSupply("water",1,"A flask. The water is still. That should not be possible.");
+  }else if(r<=80){
+    gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
+  }else{
+    gainSupply("bread",1,"Bread appears where bread should not be. The Bridge is mocking you.");
+  }
+  save(); renderAll();
+}
 
-You sense the Warden somewhere below, turning pages.`,
-      choices:[
-        { label:"Continue", hint:"Leave the miracle behind.", to:"resume_after_returned",
-          effect:(st)=>{
-            setStat("resolve",+4);
-            st.flags.rareReturnedMet = true;
-          }
-        }
-      ]
-    },
+/* Rare event 1/30 (more realistic) */
+function maybeReturnedEvent(nextScene){
+  if(S.flags.returnedSeen) return;
+  // Gate it lightly so it feels earned
+  const gate = (S.resolve >= 58) && (S.flags.listenedArch || S.flags.hasAshCoin);
+  if(!gate) return;
+  const chance = 30;
+  if(randInt(1,chance) === 1){
+    S.flags.returnedSeen = true;
+    addLog("The fog hesitates. Something old is near.");
+    S.scene = "s_returned";
+    save(); renderAll();
+    return;
+  }
+}
 
-    resume_after_returned:{
-      layout:"wide",
-      title:"After the Impossible",
-      text:(s)=>`The Bridge resumes its performance of being stone.
-But now you know it can be interrupted.
+/* Render scene */
+function renderScene(){
+  const sc = SCENES[S.scene];
+  if(!sc){
+    S.scene = "s_intro";
+    save();
+    return renderScene();
+  }
 
-Fog peels away in thin layers.
-Ahead: the final stretch.
-Behind: a person who should not exist.
+  $("sceneTitle").textContent = sc.title;
+  $("sceneText").textContent = sc.text(S);
 
-You feel the Bridge try to tidy you up.
-You resist.`,
-      choices:[
-        { label:"Continue", hint:"Toward the final threshold.", to:"final_approach",
-          effect:(st)=>{ setStat("energy",-1); addLog("You walk. This time, with your eyes open."); }
-        }
-      ]
-    },
+  const choices = $("choices");
+  choices.innerHTML = "";
 
-    cross_ending:{
-      layout:"wide",
-      title:"Ending: Beyond the Bridge",
-      text:(s)=>`You step out of the fog.
-The light is harsh, honest, mortal.
+  // Post combat continue
+  if(S.postCombat){
+    const btn = document.createElement("button");
+    btn.className = "choiceBtn";
+    btn.textContent = "Continue";
+    btn.onclick = ()=>{
+      const next = S.postCombat.next;
+      const note = S.postCombat.note;
+      S.postCombat = null;
+      addLog(note || "You continue.");
+      save();
+      if(next) go(next);
+      else renderAll();
+    };
+    choices.appendChild(btn);
+    return;
+  }
 
-Final status
-Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}
+  // If combat active, render combat only
+  if(S.combat && S.combat.active){
+    renderCombatUI();
+    return;
+  } else {
+    $("combat").innerHTML = "";
+  }
 
-The Bridge does not threaten you.
-It simply remembers you.`,
-      choices:[
-        { label:"Restart", hint:"Clean run.", to:"__restart" }
-      ]
-    },
+  const list = sc.choices || [];
+  list.forEach((c)=>{
+    if(c.when && !c.when(S)) return;
 
-    return_ending:{
-      layout:"hall",
-      title:"Ending: Returned, But Filed",
-      text:(s)=>`You blink and you are back in the Village.
-Everything is clean.
-Everything is calm.
+    const btn = document.createElement("button");
+    btn.className = "choiceBtn";
+    btn.innerHTML = `<strong>${c.label}</strong><div class="muted" style="font-size:12px;margin-top:4px">${c.hint || ""}</div>`;
+    btn.onclick = ()=>{
+      if(typeof c.effect === "function") c.effect(S);
 
-The Council nods like nothing unusual occurred.
-They welcome you.
-They also do not ask what you saw.
+      const next = (typeof c.to === "function") ? c.to(S) : c.to;
+      if(typeof next === "string") go(next);
+      else renderAll();
+    };
+    choices.appendChild(btn);
+  });
+}
 
-Because the form you signed already answered for you.
+function go(id){
+  if(id==="__reset"){
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    S = deepClone(DEFAULT);
+    save();
+    S = load() || deepClone(DEFAULT);
+    bootNormalize();
+    $("startScreen").classList.remove("hidden");
+    $("sceneTitle").textContent = "";
+    $("sceneText").textContent = "";
+    $("combat").innerHTML = "";
+    $("choices").innerHTML = "";
+    renderStats();
+    return;
+  }
 
-Final status
-Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}
+  // If next is normal scene, allow rare returned
+  if(id && id.startsWith("s_")){
+    maybeReturnedEvent(id);
+    if(S.scene === "s_returned") return;
+    S.scene = id;
+    save();
+    renderAll();
+  }
+}
 
-You returned.
-Changed.`,
-      choices:[
-        { label:"Restart", hint:"Try refusing the signature.", to:"__restart" }
-      ]
-    },
+/* Combat engine */
+function parseDice(expr){
+  const m = String(expr).trim().match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+  if(!m) return { total:0, detail:"0" };
+  const n = parseInt(m[1],10);
+  const d = parseInt(m[2],10);
+  const mod = m[3] ? parseInt(m[3],10) : 0;
+  let sum = 0;
+  const rolls = [];
+  for(let i=0;i<n;i++){
+    const r = roll(d);
+    rolls.push(r);
+    sum += r;
+  }
+  const total = sum + mod;
+  const detail = `${n}d${d}${mod? (mod>0? "+"+mod : mod) : ""} = [${rolls.join(", ")}]${mod? (mod>0? " + "+mod : " - "+Math.abs(mod)) : ""} => ${total}`;
+  return { total, detail };
+}
 
-    forget_ending:{
-      layout:"hall",
-      title:"Ending: Enter and Forget",
-      text:(s)=>`You return to warmth.
-You live. You smile. You resume eternity.
+function startCombat(enemyId, returnScene){
+  const e = ENEMIES[enemyId];
+  if(!e) return;
 
-And yet, sometimes someone says a simple word and you do not understand it.
-
-Final status
-Health: ${s.hp}  Energy: ${s.energy}  Resolve: ${s.resolve}
-
-The Rule is satisfied.
-You returned.
-Changed.`,
-      choices:[
-        { label:"Restart", hint:"Try refusing the door.", to:"__restart" }
-      ]
-    }
+  S.combat = {
+    active:true,
+    enemyId: enemyId,
+    eHp: e.hp,
+    eHpMax: e.hp,
+    eAc: e.ac,
+    eHit: e.hit,
+    eDmg: e.dmg,
+    eThreat: e.threat,
+    guard:false,
+    focus:0,
+    returnScene: returnScene || S.scene,
+    log:[`${e.desc}`, "", "Combat begins."]
   };
 
-  function renderScene(){
-    const sc = SCENES_LOCAL[S.scene];
-    $("sceneTitle").textContent = sc.title;
-    $("sceneText").textContent = sc.text(S);
+  save();
+  renderAll();
+}
 
-    S.layout = sc.layout || "wide";
-    setLayout(S.layout);
+function combatPush(line){
+  if(!S.combat) return;
+  S.combat.log.push(line);
+  if(S.combat.log.length>120) S.combat.log.shift();
+}
 
-    const choicesBox = $("choices");
-    choicesBox.innerHTML = "";
+function renderCombatUI(){
+  const c = S.combat;
+  const e = ENEMIES[c.enemyId];
+  const mount = $("combat");
 
-    if(S.postCombat){
-      const btn = document.createElement("button");
-      btn.className = "choiceBtn";
-      btn.type = "button";
-      btn.innerHTML = `<div class="badge">C</div>
-        <div class="choiceText">
-          <div class="main">Continue</div>
-          <div class="hint">Leave the fight behind. Carry consequences forward.</div>
-        </div>`;
-      btn.addEventListener("click", ()=>{
-        const next = S.postCombat.nextScene;
-        const note = S.postCombat.note;
-        S.postCombat = null;
-        addLog(note || "You continue.");
-        save();
-        go(next);
-      });
-      choicesBox.appendChild(btn);
-      renderLog();
-      return;
-    }
+  const pct = c.eHpMax<=0 ? 0 : Math.floor((c.eHp / c.eHpMax) * 100);
+  const w = currentWeapon();
+  const toHit = weaponToHit(w);
 
-    if(S.combat && S.combat.active){
-      renderCombat();
-      renderLog();
-      return;
-    } else {
-      renderCombat();
-    }
+  mount.innerHTML = `
+    <div class="card">
+      <div class="enemyTop">
+        <div class="row" style="gap:12px;align-items:flex-start">
+          <div class="spriteBox" id="enemySprite"></div>
+          <div>
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <strong style="font-size:16px">${e.name}</strong>
+              <span class="crit" id="critBadge">CRIT</span>
+            </div>
+            <div class="enemyMeta">HP ${c.eHp}/${c.eHpMax} | AC ${c.eAc} | Threat ${c.eThreat}</div>
+            <div style="margin-top:8px" class="hpBar">
+              <div class="hpFill danger" style="width:${pct}%"></div>
+            </div>
+            <div class="muted" style="font-size:12px;margin-top:8px">
+              You: DMG ${w.dmg} | HIT ${toHit>=0? "+"+toHit:toHit} | DUR ${w.curDur}
+            </div>
+          </div>
+        </div>
+      </div>
 
-    const list = sc.choices || [];
-    let visibleIndex = 0;
-    list.forEach((c)=>{
-      let show = true;
-      if(typeof c.when === "function"){
-        try{ show = c.when(S); }catch(e){ show = true; }
-      }
-      if(!show) return;
+      <div class="diceBox">
+        <div class="die"><div class="lbl">Your d20</div><div class="num" id="dPlayer">-</div></div>
+        <div class="die"><div class="lbl">Enemy d20</div><div class="num enemy" id="dEnemy">-</div></div>
+        <div class="die"><div class="lbl">Last hit</div><div class="num good" id="dHit">-</div></div>
+      </div>
 
-      const btn = document.createElement("button");
-      btn.className = "choiceBtn";
-      btn.type = "button";
+      <div class="row" style="margin-top:10px">
+        <button class="smallBtn" id="btnAttack">Attack</button>
+        <button class="smallBtn" id="btnFocus">Focus</button>
+        <button class="smallBtn" id="btnGuard">Guard</button>
+      </div>
 
-      const badgeLetter = String.fromCharCode(65 + (visibleIndex % 26));
-      visibleIndex++;
+      <div class="card" style="margin-top:12px">
+        <div class="muted" style="white-space:pre-wrap;font-size:12px;line-height:1.45" id="combatLog"></div>
+      </div>
+    </div>
+  `;
 
-      btn.innerHTML = `<div class="badge">${badgeLetter}</div>
-        <div class="choiceText">
-          <div class="main"></div>
-          <div class="hint"></div>
-        </div>`;
-      btn.querySelector(".main").textContent = c.label;
-      btn.querySelector(".hint").textContent = c.hint || "";
+  const spriteMount = $("enemySprite");
+  window.renderEnemySprite(c.enemyId, spriteMount);
 
-      btn.addEventListener("click", ()=>{
-        if(typeof c.effect === "function") c.effect(S);
-        const next = (typeof c.to === "function") ? c.to(S) : c.to;
-        renderHud();
-        save();
-        go(next);
-      });
+  const logEl = $("combatLog");
+  logEl.textContent = c.log.slice(-18).join("\n");
 
-      choicesBox.appendChild(btn);
-    });
+  $("btnAttack").onclick = playerAttack;
+  $("btnFocus").onclick = playerFocus;
+  $("btnGuard").onclick = playerGuard;
+}
 
-    renderLog();
-  }
+function showCrit(){
+  const b = $("critBadge");
+  if(!b) return;
+  b.classList.add("show");
+  setTimeout(()=>b.classList.remove("show"), 520);
+}
 
-  function go(sceneId){
-    if(sceneId==="__restart"){
-      S = structuredClone(DEFAULT_STATE);
-      normalizeState();
-      save();
-      renderAll();
-      toast("New run.");
-      return;
-    }
+function playerAttack(){
+  if(!S.combat) return;
+  const c = S.combat;
+  const e = ENEMIES[c.enemyId];
 
-    if(shouldTriggerReturnedOne(sceneId)){
-      S.flags.rareReturnedSeen = true;
-      addLog("The fog hesitates. Something old is near.");
-      save();
-      sceneId = "returned_one";
-    }
+  const w = currentWeapon();
+  decDur(w.id, 1);
 
-    if(sceneId==="combat_mirror_entry"){
-      startCombat("mist_mirror", "toll_station", "toll_station");
-      return;
-    }
-    if(sceneId==="combat_scribe_entry"){
-      startCombat("stone_scribe", "final_approach", "final_approach");
-      return;
-    }
-    if(sceneId==="combat_warden_entry"){
-      startCombat("hollow_warden", "toll_station", "toll_station");
-      return;
-    }
-    if(sceneId==="combat_toll_entry"){
-      startCombat("toll_clerk", "choir_of_columns", "choir_of_columns");
-      return;
-    }
-    if(sceneId==="combat_choir_entry"){
-      startCombat("choir_column", "hanging_city", "hanging_city");
-      return;
-    }
+  const nat = roll(20);
+  animateNumber($("dPlayer"), nat, 420, 1, 20);
 
-    if(!SCENES_LOCAL[sceneId]){
-      addLog("Missing scene. Resetting.");
-      S.scene = "intro_scene";
-      save();
-      renderAll();
-      return;
-    }
-
-    S.scene = sceneId;
-    save();
-    renderAll();
-  }
-
-  function renderCombat(){
-    const box = $("combatBox");
-    if(!S.combat || !S.combat.active){
-      box.classList.remove("show");
-      $("attackBtn").disabled = true;
-      $("focusBtn").disabled = true;
-      $("guardBtn").disabled = true;
-      $("fleeBtn").disabled = true;
-      return;
-    }
-    box.classList.add("show");
-    const e = ENEMIES[S.combat.enemyId];
-    $("enemyName").textContent = e.name;
-    $("enemyMeta").textContent = `HP ${S.combat.eHp} / ${S.combat.eHpMax}, AC ${S.combat.eAc}, Threat ${S.combat.eThreat}`;
-    $("enemyHpTxt").textContent = `${S.combat.eHp}/${S.combat.eHpMax}`;
-
-    const pct = (S.combat.eHpMax<=0) ? 0 : Math.max(0, Math.min(100, Math.floor((S.combat.eHp / S.combat.eHpMax)*100)));
-    $("enemyHpFill").style.width = pct + "%";
-
-    $("attackBtn").disabled = false;
-    $("focusBtn").disabled = false;
-    $("guardBtn").disabled = false;
-    $("fleeBtn").disabled = !S.combat.allowFleeTo;
-    $("choices").innerHTML = "";
-  }
-
-  function combatLog(line){
-    const el = $("combatLog");
-    el.textContent += "\n" + line;
-    el.scrollTop = el.scrollHeight;
-  }
-
-  function startCombat(enemyId, returnScene, allowFleeTo){
-    const e = ENEMIES[enemyId];
-    if(!e) return;
-
-    const hpBonus = S.hardMode ? 5 : 0;
-    const acBonus = S.hardMode ? 1 : 0;
-    const hitBonus = S.hardMode ? 1 : 0;
-
-    const eHpMax = e.hp + hpBonus;
-
-    S.combat = {
-      active:true,
-      enemyId,
-      eHp: eHpMax,
-      eHpMax: eHpMax,
-      eAc: e.ac + acBonus,
-      eHit: e.hit + hitBonus,
-      eDmg: e.dmg,
-      eThreat: e.threat + (S.hardMode ? 1 : 0),
-      guard:false,
-      focusStacks:0,
-      returnScene: returnScene,
-      allowFleeTo: allowFleeTo || null
-    };
-
-    $("combatLog").textContent = `${e.desc}\n\nCombat begins.`;
-    $("playerDie").textContent = "-";
-    $("enemyDie").textContent = "-";
-    $("lastHit").textContent = "-";
-    addLog(`A hostile presence forms: ${e.name}.`);
-    save();
-    renderScene();
-  }
-
-  function endCombat(victory){
-    const enemy = ENEMIES[S.combat.enemyId];
-    if(victory){
-      addLog(`You survived ${enemy.name}. The Bridge does not congratulate you.`);
-      const drop = randInt(1,100) - (S.hardMode ? 10 : 0);
-
-      if(drop<=10){
-        gainWeapon("glass_sabre");
-      }else if(drop<=18){
-        gainWeapon(randInt(0,1)===0 ? "fog_dagger" : "stone_maul");
-      }else if(drop<=32){
-        gainSupply("salve", 1, "You found salve in a crack of the stone. It smells like winter.");
-      }else if(drop<=58){
-        gainSupply("bread", 1, "Bread appears where bread should not be. The Bridge is mocking you.");
-      }else if(drop<=78){
-        gainSupply("water", 1, "A flask. The water is still. That should not be possible.");
-      }else{
-        addLog("Nothing useful remains, only the memory of impact.");
-      }
-
-      setStat("resolve", +6);
-      setStat("energy", -3);
-    } else {
-      addLog("You endured. The Bridge calls that enough.");
-    }
-
-    const nextScene = S.combat.returnScene || S.scene;
-    S.postCombat = {
-      nextScene: nextScene,
-      note: victory ? "You steady your breathing and move on." : "You crawl forward, refusing to stop."
-    };
-
-    S.combat = null;
-    renderHud();
-    save();
-    renderScene();
-  }
-
-  function enemyTurn(){
-    if(!S.combat) return;
-    const e = ENEMIES[S.combat.enemyId];
-
-    const d20 = roll(20);
-    animateDie("enemyDie", d20);
-
-    const enemyAtk = d20 + S.combat.eHit + Math.floor((S.combat.eThreat-2));
-    const playerAC = 12 + Math.floor(S.resolve/25) + (S.combat.guard ? 2 : 0) + (S.hardMode ? -1 : 0);
-
-    if(d20===1){
-      combatLog(`${e.name} rolls a natural 1. MISS.`);
-      S.combat.guard = false;
-      S.combat.focusStacks = 0;
-      save();
-      return;
-    }
-
-    const hit = (d20===20) || (enemyAtk >= playerAC);
-    if(hit){
-      const dmg = rollDice(S.combat.eDmg);
-      let taken = dmg.total;
-      if(S.combat.guard) taken = Math.max(1, Math.floor(taken*0.55));
-      if(d20===20) taken += rollDice("1d6").total;
-
-      setStat("hp", -taken);
-      shakeStory();
-      setStat("resolve", -2);
-      $("lastHit").textContent = String(taken);
-
-      combatLog(`${e.name} rolls ${d20}. Attack ${enemyAtk} vs your AC ${playerAC}. HIT.`);
-      combatLog(`Damage: ${dmg.detail} | You take ${taken}.`);
-
-      if(S.hp<=0){
-        combatLog("You collapse. Not dead. Rewritten.");
-        S.hp = 35; S.energy = 25; S.resolve = clamp(S.resolve-12,0,100);
-        endCombat(false);
-        return;
-      }
-    } else {
-      combatLog(`${e.name} rolls ${d20}. Attack ${enemyAtk} vs your AC ${playerAC}. MISS.`);
-      setStat("resolve", +1);
-    }
-
-    S.combat.guard = false;
-    S.combat.focusStacks = 0;
-    save();
-    renderCombat();
-  }
-
-  function playerAttack(){
-    if(!S.combat) return;
-    const wep = currentWeapon();
-
-    const nat = roll(20);
-    animateDie("playerDie", nat);
-
-    decDur(wep.id, 1);
-
-    const toHit = weaponToHit(wep);
-    const focusBonus = S.combat.focusStacks * 2;
-    const attackTotal = nat + toHit + focusBonus + Math.floor((S.resolve-50)/20);
-
-    if(nat===1){
-      combatLog("You roll a natural 1. MISS.");
-      setStat("energy",-3);
-      enemyTurn();
-      return;
-    }
-
-    const crit = (nat===20);
-    if(crit) showCritBadge();
-
-    if(crit || attackTotal >= S.combat.eAc){
-      const dmg = rollDice(wep.dmg);
-      const bonus = crit ? rollDice("1d6").total : 0;
-      const finalDmg = dmg.total + bonus;
-
-      S.combat.eHp = Math.max(0, S.combat.eHp - finalDmg);
-      $("lastHit").textContent = String(finalDmg);
-
-      combatLog(`You roll ${nat}. Attack ${attackTotal} vs AC ${S.combat.eAc}. HIT.`);
-      combatLog(`Damage: ${dmg.detail}${crit ? " | CRIT +1d6" : ""} => ${finalDmg}`);
-
-      enemyImpact();
-      setStat("energy",-5);
-
-      renderCombat();
-
-      if(S.combat.eHp<=0){
-        combatLog("Enemy dissolves into fog and silence.");
-        endCombat(true);
-        return;
-      }
-      enemyTurn();
-    } else {
-      combatLog(`You roll ${nat}. Attack ${attackTotal} vs AC ${S.combat.eAc}. MISS.`);
-      setStat("energy",-4);
-      enemyTurn();
-    }
-    save();
-  }
-
-  function playerFocus(){
-    if(!S.combat) return;
-    if(S.energy<10){
-      combatLog("Not enough energy to focus.");
-      return;
-    }
-    setStat("energy",-10);
-    setStat("resolve",+6);
-    S.combat.focusStacks = clamp(S.combat.focusStacks+1,0,3);
-    combatLog(`You focus. Next attack gains +${S.combat.focusStacks*2} to hit.`);
+  if(nat === 1){
+    combatPush("You roll a natural 1. MISS.");
+    setStat("energy",-4);
     enemyTurn();
-    save();
+    endRound();
+    return;
   }
 
-  function playerGuard(){
-    if(!S.combat) return;
-    S.combat.guard = true;
-    setStat("energy",-6);
-    setStat("resolve",+2);
-    combatLog("You guard. Incoming damage reduced this round.");
-    enemyTurn();
-    save();
-  }
+  const crit = (nat === 20);
+  if(crit) showCrit();
 
-  function playerFlee(){
-    if(!S.combat || !S.combat.allowFleeTo) return;
-    const fleeRoll = roll(20) + Math.floor(S.resolve/25) - (S.combat.eThreat*2) + (S.hardMode ? -1 : 0);
-    animateDie("playerDie", Math.max(1, Math.min(20, fleeRoll)));
-    combatLog(`Flee attempt: ${fleeRoll}.`);
-    if(fleeRoll>=14){
-      combatLog("ESCAPE.");
-      const to = S.combat.allowFleeTo;
-      S.combat = null;
-      S.postCombat = { nextScene: to, note:"You escaped. It feels like living." };
-      save();
-      renderScene();
+  const atk = nat + weaponToHit(w) + (c.focus*2) + Math.floor((S.resolve-50)/20);
+  if(crit || atk >= c.eAc){
+    const dmg = parseDice(w.dmg);
+    const bonus = crit ? parseDice("1d6").total : 0;
+    const total = dmg.total + bonus;
+
+    c.eHp = Math.max(0, c.eHp - total);
+    $("dHit").textContent = String(total);
+
+    combatPush(`You roll ${nat}. Attack ${atk} vs AC ${c.eAc}. HIT.`);
+    combatPush(`Damage: ${dmg.detail}${crit ? " | CRIT +1d6" : ""} => ${total}`);
+
+    setStat("energy",-5);
+
+    if(c.eHp <= 0){
+      combatPush("Enemy dissolves into fog and silence.");
+      endCombat(true);
       return;
     }
-    combatLog("You fail to flee.");
+
     enemyTurn();
-    save();
+    endRound();
+  } else {
+    combatPush(`You roll ${nat}. Attack ${atk} vs AC ${c.eAc}. MISS.`);
+    setStat("energy",-4);
+    enemyTurn();
+    endRound();
+  }
+}
+
+function playerFocus(){
+  if(!S.combat) return;
+  if(S.energy < 10){
+    combatPush("Not enough energy to focus.");
+    renderAll();
+    return;
+  }
+  setStat("energy",-10);
+  setStat("resolve",+6);
+  S.combat.focus = clamp(S.combat.focus+1, 0, 3);
+  combatPush(`You focus. Next attack gains +${S.combat.focus*2} to hit.`);
+  enemyTurn();
+  endRound();
+}
+
+function playerGuard(){
+  if(!S.combat) return;
+  S.combat.guard = true;
+  setStat("energy",-6);
+  setStat("resolve",+2);
+  combatPush("You guard. Incoming damage reduced this round.");
+  enemyTurn();
+  endRound();
+}
+
+function enemyTurn(){
+  if(!S.combat) return;
+  const c = S.combat;
+  const e = ENEMIES[c.enemyId];
+
+  const nat = roll(20);
+  animateNumber($("dEnemy"), nat, 420, 1, 20);
+
+  const enemyAtk = nat + c.eHit + Math.floor((c.eThreat-2));
+  const playerAC = 12 + Math.floor(S.resolve/25) + (c.guard ? 2 : 0);
+
+  if(nat === 1){
+    combatPush(`${e.name} rolls a natural 1. MISS.`);
+    setStat("resolve", +1);
+    c.guard = false;
+    c.focus = 0;
+    return;
   }
 
-  $("attackBtn").addEventListener("click", playerAttack);
-  $("focusBtn").addEventListener("click", playerFocus);
-  $("guardBtn").addEventListener("click", playerGuard);
-  $("fleeBtn").addEventListener("click", playerFlee);
+  const hit = (nat === 20) || (enemyAtk >= playerAC);
+  if(hit){
+    const dmg = parseDice(c.eDmg);
+    let taken = dmg.total;
+    if(c.guard) taken = Math.max(1, Math.floor(taken * 0.55));
+    if(nat === 20) taken += parseDice("1d6").total;
 
-  $("restartBtn").addEventListener("click", ()=>go("__restart"));
-  $("clearSaveBtn").addEventListener("click", ()=>{
-    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-    S = structuredClone(DEFAULT_STATE);
-    normalizeState();
-    save();
-    renderAll();
-    toast("Save reset.");
-  });
-  $("toggleHardBtn").addEventListener("click", ()=>{
-    S.hardMode = !S.hardMode;
-    addLog(`Hard mode is now ${S.hardMode ? "ON" : "OFF"}.`);
-    save();
-    renderHud();
-  });
+    setStat("hp", -taken);
+    setStat("resolve", -2);
+    shakeStory();
+    $("dHit").textContent = String(taken);
 
-  /* Start screen controls */
-  function showStart(){
-    $("startScreen").classList.add("show");
-    $("gameWrap").classList.add("gameHidden");
-  }
-  function hideStart(){
-    $("startScreen").classList.remove("show");
-    $("gameWrap").classList.remove("gameHidden");
-  }
+    combatPush(`${e.name} rolls ${nat}. Attack ${enemyAtk} vs your AC ${playerAC}. HIT.`);
+    combatPush(`Damage: ${dmg.detail} | You take ${taken}.`);
 
-  $("startBtn").addEventListener("click", ()=>{
-    hideStart();
-    renderAll();
-    toast("The fog opens.");
-  });
-
-  $("startNewBtn").addEventListener("click", ()=>{
-    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-    S = structuredClone(DEFAULT_STATE);
-    normalizeState();
-    save();
-    hideStart();
-    renderAll();
-    toast("New run.");
-  });
-
-  $("showIntroBtn").addEventListener("click", ()=>{
-    // Show intro screen without resetting anything
-    $("saveNote").textContent = "Your run is saved. Press Start to return.";
-    showStart();
-  });
-
-  function hardFailSafe(){
-    try{
-      normalizeState();
-      renderHud();
-      if(!SCENES_LOCAL[S.scene]) S.scene = "intro_scene";
-      renderScene();
-      renderLog();
-      save();
-    }catch(e){
-      console.error(e);
-      try{
-        S = structuredClone(DEFAULT_STATE);
-        save();
-        renderAll();
-      }catch(_){}
+    if(S.hp <= 0){
+      combatPush("You collapse. Not dead. Rewritten.");
+      S.hp = 35;
+      S.energy = 25;
+      S.resolve = clamp(S.resolve-12, 0, 100);
+      endCombat(false);
+      return;
     }
+  } else {
+    combatPush(`${e.name} rolls ${nat}. Attack ${enemyAtk} vs your AC ${playerAC}. MISS.`);
+    setStat("resolve", +1);
   }
 
-  function renderAll(){
-    normalizeState();
-    renderHud();
-    renderScene();
-    renderLog();
-    save();
-  }
+  c.guard = false;
+  c.focus = 0;
+}
 
-  window.addEventListener("error", ()=>{
-    addLog("A glitch ripples through the fog. The Bridge tries to recover.");
-    hardFailSafe();
-  });
+function endRound(){
+  save();
+  renderAll();
+}
 
-  /* Init */
-  $("startIntroText").textContent = INTRO;
+function endCombat(victory){
+  const c = S.combat;
+  const e = ENEMIES[c.enemyId];
 
-  // Save detection message
-  (function(){
-    const hasSave = !!load();
-    if(hasSave){
-      $("saveNote").textContent = "Save found. Start continues your last run.";
+  if(victory){
+    addLog(`You survived ${e.name}. The Bridge does not congratulate you.`);
+    setStat("resolve", +6);
+    setStat("energy", -3);
+
+    // Drops
+    const r = randInt(1,100);
+    if(r<=18){
+      gainSupply("salve",1,"You found salve in a crack of the stone. It smells like winter.");
+    } else if(r<=38){
+      gainSupply("water",1,"A flask. The water is still. That should not be possible.");
+    } else if(r<=58){
+      gainSupply("bread",1,"Bread appears where bread should not be. The Bridge is mocking you.");
+    } else if(r<=70){
+      gainWeapon("fog_dagger");
+    } else if(r<=80){
+      gainWeapon("stone_maul");
+    } else if(r<=86){
+      gainWeapon("glass_sabre");
     } else {
-      $("saveNote").textContent = "No save found. Start begins a new run.";
+      addLog("Nothing useful remains, only the memory of impact.");
     }
-  })();
+  } else {
+    addLog("You endured. The Bridge calls that enough.");
+  }
 
-  // Default: show start screen always
-  showStart();
+  const next = c.returnScene || S.scene;
+  S.combat = null;
+  S.postCombat = {
+    next: next,
+    note: victory ? "You steady your breathing and move on." : "You crawl forward, refusing to stop."
+  };
+
+  save();
+  renderAll();
+}
+
+/* Risky slip past */
+function slipPast(){
+  // d20 + resolve bonus vs threshold
+  const d = roll(20);
+  const total = d + Math.floor(S.resolve/15) - 2;
+  addLog(`You attempt to slip past. Your body votes with a roll: ${d}.`);
+  if(total >= 18){
+    setStat("resolve", +6);
+    setStat("energy", -4);
+    addLog("You pass under the Warden's authority without being noticed.");
+    go("s_final");
+  } else {
+    setStat("hp", -8);
+    shakeStory();
+    addLog("The Warden notices. The Bridge corrects your confidence.");
+    startCombat("hollow_warden","s_final");
+  }
+}
+
+/* Start screen buttons */
+$("startBtn").addEventListener("click", ()=>{
+  $("startScreen").classList.add("hidden");
+  renderAll();
+});
+$("resetBtn").addEventListener("click", ()=>{
+  go("__reset");
+});
+
+/* Boot render */
+function renderAll(){
+  renderStats();
+  renderScene();
+}
+
+/* Start at intro screen, but keep state ready */
+$("startScreen").classList.remove("hidden");
+renderStats();
+
 })();
 </script>
+  <script>
+(function(){
+"use strict";
+
+/* PART 3: colored pixel art icons + enemy sprites + intro mobile fix */
+
+/* Mobile intro title fix (safe-area friendly, works even if IDs differ) */
+(function injectIntroFixCss(){
+  const css = `
+  /* Fix start intro title being clipped on mobile */
+  #startScreen{
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+  #startScreen h1,
+  #startScreen .title,
+  #startTitle{
+    margin-top: 10px !important;
+    padding-top: 6px !important;
+    line-height: 1.08 !important;
+  }
+  /* extra breathing room above the intro text block */
+  #startScreen .panel,
+  #startScreen .card,
+  #startScreen .startCard{
+    margin-top: 12px !important;
+  }
+  `;
+  const style = document.createElement("style");
+  style.textContent = css;
+  document.head.appendChild(style);
+})();
+
+/* Pixel art engine */
+function makeSpriteCanvas(map, palette, scale, bg){
+  const h = map.length;
+  const w = map[0].length;
+  const c = document.createElement("canvas");
+  c.width = w * scale;
+  c.height = h * scale;
+
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+
+  if(bg){
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,c.width,c.height);
+  }
+
+  for(let y=0;y<h;y++){
+    const row = map[y];
+    for(let x=0;x<w;x++){
+      const k = row[x];
+      const col = palette[k];
+      if(!col) continue;
+      ctx.fillStyle = col;
+      ctx.fillRect(x*scale, y*scale, scale, scale);
+    }
+  }
+
+  c.style.imageRendering = "pixelated";
+  c.style.display = "block";
+  return c;
+}
+
+function framedIcon(node){
+  const wrap = document.createElement("div");
+  wrap.style.width = "34px";
+  wrap.style.height = "34px";
+  wrap.style.borderRadius = "10px";
+  wrap.style.border = "1px solid rgba(255,255,255,.12)";
+  wrap.style.background = "rgba(0,0,0,.18)";
+  wrap.style.display = "grid";
+  wrap.style.placeItems = "center";
+  wrap.style.overflow = "hidden";
+  wrap.appendChild(node);
+  return wrap;
+}
+
+/* Palettes */
+const PAL = {
+  metal:"#cbd5e1",
+  metal2:"#94a3b8",
+  dark:"#0b1220",
+  outline:"#0a0f1a",
+  gold:"#fbbf24",
+  gold2:"#f59e0b",
+  red:"#fb7185",
+  red2:"#ef4444",
+  blue:"#60a5fa",
+  teal:"#22d3ee",
+  wood:"#a16207",
+  wood2:"#854d0e",
+  bone:"#f1f5f9",
+  mist:"#d8b4fe",
+  mist2:"#a78bfa",
+  green:"#34d399",
+  glass:"#93c5fd",
+  glass2:"#e0f2fe",
+  ink:"#111827"
+};
+
+/* Weapon icon maps (16x16) */
+const WEAPON_SPRITES = {
+  iron_sword:{
+    pal:{ ".":null, "o":PAL.outline, "m":PAL.metal, "s":PAL.metal2, "g":PAL.gold, "h":PAL.gold2, "b":PAL.blue },
+    map:[
+      ".......oo.......",
+      "......ommo......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      ".......oo.......",
+      ".....ohggho.....",
+      "......oggo......",
+      "......obb o.....".replace(" ","."),
+      "......obbo......",
+      "......oooo......"
+    ]
+  },
+  oak_club:{
+    pal:{ ".":null, "o":PAL.outline, "w":PAL.wood, "v":PAL.wood2, "g":PAL.green },
+    map:[
+      "................",
+      ".......oo.......",
+      "......owwo......",
+      "......owwo......",
+      "......owwo......",
+      "......owwo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      ".....ogvvo......",
+      "......oo........",
+      "................"
+    ]
+  },
+  chipped_spear:{
+    pal:{ ".":null, "o":PAL.outline, "m":PAL.metal, "s":PAL.metal2, "w":PAL.wood, "v":PAL.wood2, "b":PAL.blue },
+    map:[
+      ".......oo.......",
+      "......ommo......",
+      ".....omssmo.....",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......ovvo......",
+      "......obbo......",
+      ".......oo......."
+    ]
+  },
+  river_knife:{
+    pal:{ ".":null, "o":PAL.outline, "m":PAL.metal, "s":PAL.metal2, "b":PAL.blue, "g":PAL.gold2 },
+    map:[
+      "................",
+      ".......oo.......",
+      "......ommo......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      ".......oo.......",
+      ".....oggggo.....",
+      "......obbo......",
+      "......obbo......",
+      ".......oo.......",
+      "................",
+      "................",
+      "................"
+    ]
+  },
+  fog_dagger:{
+    pal:{ ".":null, "o":PAL.outline, "m":PAL.metal, "s":PAL.metal2, "p":PAL.mist, "q":PAL.mist2 },
+    map:[
+      "................",
+      ".......oo.......",
+      "......ommo......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      "......omso......",
+      ".......oo.......",
+      ".....oqqqqo.....",
+      "......oppo......",
+      "......oppo......",
+      ".......oo.......",
+      "................",
+      "................",
+      "................"
+    ]
+  },
+  stone_maul:{
+    pal:{ ".":null, "o":PAL.outline, "s":PAL.metal2, "m":PAL.metal, "w":PAL.wood, "v":PAL.wood2 },
+    map:[
+      "......oooo......",
+      ".....osssso.....",
+      ".....osmmso.....",
+      ".....osssso.....",
+      "......oooo......",
+      ".......ov.......",
+      ".......ov.......",
+      ".......ov.......",
+      ".......ov.......",
+      ".......ov.......",
+      ".......ov.......",
+      "......ovv.......",
+      "......ovv.......",
+      "......ovv.......",
+      ".......oo.......",
+      "................"
+    ]
+  },
+  glass_sabre:{
+    pal:{ ".":null, "o":PAL.outline, "g":PAL.glass, "h":PAL.glass2, "m":PAL.metal2, "p":PAL.mist2 },
+    map:[
+      ".......oo.......",
+      "......oggo......",
+      "......ohho......",
+      "......ohho......",
+      "......ohho......",
+      "......ohho......",
+      "......ohho......",
+      "......ohho......",
+      "......oggo......",
+      ".......oo.......",
+      ".....oppppo.....",
+      "......ommo......",
+      ".......oo.......",
+      "................",
+      "................",
+      "................"
+    ]
+  },
+  council_needle:{
+    pal:{ ".":null, "o":PAL.outline, "m":PAL.metal2, "i":PAL.ink, "g":PAL.gold, "r":PAL.red },
+    map:[
+      ".......oo.......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      ".......oo.......",
+      ".....oggggo.....",
+      "......or ro......".replace(" ","."),
+      "......oiio......",
+      ".......oo.......",
+      "................"
+    ]
+  },
+  bridgeheart_relic:{
+    pal:{ ".":null, "o":PAL.outline, "g":PAL.gold, "h":PAL.gold2, "m":PAL.metal, "b":PAL.blue, "r":PAL.red2 },
+    map:[
+      ".......oo.......",
+      "......oggo......",
+      ".....oghhgo.....",
+      "......oggo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      "......ommo......",
+      ".......oo.......",
+      ".....obbbbo.....",
+      "......or ro......".replace(" ","."),
+      "......oggo......",
+      ".......oo.......",
+      "................"
+    ]
+  }
+};
+
+/* Enemy sprites (24x24) */
+const ENEMY_SPRITES = {
+  batling:{
+    pal:{ ".":null, "o":PAL.outline, "r":PAL.red2, "p":PAL.red, "m":PAL.metal2, "e":"#fde68a" },
+    map:[
+      "........................",
+      "..........oooo..........",
+      ".........orrrro.........",
+      "....oooo.orpppro.oooo...",
+      "...orrrroorppproorrrro..",
+      "..orppproorrrroorpppro..",
+      "..orpppro.oooo.orpppro..",
+      "...orrrro..oo..orrrro...",
+      "....oooo..orr..oooo.....",
+      "..........orrro..........",
+      "..........orrro..........",
+      ".........oerr eo.........".replace(" ","."),
+      ".........oerr eo.........".replace(" ","."),
+      "..........orrro..........",
+      "..........o..o..........",
+      ".........oo..oo.........",
+      "........o......o........",
+      "........o......o........",
+      ".........oo..oo.........",
+      "..........oooo..........",
+      "........................",
+      "........................",
+      "........................",
+      "........................"
+    ]
+  },
+  mist_mirror:{
+    pal:{ ".":null, "o":PAL.outline, "p":PAL.mist2, "q":PAL.mist, "b":PAL.blue, "i":PAL.ink },
+    map:[
+      "........................",
+      ".........oooooo.........",
+      ".......ooqqqqqqoo.......",
+      "......oqpppppppqo......",
+      ".....oqpbbbbbbpq o.....".replace(" ","."),
+      ".....oqpbiiii bqo......".replace(" ","."),
+      ".....oqpbiiii bqo......".replace(" ","."),
+      ".....oqpbbbbbbpqo......",
+      "......oqpppppppqo......",
+      ".......ooqqqqqqoo.......",
+      ".........oooooo.........",
+      "............oo..........",
+      ".........oooooo.........",
+      ".......ooqqqqqqoo.......",
+      "......oqpppppppqo......",
+      ".....oqpbbbbbbpqo......",
+      ".....oqpbiiii bqo......".replace(" ","."),
+      ".....oqpbiiii bqo......".replace(" ","."),
+      ".....oqpbbbbbbpqo......",
+      "......oqpppppppqo......",
+      ".......ooqqqqqqoo.......",
+      ".........oooooo.........",
+      "........................",
+      "........................"
+    ]
+  },
+  hollow_warden:{
+    pal:{ ".":null, "o":PAL.outline, "m":PAL.metal, "s":PAL.metal2, "g":PAL.gold2, "i":PAL.ink, "r":PAL.red2 },
+    map:[
+      "........................",
+      "..........oooo..........",
+      ".........ommmmo.........",
+      "........omssssmo........",
+      "........omsii smo........".replace(" ","."),
+      "........omsii smo........".replace(" ","."),
+      "........omssssmo........",
+      ".........ommmmo.........",
+      "......ooooommmmooooo....",
+      ".....ommmmsssssmmmmmo...",
+      "....omssssoooooosssmo...",
+      "....omssooggggooossmo...",
+      "....omssoogrrgooossmo...",
+      "....omssooggggooossmo...",
+      "....omssssoooooosssmo...",
+      ".....ommmmsssssmmmmmo...",
+      "......ooooommmmooooo....",
+      "..........ommmmo.........",
+      ".........omssssmo........",
+      ".........omssssmo........",
+      "..........ommmmo.........",
+      "...........oooo..........",
+      "........................",
+      "........................"
+    ]
+  },
+  stone_scribe:{
+    pal:{ ".":null, "o":PAL.outline, "s":PAL.metal2, "b":PAL.bone, "i":PAL.ink, "g":PAL.gold, "w":PAL.wood2 },
+    map:[
+      "........................",
+      "..........oooo..........",
+      ".........osssso.........",
+      "........osbbbbso........",
+      "........osbii bso........".replace(" ","."),
+      "........osbii bso........".replace(" ","."),
+      "........osbbbbso........",
+      ".........osssso.........",
+      "..........oooo..........",
+      ".......ooooosoooo.......",
+      "......osssssssssso......",
+      ".....ossssoooooosso.....",
+      ".....osssowwwwwwosso.....",
+      ".....osssowg g wosso.....".replace(" ","."),
+      ".....osssowwwwwwosso.....",
+      ".....ossssoooooosso.....",
+      "......osssssssssso......",
+      ".......ooooosoooo.......",
+      "...........oo...........",
+      "...........oo...........",
+      "..........oooo..........",
+      "........................",
+      "........................",
+      "........................"
+    ]
+  }
+};
+
+/* Override the stubs from Part 2 with real colored pixel art */
+window.renderWeaponIcon = function(weaponId){
+  const s = WEAPON_SPRITES[weaponId] || WEAPON_SPRITES.iron_sword;
+  const canvas = makeSpriteCanvas(s.map, s.pal, 2, null);
+  canvas.style.width = "28px";
+  canvas.style.height = "28px";
+  return framedIcon(canvas);
+};
+
+window.renderEnemySprite = function(enemyId, mount){
+  mount.innerHTML = "";
+  const s = ENEMY_SPRITES[enemyId] || ENEMY_SPRITES.batling;
+
+  const canvas = makeSpriteCanvas(s.map, s.pal, 2, "rgba(0,0,0,.18)");
+  canvas.style.width = "92px";
+  canvas.style.height = "92px";
+  canvas.style.borderRadius = "10px";
+  canvas.style.border = "1px solid rgba(255,255,255,.10)";
+  canvas.style.boxShadow = "0 10px 24px rgba(0,0,0,.25)";
+  mount.appendChild(canvas);
+};
+
+})();
+</script>
+
+
 </body>
 </html>

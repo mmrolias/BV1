@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- BUILD v7.1 (mobile intro safe-area + enemy pixel sprites integrated) -->
+<!-- BUILD v7.2 (enemy sprites + mobile-safe intro title) -->
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>The Bridge: Branching Story (BUILD v7.1)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>The Bridge: Branching Story (BUILD v7.2)</title>
   <style>
     :root{
       --bg0:#07080b;
@@ -288,6 +288,18 @@
     .enemyCard strong{ font-size: 14px; }
     .enemyCard span{ font-size: 12px; color: var(--muted); }
 
+    .enemySprite{
+      width: 84px;
+      height: 84px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      image-rendering: pixelated;
+      box-shadow: 0 10px 26px rgba(0,0,0,.35);
+      align-self:flex-start;
+      margin-top: 4px;
+    }
+
     .enemyImpact{
       pointer-events:none;
       position:absolute;
@@ -453,22 +465,24 @@
       place-items:center;
       z-index: 80;
 
-      padding: 18px;
-      padding-top: max(18px, env(safe-area-inset-top));
-      padding-bottom: max(18px, env(safe-area-inset-bottom));
-
       background:
         radial-gradient(900px 650px at 20% 15%, rgba(125,211,252,.14), transparent 62%),
         radial-gradient(900px 650px at 70% 25%, rgba(255,92,122,.10), transparent 66%),
         linear-gradient(180deg, rgba(6,7,10,.96), rgba(11,16,32,.96));
+
       overflow:auto;
+
+      /* Mobile safe areas and notches */
+      padding:
+        calc(18px + env(safe-area-inset-top))
+        calc(18px + env(safe-area-inset-right))
+        calc(18px + env(safe-area-inset-bottom))
+        calc(18px + env(safe-area-inset-left));
+
+      /* Better on mobile browsers that change viewport height */
+      min-height: 100svh;
     }
     .startScreen.show{ display:grid; }
-
-    @media (max-height: 720px){
-      .startScreen{ place-items: start center; }
-      .startCard{ margin-top: 12px; }
-    }
 
     .startCard{
       width: min(900px, 96vw);
@@ -479,7 +493,14 @@
       overflow:hidden;
       position:relative;
     }
-    .startInner{ padding: 18px; position:relative; }
+    .startInner{
+      padding:
+        calc(18px + env(safe-area-inset-top))
+        18px
+        18px
+        18px;
+      position:relative;
+    }
     .startInner p{
       margin: 0;
       color: var(--muted);
@@ -513,23 +534,11 @@
       image-rendering: pixelated;
       flex: 0 0 auto;
     }
-
-    /* Enemy sprite canvas (NEW) */
-    .enemySprite{
-      width: 72px;
-      height: 72px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.22);
-      image-rendering: pixelated;
-      box-shadow: 0 10px 28px rgba(0,0,0,.35);
-      margin-bottom: 2px;
-    }
   </style>
 </head>
 
 <body>
-  <!-- Start Screen (intro moved here) -->
+  <!-- Start Screen -->
   <div class="startScreen" id="startScreen" aria-label="Start screen">
     <div class="startCard">
       <div class="mist"></div>
@@ -537,11 +546,12 @@
         <h1>The Bridge</h1>
         <p id="startIntroText"></p>
         <div class="meta" style="margin-top:14px;">
-          <span class="tag">BUILD v7.1</span>
+          <span class="tag">BUILD v7.2</span>
           <span class="tag">Single page</span>
           <span class="tag">Branching story</span>
           <span class="tag">Dice combat (d20)</span>
           <span class="tag">Enemy HP bar</span>
+          <span class="tag">Enemy pixel sprites</span>
           <span class="tag">Loot is one-shot</span>
           <span class="tag">Post-combat Continue</span>
           <span class="tag">Impact anim</span>
@@ -637,11 +647,12 @@
                 <div class="enemyImpact" id="enemyImpact"></div>
                 <div class="critBadge" id="critBadge">CRIT</div>
 
-                <!-- NEW: enemy sprite canvas -->
-                <canvas id="enemySprite" class="enemySprite" width="72" height="72" aria-label="Enemy sprite"></canvas>
-
                 <strong id="enemyName">Enemy</strong>
                 <span id="enemyMeta">HP ?, AC ?, Threat ?</span>
+
+                <!-- Enemy sprite canvas (pixel art generated in JS) -->
+                <canvas id="enemySprite" class="enemySprite" width="96" height="96" aria-label="Enemy sprite"></canvas>
+
                 <div class="enemyHpRow">
                   <div>HP</div>
                   <div class="enemyHpBar"><div id="enemyHpFill" class="enemyHpFill"></div></div>
@@ -857,11 +868,130 @@ Tonight, the Council speaks your name.`;
     choir_column:{ id:"choir_column", name:"Choir of Columns", desc:"Not one enemy. A chorus that hits in rhythm.", hp:24, ac:11, dmg:"1d6+4", hit:+4, threat:3 }
   };
 
-  /* Pixel icons (no external assets)
-     Each icon is a tiny grid using characters:
-     . = empty
-     1..5 = palette index
+  /* Enemy pixel sprites (no external assets)
+     '.' = transparent, '1..5' = palette index
   */
+  const ENEMY_SPRITES = {
+    mist_mirror: [
+      "..111111..",
+      ".12222221.",
+      "1223333221",
+      "1233443321",
+      "1234444321",
+      "1233443321",
+      "1223333221",
+      ".12222221.",
+      "..111111..",
+      "....11...."
+    ],
+    stone_scribe: [
+      "..11111...",
+      ".1222221..",
+      "122333221.",
+      "123333321.",
+      "123444321.",
+      "123333321.",
+      "122333221.",
+      ".1222221..",
+      "..11111...",
+      "...22....."
+    ],
+    hollow_warden: [
+      "..111111..",
+      ".12222221.",
+      "1224444221",
+      "1243333421",
+      "1243333421",
+      "1243333421",
+      "1224444221",
+      ".12222221.",
+      "..111111..",
+      "...22.22.."
+    ],
+    toll_clerk: [
+      "..11111...",
+      ".1222221..",
+      "122333221.",
+      "123222321.",
+      "123222321.",
+      "123333321.",
+      "122333221.",
+      ".1222221..",
+      "..11111...",
+      "...22....."
+    ],
+    choir_column: [
+      "111..111..",
+      "122..2221.",
+      "123..3321.",
+      "123..3321.",
+      "123..3321.",
+      "123..3321.",
+      "122..2221.",
+      "111..111..",
+      "..2..2..2.",
+      "..2..2..2."
+    ],
+    fallback: [
+      "..11111...",
+      ".1222221..",
+      "122333221.",
+      "123444321.",
+      "123444321.",
+      "123444321.",
+      "122333221.",
+      ".1222221..",
+      "..11111...",
+      "...22....."
+    ]
+  };
+
+  const ENEMY_PALETTES = {
+    mist_mirror: ["rgba(0,0,0,0)","#e8e9ee","#7dd3fc","#c4b5fd","#76ffb2","#ffd36c"],
+    stone_scribe:["rgba(0,0,0,0)","#e8e9ee","#a9adbb","#ffd36c","#93c5fd","#76ffb2"],
+    hollow_warden:["rgba(0,0,0,0)","#e8e9ee","#a9adbb","#93c5fd","#ff5c7a","#ffd36c"],
+    toll_clerk: ["rgba(0,0,0,0)","#e8e9ee","#a9adbb","#ff5c7a","#ffd36c","#93c5fd"],
+    choir_column:["rgba(0,0,0,0)","#e8e9ee","#c4b5fd","#93c5fd","#76ffb2","#ffd36c"],
+    fallback:   ["rgba(0,0,0,0)","#e8e9ee","#a9adbb","#93c5fd","#76ffb2","#ffd36c"]
+  };
+
+  function drawEnemySprite(enemyId){
+    const cv = $("enemySprite");
+    if(!cv) return;
+
+    const map = ENEMY_SPRITES[enemyId] || ENEMY_SPRITES.fallback;
+    const pal = ENEMY_PALETTES[enemyId] || ENEMY_PALETTES.fallback;
+
+    const gridH = map.length;
+    const gridW = map[0].length;
+
+    const ctx = cv.getContext("2d");
+    ctx.clearRect(0,0,cv.width,cv.height);
+
+    ctx.fillStyle = "rgba(0,0,0,.18)";
+    ctx.fillRect(0,0,cv.width,cv.height);
+
+    const px = Math.floor(Math.min(cv.width/gridW, cv.height/gridH));
+    const offX = Math.floor((cv.width - gridW*px)/2);
+    const offY = Math.floor((cv.height - gridH*px)/2);
+
+    for(let y=0;y<gridH;y++){
+      const row = map[y];
+      for(let x=0;x<gridW;x++){
+        const ch = row[x];
+        if(ch===".") continue;
+        const idx = Math.max(0, Math.min(pal.length-1, parseInt(ch,10)));
+        ctx.fillStyle = pal[idx] || pal[1];
+        ctx.fillRect(offX + x*px, offY + y*px, px, px);
+      }
+    }
+
+    ctx.strokeStyle = "rgba(255,255,255,.12)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1,1,cv.width-2,cv.height-2);
+  }
+
+  /* Pixel icons (weapons, no external assets) */
   const ICONS = {
     iron_sword: [
       "....1.......",
@@ -976,125 +1106,6 @@ Tonight, the Council speaks your name.`;
       "............"
     ]
   };
-
-  /* Enemy pixel sprites (NEW) */
-  const ENEMY_SPRITES = {
-    mist_mirror: [
-      "..111111..",
-      ".12222221.",
-      "1223333221",
-      "1233443321",
-      "1234444321",
-      "1233443321",
-      "1223333221",
-      ".12222221.",
-      "..111111..",
-      "....11...."
-    ],
-    stone_scribe: [
-      "..1111....",
-      ".122221...",
-      "12233221..",
-      "12333321..",
-      "12333321..",
-      "12333321..",
-      "12233221..",
-      ".122221...",
-      "..1111....",
-      "...22....."
-    ],
-    hollow_warden: [
-      "..111111..",
-      ".12222221.",
-      "1224444221",
-      "1243333421",
-      "1243333421",
-      "1243333421",
-      "1224444221",
-      ".12222221.",
-      "..111111..",
-      "...22.22.."
-    ],
-    toll_clerk: [
-      "..11111...",
-      ".1222221..",
-      "122333221.",
-      "123222321.",
-      "123222321.",
-      "123333321.",
-      "122333221.",
-      ".1222221..",
-      "..11111...",
-      "...22....."
-    ],
-    choir_column: [
-      "111..111..",
-      "122..2221.",
-      "123..3321.",
-      "123..3321.",
-      "123..3321.",
-      "123..3321.",
-      "122..2221.",
-      "111..111..",
-      "..2..2..2.",
-      "..2..2..2."
-    ],
-    fallback: [
-      "..1111....",
-      ".122221...",
-      "12233221..",
-      "12333321..",
-      "12333321..",
-      "12233221..",
-      ".122221...",
-      "..1111....",
-      "...22.....",
-      ".........."
-    ]
-  };
-
-  const ENEMY_PALETTES = {
-    mist_mirror: ["rgba(0,0,0,0)","#dbe0ea","#7dd3fc","#a9adbb","#c4b5fd"],
-    stone_scribe: ["rgba(0,0,0,0)","#dbe0ea","#a9adbb","#93c5fd","#ffd36c"],
-    hollow_warden:["rgba(0,0,0,0)","#dbe0ea","#a9adbb","#76ffb2","#ff5c7a"],
-    toll_clerk:  ["rgba(0,0,0,0)","#dbe0ea","#ffd36c","#a9adbb","#ff5c7a"],
-    choir_column:["rgba(0,0,0,0)","#dbe0ea","#c4b5fd","#7dd3fc","#76ffb2"]
-  };
-
-  function drawEnemySprite(canvas, enemyId){
-    const map = ENEMY_SPRITES[enemyId] || ENEMY_SPRITES.fallback;
-    const pal = ENEMY_PALETTES[enemyId] || ["rgba(0,0,0,0)","#dbe0ea","#a9adbb","#7dd3fc","#ff5c7a"];
-
-    const gridH = map.length;
-    const gridW = map[0].length;
-
-    const scale = 3;
-    const px = 2 * scale;
-
-    canvas.width = gridW * px;
-    canvas.height = gridH * px;
-
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    ctx.fillStyle = "rgba(0,0,0,.18)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    for(let y=0;y<gridH;y++){
-      const row = map[y];
-      for(let x=0;x<gridW;x++){
-        const ch = row[x];
-        if(ch==="." ) continue;
-        const idx = Math.max(0, Math.min(pal.length-1, parseInt(ch,10)));
-        ctx.fillStyle = pal[idx] || pal[1];
-        ctx.fillRect(x*px, y*px, px, px);
-      }
-    }
-
-    ctx.strokeStyle = "rgba(255,255,255,.10)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(1,1,canvas.width-2,canvas.height-2);
-  }
 
   const DEFAULT_STATE = {
     hp:100, energy:100, resolve:50,
@@ -1474,10 +1485,6 @@ Tonight, the Council speaks your name.`;
     const chance = 260;
     return randInt(1, chance) === 1;
   }
-
-  const SCENES = (function(){
-    return window.__BRIDGE_SCENES__ || null;
-  })();
 
   const SCENES_LOCAL = {
     intro_scene:{
@@ -2831,16 +2838,13 @@ Changed.`,
     box.classList.add("show");
     const e = ENEMIES[S.combat.enemyId];
     $("enemyName").textContent = e.name;
-
-    /* NEW: draw enemy sprite */
-    const cv = $("enemySprite");
-    if(cv) drawEnemySprite(cv, S.combat.enemyId);
-
     $("enemyMeta").textContent = `HP ${S.combat.eHp} / ${S.combat.eHpMax}, AC ${S.combat.eAc}, Threat ${S.combat.eThreat}`;
     $("enemyHpTxt").textContent = `${S.combat.eHp}/${S.combat.eHpMax}`;
 
     const pct = (S.combat.eHpMax<=0) ? 0 : Math.max(0, Math.min(100, Math.floor((S.combat.eHp / S.combat.eHpMax)*100)));
     $("enemyHpFill").style.width = pct + "%";
+
+    drawEnemySprite(S.combat.enemyId);
 
     $("attackBtn").disabled = false;
     $("focusBtn").disabled = false;
@@ -2885,6 +2889,9 @@ Changed.`,
     $("enemyDie").textContent = "-";
     $("lastHit").textContent = "-";
     addLog(`A hostile presence forms: ${e.name}.`);
+
+    drawEnemySprite(enemyId);
+
     save();
     renderScene();
   }
@@ -3094,7 +3101,6 @@ Changed.`,
     renderHud();
   });
 
-  /* Start screen controls */
   function showStart(){
     $("startScreen").classList.add("show");
     $("gameWrap").classList.add("gameHidden");
@@ -3156,7 +3162,6 @@ Changed.`,
     hardFailSafe();
   });
 
-  /* Init */
   $("startIntroText").textContent = INTRO;
 
   (function(){

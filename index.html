@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD v7.1 -->
+<!-- BUILD v7.1 (mobile intro safe-area + enemy pixel sprites integrated) -->
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -452,7 +452,11 @@
       display:none;
       place-items:center;
       z-index: 80;
+
       padding: 18px;
+      padding-top: max(18px, env(safe-area-inset-top));
+      padding-bottom: max(18px, env(safe-area-inset-bottom));
+
       background:
         radial-gradient(900px 650px at 20% 15%, rgba(125,211,252,.14), transparent 62%),
         radial-gradient(900px 650px at 70% 25%, rgba(255,92,122,.10), transparent 66%),
@@ -460,6 +464,11 @@
       overflow:auto;
     }
     .startScreen.show{ display:grid; }
+
+    @media (max-height: 720px){
+      .startScreen{ place-items: start center; }
+      .startCard{ margin-top: 12px; }
+    }
 
     .startCard{
       width: min(900px, 96vw);
@@ -503,6 +512,18 @@
       box-shadow: 0 6px 20px rgba(0,0,0,.35);
       image-rendering: pixelated;
       flex: 0 0 auto;
+    }
+
+    /* Enemy sprite canvas (NEW) */
+    .enemySprite{
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      image-rendering: pixelated;
+      box-shadow: 0 10px 28px rgba(0,0,0,.35);
+      margin-bottom: 2px;
     }
   </style>
 </head>
@@ -615,6 +636,9 @@
               <div class="enemyCard" id="enemyCard">
                 <div class="enemyImpact" id="enemyImpact"></div>
                 <div class="critBadge" id="critBadge">CRIT</div>
+
+                <!-- NEW: enemy sprite canvas -->
+                <canvas id="enemySprite" class="enemySprite" width="72" height="72" aria-label="Enemy sprite"></canvas>
 
                 <strong id="enemyName">Enemy</strong>
                 <span id="enemyMeta">HP ?, AC ?, Threat ?</span>
@@ -953,6 +977,125 @@ Tonight, the Council speaks your name.`;
     ]
   };
 
+  /* Enemy pixel sprites (NEW) */
+  const ENEMY_SPRITES = {
+    mist_mirror: [
+      "..111111..",
+      ".12222221.",
+      "1223333221",
+      "1233443321",
+      "1234444321",
+      "1233443321",
+      "1223333221",
+      ".12222221.",
+      "..111111..",
+      "....11...."
+    ],
+    stone_scribe: [
+      "..1111....",
+      ".122221...",
+      "12233221..",
+      "12333321..",
+      "12333321..",
+      "12333321..",
+      "12233221..",
+      ".122221...",
+      "..1111....",
+      "...22....."
+    ],
+    hollow_warden: [
+      "..111111..",
+      ".12222221.",
+      "1224444221",
+      "1243333421",
+      "1243333421",
+      "1243333421",
+      "1224444221",
+      ".12222221.",
+      "..111111..",
+      "...22.22.."
+    ],
+    toll_clerk: [
+      "..11111...",
+      ".1222221..",
+      "122333221.",
+      "123222321.",
+      "123222321.",
+      "123333321.",
+      "122333221.",
+      ".1222221..",
+      "..11111...",
+      "...22....."
+    ],
+    choir_column: [
+      "111..111..",
+      "122..2221.",
+      "123..3321.",
+      "123..3321.",
+      "123..3321.",
+      "123..3321.",
+      "122..2221.",
+      "111..111..",
+      "..2..2..2.",
+      "..2..2..2."
+    ],
+    fallback: [
+      "..1111....",
+      ".122221...",
+      "12233221..",
+      "12333321..",
+      "12333321..",
+      "12233221..",
+      ".122221...",
+      "..1111....",
+      "...22.....",
+      ".........."
+    ]
+  };
+
+  const ENEMY_PALETTES = {
+    mist_mirror: ["rgba(0,0,0,0)","#dbe0ea","#7dd3fc","#a9adbb","#c4b5fd"],
+    stone_scribe: ["rgba(0,0,0,0)","#dbe0ea","#a9adbb","#93c5fd","#ffd36c"],
+    hollow_warden:["rgba(0,0,0,0)","#dbe0ea","#a9adbb","#76ffb2","#ff5c7a"],
+    toll_clerk:  ["rgba(0,0,0,0)","#dbe0ea","#ffd36c","#a9adbb","#ff5c7a"],
+    choir_column:["rgba(0,0,0,0)","#dbe0ea","#c4b5fd","#7dd3fc","#76ffb2"]
+  };
+
+  function drawEnemySprite(canvas, enemyId){
+    const map = ENEMY_SPRITES[enemyId] || ENEMY_SPRITES.fallback;
+    const pal = ENEMY_PALETTES[enemyId] || ["rgba(0,0,0,0)","#dbe0ea","#a9adbb","#7dd3fc","#ff5c7a"];
+
+    const gridH = map.length;
+    const gridW = map[0].length;
+
+    const scale = 3;
+    const px = 2 * scale;
+
+    canvas.width = gridW * px;
+    canvas.height = gridH * px;
+
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "rgba(0,0,0,.18)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    for(let y=0;y<gridH;y++){
+      const row = map[y];
+      for(let x=0;x<gridW;x++){
+        const ch = row[x];
+        if(ch==="." ) continue;
+        const idx = Math.max(0, Math.min(pal.length-1, parseInt(ch,10)));
+        ctx.fillStyle = pal[idx] || pal[1];
+        ctx.fillRect(x*px, y*px, px, px);
+      }
+    }
+
+    ctx.strokeStyle = "rgba(255,255,255,.10)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1,1,canvas.width-2,canvas.height-2);
+  }
+
   const DEFAULT_STATE = {
     hp:100, energy:100, resolve:50,
     hardMode:false,
@@ -1157,7 +1300,7 @@ Tonight, the Council speaks your name.`;
     const gridH = map.length;
     const gridW = map[0].length;
 
-    const scale = 2; // internal scale for crispness
+    const scale = 2;
     const px = 2 * scale;
 
     canvas.width = gridW * px;
@@ -1166,11 +1309,9 @@ Tonight, the Council speaks your name.`;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // subtle vignette background
     ctx.fillStyle = "rgba(0,0,0,.18)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // draw pixels
     for(let y=0;y<gridH;y++){
       const row = map[y];
       for(let x=0;x<gridW;x++){
@@ -1182,7 +1323,6 @@ Tonight, the Council speaks your name.`;
       }
     }
 
-    // border highlight
     ctx.strokeStyle = "rgba(255,255,255,.12)";
     ctx.lineWidth = 2;
     ctx.strokeRect(1,1,canvas.width-2,canvas.height-2);
@@ -1335,13 +1475,10 @@ Tonight, the Council speaks your name.`;
     return randInt(1, chance) === 1;
   }
 
-  /* Scenes are unchanged from your v7 build */
   const SCENES = (function(){
     return window.__BRIDGE_SCENES__ || null;
   })();
 
-  // Inject scenes: your original SCENES object copied verbatim (kept intact)
-  // NOTE: This is your SCENES from the posted build, unchanged.
   const SCENES_LOCAL = {
     intro_scene:{
       layout:"hall",
@@ -2694,6 +2831,11 @@ Changed.`,
     box.classList.add("show");
     const e = ENEMIES[S.combat.enemyId];
     $("enemyName").textContent = e.name;
+
+    /* NEW: draw enemy sprite */
+    const cv = $("enemySprite");
+    if(cv) drawEnemySprite(cv, S.combat.enemyId);
+
     $("enemyMeta").textContent = `HP ${S.combat.eHp} / ${S.combat.eHpMax}, AC ${S.combat.eAc}, Threat ${S.combat.eThreat}`;
     $("enemyHpTxt").textContent = `${S.combat.eHp}/${S.combat.eHpMax}`;
 
@@ -2979,7 +3121,6 @@ Changed.`,
   });
 
   $("showIntroBtn").addEventListener("click", ()=>{
-    // Show intro screen without resetting anything
     $("saveNote").textContent = "Your run is saved. Press Start to return.";
     showStart();
   });
@@ -3018,7 +3159,6 @@ Changed.`,
   /* Init */
   $("startIntroText").textContent = INTRO;
 
-  // Save detection message
   (function(){
     const hasSave = !!load();
     if(hasSave){
@@ -3028,7 +3168,6 @@ Changed.`,
     }
   })();
 
-  // Default: show start screen always
   showStart();
 })();
 </script>
